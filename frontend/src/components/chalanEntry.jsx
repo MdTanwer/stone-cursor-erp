@@ -6,7 +6,7 @@ import MaterialTable, { Column } from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import { TextField } from '@mui/material';
+import { DialogContentText, TextField } from '@mui/material';
 
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -68,6 +68,12 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  deleteName: {
+    color: 'red', // Your desired color
+    fontWeight: 'bold',
+    fontSize: '20px', // Your desired font weight or other styles
+    // Add any other custom styles you want
+  },
 }));
 
 export default function ChallanEntry(props) {
@@ -95,6 +101,7 @@ export default function ChallanEntry(props) {
   };
 
   const columns = [
+    { title: 'MongoDB Challan ID', field: '_id', hidden: true },
     { title: 'Challan No.', field: 'challanNumber' },
     { title: 'Manual Challan No.', field: 'mChallanNo' },
     { title: 'Mine / Source Name', field: 'mineSourceName' },
@@ -168,6 +175,9 @@ export default function ChallanEntry(props) {
 
   console.log(challanEntryData);
 
+  const [selectedRowId, setSelectedRowId] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [customerDeleteName, setCustomerDeleteName] = useState('');
   ///////////////////// All masters data /////////////////
 
   const [mineSource, setMineSource] = useState([]);
@@ -778,6 +788,28 @@ export default function ChallanEntry(props) {
 
   const handlePreview = () => {};
 
+  const handleDelete = async (id) => {
+    try {
+      // dispatch(deleteCustomerRequest());
+      const { data } = await axios.delete(
+        `/challan/delete-challan/${id}`
+        // {
+        //   withCredentials: true,
+        // }
+      );
+
+      // console.log(data);
+      if (data?.success === true) {
+        // dispatch(deleteCustomer(`${data.message}`));
+        toast.success(`${data.message}`);
+        getAllChallans();
+      }
+    } catch (err) {
+      // dispatch(deleteCustomerFailed({ err }));
+      console.log(err);
+    }
+  };
+
   const actions = [
     {
       icon: () => <Refresh />,
@@ -799,7 +831,9 @@ export default function ChallanEntry(props) {
       icon: () => <DeleIcon />,
       tooltip: 'Delete Factory',
       onClick: (event, rowData) => {
-        // onClickDelete(rowData);
+        setSelectedRowId(rowData._id);
+        setShowDeleteConfirm(true);
+        setCustomerDeleteName(rowData.customerName);
       },
     },
   ];
@@ -1942,6 +1976,60 @@ export default function ChallanEntry(props) {
             </form>
           </div>
         </DialogContent>
+      </Dialog>
+      <Dialog
+        // classes={{ paper: classes.customDialog }}
+        // className={classes.customDialog}
+        open={showDeleteConfirm}
+        disableBackdropClick={true}
+        maxWidth='sm' // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
+        fullWidth={true}
+        onClose={() => setShowDeleteConfirm(false)}
+        aria-labelledby='alert-dialog-title '
+        aria-describedby='alert-dialog-description '
+      >
+        <DialogTitle id='alert-dialog-title'>{'Confirm Delete'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            Are you sure you want to delete this{' '}
+            <span
+              className={classes.deleteName}
+            >{`' ${customerDeleteName} '`}</span>{' '}
+            record?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}></Grid>
+            <Grid item xs={12} sm={4}>
+              <Button
+                fullWidth
+                name='submit'
+                variant='contained'
+                onClick={() => setShowDeleteConfirm(false)}
+                color='primary'
+              >
+                No
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Button
+                name='cancle'
+                variant='contained'
+                color='secondary'
+                fullWidth
+                onClick={() => {
+                  handleDelete(selectedRowId);
+                  getAllChallans();
+                  setShowDeleteConfirm(false);
+                }}
+                autoFocus
+              >
+                Yes
+              </Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
       </Dialog>
     </>
   );
