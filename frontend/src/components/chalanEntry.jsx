@@ -382,7 +382,7 @@ export default function ChallanEntry(props) {
 
   const getAllChallans = () => {
     axios
-      .get('challan//all-challans')
+      .get('challan/all-challans')
       .then((res) => {
         console.log(res.data);
         setChallans(res.data.challans);
