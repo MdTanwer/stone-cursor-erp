@@ -110,6 +110,7 @@ const Payment = require('./controller/paymentAmount');
 const expenses = require('./controller/expenses');
 const maintanance = require('./controller/maintanance');
 const challan = require('./controller/challanEntry');
+const miningRoyalty = require("./controller/miningRoyalty");
 
 app.use('/api/v2/user', user);
 app.use('/api/v2/challan', challan);
@@ -128,6 +129,7 @@ app.use('/api/v2/supplier', supplier);
 app.use('/api/v2/petrolPump', petrolPump);
 app.use('/api/v2/employee', employee);
 app.use('/api/v2/transport', transport);
+app.use("/api/v2/miningRoyalty", miningRoyalty);
 
 app.use('/api/v2/expenses', expenses);
 app.use('/api/v2/maintanance', maintanance);
