@@ -1,0 +1,917 @@
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
+import { Refresh } from "@material-ui/icons";
+import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
+import { Edit as EditIcon, Delete as DeleIcon } from "@material-ui/icons";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  deleteName: {
+    color: "red", // Your desired color
+    fontWeight: "bold",
+    fontSize: "20px", // Your desired font weight or other styles
+    // Add any other custom styles you want
+  },
+}));
+const label = { inputProps: { "aria-label": "Checkbox demo" } };
+const MaterialRate = () => {
+  const [data, setData] = useState([]);
+  const [allCustomer, setAllCustomer] = useState([]);
+  const [destination, setDestination] = useState([]);
+
+  const [materialRate, setMaterialRate] = useState([]);
+  const [materialRateId, setMaterialRateId] = useState("");
+  const [updateMaterialRateId, setUpdateMaterialRateId] = useState("");
+  const [materialName, setMaterialName] = useState("");
+  const [locationName, setLocationName] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [rate, setRate] = useState("");
+  const [transportRate, setTransportRate] = useState("");
+  const [materialRateDelete, setMaterialRateDelete] = useState("");
+  const [open, setOpen] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+  const [update, setUpdate] = useState(false);
+  const [mongodbId, setMongodbId] = useState();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [material, setMaterial] = useState([]); //FOR DATA FETCH FROM MATERIAL TABLE
+  const classes = useStyles();
+  const columns = [
+    { title: "MaterialRate ID ", field: "materialRateId" },
+    { title: "Material Name", field: "materialName" },
+    { title: "Customer Name", field: "customerName" },
+    { title: "Location Name", field: "locationName" },
+    { title: "Transport Rate", field: "transportRate" },
+    { title: "Rate", field: "rate" },
+  ];
+  useEffect(() => {
+    GetMaterial();
+    GetMaterialRate();
+    getMaxMaterialRateId();
+    setMaterialRateId(getMaxMaterialRateId());
+    getAllCustomers()
+    GetDestination()
+  }, [open]);
+  // ======================================
+  const GetMaterial = async () => {
+    try {
+      const response = await axios.get("materialmaster/get-materialmaster");
+      debugger;
+      // console.log(response.data.materialmasters);
+      setMaterial(response.data.materialmasters);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // ======================================
+  const getAllCustomers = () => {
+    axios
+      .get(`/customer/all-customers`)
+      .then((res) => {
+        setAllCustomer(res.data.customers);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  // ======================================
+  const GetDestination = () => {
+
+    axios
+      .get("destinationmaster/get-destination")
+      .then((res) => {
+        console.log(res);
+        setDestination(res.data.destinations);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+
+  const GetMaterialRate = async () => {
+    try {
+      const response = await axios.get("materialrate/get/materialrate");
+      debugger;
+      // console.log(response.data.materialrates);
+      setMaterialRate(response.data.materialrates);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // ===================For Automatic Id generator==================
+  const getMaxMaterialRateId = () => {
+    if (!materialRate || materialRate.length === 0) {
+      return 1;
+    }
+    const maxID = materialRate.reduce((max, materialRate) => {
+      const RateId = parseInt(materialRate.materialRateId);
+      if (RateId > max) {
+        return RateId;
+      } else {
+        return max;
+      }
+    }, 0);
+    return maxID + 1;
+  };
+  //   ==================================================================
+  //   useEffect(() => {
+  //     // Make an Axios request to your API
+  //     debugger;
+  //     axios
+  //       .get("materialmaster/get-materialmaster")
+  //       .then((response) => {
+  //         // Assuming your API returns an array of options
+  //         setOptions(response.data.materialmasters);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       });
+  //   }, []);
+  //   const handleSelection = (event) => {
+  //     setSelectedOption(event.target.value);
+  //   };
+  // ====================================================================
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    var materialRate = {
+      materialRateId: materialRateId,
+      materialName: materialName,
+      locationName: locationName,
+      customerName: customerName,
+      rate: rate,
+      transportRate: transportRate,
+      isActive: isActive,
+    };
+    try {
+      const response = await axios.post(
+        "materialrate/create/materialrate",
+        materialRate
+      );
+
+      if (response.status === 201) {
+        toast.success("Record has been added successfully!");
+        console.log(response);
+      } else {
+        toast("Invalid Information!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast("Invalid Material Information!");
+    }
+    setOpen(!open);
+    //  alert("added success");
+    setRate("");
+    setMaterialName("");
+    setCustomerName("");
+    setTransportRate("");
+  };
+  const handleUpdateSubmit = async (event) => {
+    debugger;
+    event.preventDefault();
+    const endpoint = `/materialrate/updatematerialrate/${mongodbId}`;
+
+    try {
+      const response = await axios.put(endpoint, {
+        materialRateId,
+        materialName: materialName,
+        locationName: locationName,
+        customerName: customerName,
+        rate: rate,
+        transportRate: transportRate,
+        isActive: isActive,
+      });
+
+      toast.success("Material Updated successfully!");
+    } catch (error) {
+      console.error("An error occurred while updating the unit:", error);
+      // //   // Handle the error in your UI, maybe show a notification or error message
+    }
+    clear();
+    setUpdate(false);
+    setOpen(false);
+    GetMaterialRate();
+  };
+  const checkChanged = (e) => {
+    setIsActive(!isActive);
+    // const [name, checked] = e.target;
+  };
+  const handlecustomerChange = (e) => {
+    setCustomerName(e.target.value);
+  };
+  const handlematerialChange = (e) => {
+    setMaterialName(e.target.value);
+  };
+  const handleLocationChange = (e) => {
+    setLocationName(e.target.value);
+  };
+
+  const handleClose = () => {
+    setUpdate(false);
+    setOpen(false);
+    setRate("");
+    setMaterialName("");
+    setCustomerName("");
+    setTransportRate("");
+  };
+  const clear = () => {
+    setRate("");
+    setMaterialName("");
+    setCustomerName("");
+    setLocationName("");
+    setTransportRate("");
+    GetMaterialRate();
+  };
+  const onClickDelete = async (rowData) => {
+    axios
+      .delete(`/materialrate/deletematerialrate/${rowData._id}`)
+      .then((res) => {
+        debugger;
+        console.log(res);
+        toast.success("Record has been deleted successfully!");
+      })
+      .catch((err) => {
+        toast("Invalid  Information!");
+        console.log(err);
+      });
+    debugger;
+    // alert("Delete = " + rowData.CustId);
+    return;
+  };
+  GetMaterialRate();
+  const actions = [
+    {
+      icon: () => <Refresh />,
+      tooltip: "Refresh Data",
+      isFreeAction: true,
+      onClick: (event, rowData) => {
+        GetMaterialRate();
+      },
+    },
+    {
+      icon: () => <EditIcon color="primary" />,
+      tooltip: "Edit Factory",
+      onClick: (event, rowData) => {
+        setUpdate(true);
+        setMongodbId(rowData._id);
+        setUpdateMaterialRateId(rowData.materialRateId);
+        setMaterialName(rowData.materialName);
+        setCustomerName(rowData.customerName);
+        setRate(rowData.rate);
+        setTransportRate(rowData.transportRate);
+        setLocationName(rowData.locationName);
+      },
+    },
+    {
+      icon: () => <DeleIcon color="secondary" />,
+      tooltip: "Delete Factory",
+      onClick: (event, rowData) => {
+        setShowDeleteConfirm(rowData);
+        setMaterialRateDelete(rowData.customerName);
+      },
+    },
+  ];
+
+  return (
+    <>
+      <div>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12}>
+            <Fab
+              color="primary"
+              style={{
+                borderRadius: "0.5rem",
+                height: "3rem",
+                width: "100%",
+              }}
+              variant="extended"
+              aria-label="add"
+              fullWidth
+              onClick={() => setOpen(true)}
+            >
+              Create Material Rate
+            </Fab>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <MaterialTable
+              title=""
+              columns={columns}
+              data={materialRate}
+              // icons={tableIcons}
+              actions={actions}
+              options={{
+                sorting: true,
+                search: true,
+                searchFieldAlignment: "right",
+                searchAutoFocus: true,
+                searchFieldVariant: "standard",
+                filtering: true,
+                paging: true,
+                pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
+                pageSize: 10,
+                paginationType: "stepped",
+                showFirstLastPageButtons: false,
+                paginationPosition: "both",
+                exportButton: true,
+                exportAllData: true,
+                exportFileName: "SitesDetails",
+                addRowPosition: "first",
+                // actionsColumnIndex: -1,
+                // selection: true,
+                // showSelectAllCheckbox: false,
+                showTextRowsSelected: false,
+                // selectionProps: (rowData) => ({
+                //   disabled: rowData.age == null,
+                //   // color:"primary"
+                // }),
+                grouping: true,
+                columnsButton: true,
+                rowStyle: (data, index) =>
+                  index % 2 === 0 ? { background: "#f5f5f5" } : null,
+                headerStyle: { background: "#f44336", color: "#fff" },
+              }}
+            />
+          </Grid>
+        </Grid>
+        <Dialog
+          fullWidth
+          maxWidth="md"
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="max-width-dialog-title"
+        >
+          <DialogTitle id="max-width-dialog-title">
+            <Grid
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              container
+            >
+              <Grid item xs={12} sm={11}>
+                {/* style={{ justifyContent: 'center' }} */}
+                <Grid container>
+                  <Typography
+                    style={{ display: "inline-block" }}
+                    variant="h5"
+                    fontWeight={700}
+                  >
+                    Create Material Rate
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  color="secondary"
+                  onClick={handleClose}
+                  variant="contained"
+                >
+                  &#10539;
+                </Button>
+              </Grid>
+            </Grid>
+          </DialogTitle>
+          <DialogContent>
+            <div>
+
+              <form className={classes.form} onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={2}>
+                    <TextField
+                      disabled={true}
+                      value={materialRateId}
+                      autoComplete="materialRateId"
+                      name="materialRateId"
+                      variant="outlined"
+                      fullWidth
+                      id="materialRateId"
+                      label="MaterialRateId"
+                      onChange={(e) => setMaterialRateId(e.target.value)}
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Material
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          onChange={handlematerialChange}
+                          variant="outlined"
+                          label="Select Prior Year"
+                        >
+                          <MenuItem value="">Select Material</MenuItem>
+                          {material.map((item) => (
+                            <MenuItem
+                              key={item.materialName}
+                              value={item.materialName}
+                            >
+                              {item.materialName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+
+                  {/* <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Material
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={materialName}
+                          label="Select Material"
+                          onChange={handlematerialChange}
+                        >
+                          <MenuItem value="gitti">Gitti</MenuItem>
+                          <MenuItem value="dust">Dust</MenuItem>
+                          <MenuItem value="cement">Cement</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid> */}
+
+                  <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Customer
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={customerName}
+                          label="Select Prior Year"
+                          onChange={handlecustomerChange}
+                        >
+                          {allCustomer.map((el) =>
+                          (<MenuItem
+                            key={el._id}
+                            value={el.customerName}>
+                            {el.customerName}
+                          </MenuItem>)
+                          )}
+                          {/* <MenuItem value="MohammadMusharaf">
+                            Mohammad Musharaf
+                          </MenuItem>
+                          <MenuItem value="MdAfrozkhan">Md Afroz khan</MenuItem>
+                          <MenuItem value="ZafirulIslam">
+                            Zafirul Islam
+                          </MenuItem> */}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Location/Destination
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={locationName}
+                          label="Location/Destination"
+                          onChange={handleLocationChange}
+                        >
+                          {destination.map((el) => (
+                            <MenuItem
+                              key={el._id}
+                              value={el.destinationName}
+                            >{el.destinationName}</MenuItem>
+                          ))}
+                          {/* <MenuItem value="Noida">Noida</MenuItem>
+                          <MenuItem value="ShaheenBagh">Shaheen Bagh</MenuItem>
+                          <MenuItem value="Jaitpur">Jaitpur</MenuItem> */}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      type="rate"
+                      value={rate}
+                      autoComplete="rate"
+                      name="rate"
+                      variant="outlined"
+                      fullWidth
+                      id="rate"
+                      label="Rate"
+                      onChange={(e) => setRate(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      type="transportRate"
+                      value={transportRate}
+                      autoComplete="transportRate"
+                      name="transportRate"
+                      variant="outlined"
+                      fullWidth
+                      id="transportRate"
+                      label="TransportRate"
+                      onChange={(e) => setTransportRate(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={1}>
+                    <label>IsActive</label>
+
+                    <Checkbox
+                      {...label}
+                      value={isActive}
+                      checked={isActive}
+                      onChange={checkChanged}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                    // className={classes.submit}
+                    >
+                      Save Material Rate Details
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => clear()}
+                    >
+                      Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={1}></Grid>
+                </Grid>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          fullWidth
+          maxWidth="md"
+          disableBackdropClick
+          open={update}
+          onClose={handleClose}
+          aria-labelledby="max-width-dialog-title"
+        >
+          <DialogTitle id="max-width-dialog-title">
+            <Grid
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              container
+            >
+              <Grid item xs={12} sm={11}>
+                {/* style={{ justifyContent: 'center' }} */}
+                <Grid container>
+                  <Typography
+                    style={{ display: "inline-block" }}
+                    variant="h5"
+                    fontWeight={700}
+                  >
+                    Update Material Rate
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} sm={1}>
+                <Button
+                  color="secondary"
+                  onClick={handleClose}
+                  variant="contained"
+                >
+                  &#10539;
+                </Button>
+              </Grid>
+            </Grid>
+          </DialogTitle>
+          <DialogContent>
+            <div>
+              <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+              />
+              <form className={classes.form} onSubmit={handleUpdateSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={2}>
+                    <TextField
+                      disabled={true}
+                      value={updateMaterialRateId}
+                      autoComplete="materialRateId"
+                      name="materialRateId"
+                      variant="outlined"
+                      fullWidth
+                      id="materialRateId"
+                      label="MaterialRateId"
+                      onChange={(e) => setMaterialRateId(e.target.value)}
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Material
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          onChange={handlematerialChange}
+                          variant="outlined"
+                          label="Select Prior Year"
+                        >
+                          <MenuItem value="">Select Material</MenuItem>
+                          {material.map((item) => (
+                            <MenuItem
+                              key={item.materialName}
+                              value={item.materialName}
+                            >
+                              {item.materialName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+
+                  {/* <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Material
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={materialName}
+                          label="Select Material"
+                          onChange={handlematerialChange}
+                        >
+                          <MenuItem value="gitti">Gitti</MenuItem>
+                          <MenuItem value="dust">Dust</MenuItem>
+                          <MenuItem value="cement">Cement</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid> */}
+
+                  <Grid item xs={12} sm={5}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Select Customer
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={customerName}
+                          label="Select Prior Year"
+                          onChange={handlecustomerChange}
+                        >
+                          <MenuItem value="MohammadMusharaf">
+                            Mohammad Musharaf
+                          </MenuItem>
+                          <MenuItem value="MdAfrozkhan">Md Afroz khan</MenuItem>
+                          <MenuItem value="ZafirulIslam">
+                            Zafirul Islam
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Box sx={{ minWidth: 20 }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                          id="demo-simple-select-label"
+                          variant="outlined"
+                        >
+                          Location/Destination
+                        </InputLabel>
+                        <Select
+                          variant="outlined"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={locationName}
+                          label="Location/Destination"
+                          onChange={handleLocationChange}
+                        >
+                          <MenuItem value="Noida">Noida</MenuItem>
+                          <MenuItem value="ShaheenBagh">Shaheen Bagh</MenuItem>
+                          <MenuItem value="Jaitpur">Jaitpur</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      type="rate"
+                      value={rate}
+                      autoComplete="rate"
+                      name="rate"
+                      variant="outlined"
+                      fullWidth
+                      id="rate"
+                      label="Rate"
+                      onChange={(e) => setRate(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      type="transportRate"
+                      value={transportRate}
+                      autoComplete="transportRate"
+                      name="transportRate"
+                      variant="outlined"
+                      fullWidth
+                      id="transportRate"
+                      label="TransportRate"
+                      onChange={(e) => setTransportRate(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={1}>
+                    <label>IsActive</label>
+
+                    <Checkbox
+                      {...label}
+                      value={isActive}
+                      checked={isActive}
+                      onChange={checkChanged}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                    // className={classes.submit}
+                    >
+                      Update Material Rate Details
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => clear()}
+                    >
+                      Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={1}></Grid>
+                </Grid>
+              </form>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <div>
+        <Dialog
+          // classes={{ paper: classes.customDialog }}
+          // className={classes.customDialog}
+          open={showDeleteConfirm}
+          disableBackdropClick={true}
+          maxWidth="sm" // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
+          fullWidth={true}
+          onClose={() => setShowDeleteConfirm(false)}
+          aria-labelledby="alert-dialog-title "
+          aria-describedby="alert-dialog-description "
+        >
+          <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="alert-dialog-description"
+              classes={{ root: classes.customDialogContent }}
+            >
+              Are you sure you want to delete this
+              <span className={classes.deleteName}>
+                {`' ${materialRateDelete} '`}
+              </span>{" "}
+              record?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}></Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  fullWidth
+                  name="submit"
+                  variant="contained"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  color="primary"
+                >
+                  No
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Button
+                  name="cancle"
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  onClick={() => {
+                    onClickDelete(showDeleteConfirm);
+                    GetMaterialRate();
+                    // dispatch(getAllUnitMaster());
+                    setShowDeleteConfirm(false);
+                  }}
+                  autoFocus
+                >
+                  Yes
+                </Button>
+              </Grid>
+            </Grid>
+          </DialogActions>
+        </Dialog>
+      </div>
+    </>
+  );
+};
+
+export default MaterialRate;
