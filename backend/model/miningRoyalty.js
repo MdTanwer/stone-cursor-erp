@@ -1,0 +1,27 @@
+const mongoose = require("mongoose");
+const miningRoyaltySchema = new mongoose.Schema({
+  royltyId: {
+    type: Number,
+  },
+  mineName: {
+    type: String,
+  },
+  locationName: {
+    type: String,
+  },
+  royltyRate: {
+    type: String,
+  },
+  gstRate: {
+    type: String,
+  },
+  igst: {
+    type: String,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+module.exports = mongoose.model("Mining Royalty", miningRoyaltySchema);

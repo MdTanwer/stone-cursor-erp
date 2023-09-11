@@ -392,7 +392,7 @@ export default function ChallanEntry(props) {
 
   const getAllChallans = () => {
     axios
-      .get('challan//all-challans')
+      .get('challan/all-challans')
       .then((res) => {
         console.log(res.data);
         setChallans(res.data.challans);
@@ -734,9 +734,8 @@ export default function ChallanEntry(props) {
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${
-                getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
-              }</p>
+              <p>${getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
+      }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName}</p>
               <p>SOURCE / MINE :</p>
@@ -786,7 +785,7 @@ export default function ChallanEntry(props) {
     printWindow.print();
   };
 
-  const handlePreview = () => {};
+  const handlePreview = () => { };
 
   const handleDelete = async (id) => {
     try {
@@ -879,11 +878,11 @@ export default function ChallanEntry(props) {
     setOpenSourceMine(true);
     // setOpenSourceMine(true)
   };
-  const handleCustomerClick = () => {
-    console.log('I was clicked');
-    setOpenMasterCustomer(true);
-    // setOpenSourceMine(true)
-  };
+  // const handleCustomerClick = () => {
+  //   console.log('I was clicked');
+  //   setOpenMasterCustomer(true);
+  //   // setOpenSourceMine(true)
+  // };
   const handleMasterCompClick = () => {
     setOpenMaterialpage(true);
     // setOpenSourceMine(true)
@@ -941,7 +940,7 @@ export default function ChallanEntry(props) {
               paginationPosition: 'both',
               exportButton: true,
               exportAllData: true,
-              exportFileName: 'CommissionRulesDetails',
+              exportFileName: 'All Chalan Entries',
               addRowPosition: 'first',
               // actionsColumnIndex: -1,
               // selection: true,
@@ -1219,7 +1218,7 @@ export default function ChallanEntry(props) {
                         // fontSize='large'
                         color='primary'
                       /> */}
-                      <AddCircleIcon
+                      {/* <AddCircleIcon
                         sx={{ fontSize: '30px' }}
                         color='primary'
                         onClick={handleCustomerClick}
@@ -1232,7 +1231,7 @@ export default function ChallanEntry(props) {
                           // onClose={handleCloseeCancle}
                           setOpenMasterCustomer={setOpenMasterCustomer}
                         />
-                      )}
+                      )} */}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1269,7 +1268,7 @@ export default function ChallanEntry(props) {
                     sm={12}
                     alignItems='center'
                   >
-                    <Grid item xs={12} sm={10}>
+                    <Grid item xs={12} sm={12}>
                       <Box sx={{ minWidth: 20 }}>
                         <FormControl fullWidth>
                           <InputLabel id='demo-simple-select-label'>
@@ -1300,7 +1299,7 @@ export default function ChallanEntry(props) {
                         </FormControl>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
+                    {/* <Grid item xs={12} sm={2}>
                       <AddCircleIcon
                         sx={{ fontSize: '30px' }}
                         // fontSize='large'
@@ -1314,7 +1313,7 @@ export default function ChallanEntry(props) {
                           setOpenMaterialpage={setOpenMaterialpage}
                         />
                       )}
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 
@@ -1327,7 +1326,7 @@ export default function ChallanEntry(props) {
                     sm={12}
                     alignItems='center'
                   >
-                    <Grid item xs={12} sm={10}>
+                    <Grid item xs={12} sm={12}>
                       <Box sx={{ minWidth: 20 }}>
                         <FormControl fullWidth>
                           <InputLabel id='demo-simple-select-label'>
@@ -1363,13 +1362,13 @@ export default function ChallanEntry(props) {
                         </FormControl>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
+                    {/* <Grid item xs={12} sm={2}>
                       <AddCircleIcon
                         sx={{ fontSize: '30px' }}
                         // fontSize='large'
                         color='primary'
                       />
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 
@@ -1907,7 +1906,7 @@ export default function ChallanEntry(props) {
                   <Grid
                     container
                     spacing={2}
-                    // style={{ justifyContent: 'flex-end' }}
+                  // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
@@ -1915,7 +1914,7 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                        // className={classes.submit}
+                      // className={classes.submit}
                       >
                         Save Chalan Entry
                       </Button>
@@ -1928,10 +1927,10 @@ export default function ChallanEntry(props) {
                         color='primary'
                         // className={classes.submit}
                         onClick={handlePrint}
-                        // onClick={convertHtmlToPdfAndPrint(challanContent)}
-                        // onClick={convertHtmlToPdfAndPrintInSamePage(
-                        //   challanContent
-                        // )}
+                      // onClick={convertHtmlToPdfAndPrint(challanContent)}
+                      // onClick={convertHtmlToPdfAndPrintInSamePage(
+                      //   challanContent
+                      // )}
                       >
                         Print
                       </Button>
@@ -1942,8 +1941,8 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                        // className={classes.submit}
-                        // onClick={handlePreview}
+                      // className={classes.submit}
+                      // onClick={handlePreview}
                       >
                         Preview
                       </Button>

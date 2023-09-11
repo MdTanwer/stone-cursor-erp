@@ -17,12 +17,16 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Refresh } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { Edit as EditIcon, Delete as DeleIcon } from "@material-ui/icons";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import MasterCustomerComp from "../MasterPageComponent/MasterCustomerComp";
+import MasterMaterialComp from "../MasterPageComponent/MasterMaterialComp";
+import MasterDestination from "../MasterPageComponent/MasterDestination";
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -53,6 +57,9 @@ const MaterialRate = () => {
   const [data, setData] = useState([]);
   const [allCustomer, setAllCustomer] = useState([]);
   const [destination, setDestination] = useState([]);
+  const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
+  const [openMaterialpage, setOpenMaterialpage] = useState(false);
+  const [openMasterDestination, setOpenMasterDestination] = useState(false);
 
   const [materialRate, setMaterialRate] = useState([]);
   const [materialRateId, setMaterialRateId] = useState("");
@@ -83,8 +90,8 @@ const MaterialRate = () => {
     GetMaterialRate();
     getMaxMaterialRateId();
     setMaterialRateId(getMaxMaterialRateId());
-    getAllCustomers()
-    GetDestination()
+    getAllCustomers();
+    GetDestination();
   }, [open]);
   // ======================================
   const GetMaterial = async () => {
@@ -110,7 +117,6 @@ const MaterialRate = () => {
   };
   // ======================================
   const GetDestination = () => {
-
     axios
       .get("destinationmaster/get-destination")
       .then((res) => {
@@ -121,7 +127,6 @@ const MaterialRate = () => {
         console.log(err);
       });
   };
-
 
   const GetMaterialRate = async () => {
     try {
@@ -221,7 +226,6 @@ const MaterialRate = () => {
       console.error("An error occurred while updating the unit:", error);
       // //   // Handle the error in your UI, maybe show a notification or error message
     }
-    clear();
     setUpdate(false);
     setOpen(false);
     GetMaterialRate();
@@ -250,6 +254,7 @@ const MaterialRate = () => {
   };
   const clear = () => {
     setRate("");
+
     setMaterialName("");
     setCustomerName("");
     setLocationName("");
@@ -289,11 +294,9 @@ const MaterialRate = () => {
         setUpdate(true);
         setMongodbId(rowData._id);
         setUpdateMaterialRateId(rowData.materialRateId);
-        setMaterialName(rowData.materialName);
-        setCustomerName(rowData.customerName);
         setRate(rowData.rate);
         setTransportRate(rowData.transportRate);
-        setLocationName(rowData.locationName);
+        setMaterialName(rowData.materialName);
       },
     },
     {
@@ -305,7 +308,18 @@ const MaterialRate = () => {
       },
     },
   ];
-
+  const handleCustomerClick = () => {
+    setOpenMasterCustomer(true);
+    // setOpenSourceMine(true)
+  };
+  const handleMasterCompClick = () => {
+    setOpenMaterialpage(true);
+    // setOpenSourceMine(true)
+  };
+  const handleMasterDestinationClick = () => {
+    setOpenMasterDestination(true);
+    // setOpenSourceMine(true)
+  };
   return (
     <>
       <div>
@@ -408,7 +422,6 @@ const MaterialRate = () => {
           </DialogTitle>
           <DialogContent>
             <div>
-
               <form className={classes.form} onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={2}>
@@ -426,34 +439,56 @@ const MaterialRate = () => {
                     />
                   </Grid>
                   <Grid item xs={12} sm={5}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Select Material
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          onChange={handlematerialChange}
-                          variant="outlined"
-                          label="Select Prior Year"
-                        >
-                          <MenuItem value="">Select Material</MenuItem>
-                          {material.map((item) => (
-                            <MenuItem
-                              key={item.materialName}
-                              value={item.materialName}
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={11}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
                             >
-                              {item.materialName}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
+                              Select Material
+                            </InputLabel>
+                            <Select
+                              labelId="demo-simple-select-label"
+                              onChange={handlematerialChange}
+                              variant="outlined"
+                              label="Select Prior Year"
+                              // value={materialName}
+                            >
+                              <MenuItem value="">Select Material</MenuItem>
+                              {material.map((item) => (
+                                <MenuItem
+                                  key={item.materialName}
+                                  value={item.materialName}
+                                >
+                                  {item.materialName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <AddCircleIcon
+                        sx={{ fontSize: "30px" }}
+                        color="primary"
+                        onClick={handleMasterCompClick}
+                      />
+                      {openMaterialpage && (
+                        <MasterMaterialComp
+                          openMaterialpage={openMaterialpage}
+                          setOpenMaterialpage={setOpenMaterialpage}
+                        />
+                      )}
+                    </Grid>
                   </Grid>
-
                   {/* <Grid item xs={12} sm={5}>
                     <Box sx={{ minWidth: 20 }}>
                       <FormControl fullWidth>
@@ -480,69 +515,123 @@ const MaterialRate = () => {
                   </Grid> */}
 
                   <Grid item xs={12} sm={5}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Select Customer
-                        </InputLabel>
-                        <Select
-                          variant="outlined"
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={customerName}
-                          label="Select Prior Year"
-                          onChange={handlecustomerChange}
-                        >
-                          {allCustomer.map((el) =>
-                          (<MenuItem
-                            key={el._id}
-                            value={el.customerName}>
-                            {el.customerName}
-                          </MenuItem>)
-                          )}
-                          {/* <MenuItem value="MohammadMusharaf">
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={10}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
+                            >
+                              Select Customer
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={customerName}
+                              label="Select Prior Year"
+                              onChange={handlecustomerChange}
+                            >
+                              {allCustomer.map((el) => (
+                                <MenuItem key={el._id} value={el.customerName}>
+                                  {el.customerName}
+                                </MenuItem>
+                              ))}
+                              {/* <MenuItem value="MohammadMusharaf">
                             Mohammad Musharaf
                           </MenuItem>
                           <MenuItem value="MdAfrozkhan">Md Afroz khan</MenuItem>
                           <MenuItem value="ZafirulIslam">
                             Zafirul Islam
                           </MenuItem> */}
-                        </Select>
-                      </FormControl>
-                    </Box>
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={2}>
+                        {/* <AddCircleIcon
+                        sx={{ fontSize: '30px' }}
+                        // fontSize='large'
+                        color='primary'
+                      /> */}
+                        <AddCircleIcon
+                          sx={{ fontSize: "30px" }}
+                          color="primary"
+                          onClick={handleCustomerClick}
+                          // onClick={() => setOpenMasterCustomer(true)}
+                        />
+                        {openMasterCustomer && (
+                          <MasterCustomerComp
+                            openMasterCustomer={openMasterCustomer}
+                            // onClose={handleCloseeCancle}
+                            setOpenMasterCustomer={setOpenMasterCustomer}
+                          />
+                        )}
+                      </Grid>
+                    </Grid>
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Location/Destination
-                        </InputLabel>
-                        <Select
-                          variant="outlined"
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={locationName}
-                          label="Location/Destination"
-                          onChange={handleLocationChange}
-                        >
-                          {destination.map((el) => (
-                            <MenuItem
-                              key={el._id}
-                              value={el.destinationName}
-                            >{el.destinationName}</MenuItem>
-                          ))}
-                          {/* <MenuItem value="Noida">Noida</MenuItem>
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={10}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
+                            >
+                              Location/Destination
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={locationName}
+                              label="Location/Destination"
+                              onChange={handleLocationChange}
+                            >
+                              {destination.map((el) => (
+                                <MenuItem
+                                  key={el._id}
+                                  value={el.destinationName}
+                                >
+                                  {el.destinationName}
+                                </MenuItem>
+                              ))}
+                              {/* <MenuItem value="Noida">Noida</MenuItem>
                           <MenuItem value="ShaheenBagh">Shaheen Bagh</MenuItem>
                           <MenuItem value="Jaitpur">Jaitpur</MenuItem> */}
-                        </Select>
-                      </FormControl>
-                    </Box>
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <AddCircleIcon
+                        sx={{ fontSize: "30px" }}
+                        color="primary"
+                        onClick={handleMasterDestinationClick}
+                      />
+                      {openMasterDestination && (
+                        <MasterDestination
+                          openMasterDestination={openMasterDestination}
+                          setOpenMasterDestination={setOpenMasterDestination}
+                        />
+                      )}
+                    </Grid>
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
@@ -582,18 +671,18 @@ const MaterialRate = () => {
                       size="medium"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"
                       fullWidth
                       variant="contained"
                       color="primary"
-                    // className={classes.submit}
+                      // className={classes.submit}
                     >
                       Save Material Rate Details
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -601,6 +690,16 @@ const MaterialRate = () => {
                       onClick={() => clear()}
                     >
                       Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => handleClose()}
+                    >
+                      Cancel
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={1}></Grid>
@@ -822,18 +921,18 @@ const MaterialRate = () => {
                       size="medium"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"
                       fullWidth
                       variant="contained"
                       color="primary"
-                    // className={classes.submit}
+                      // className={classes.submit}
                     >
                       Update Material Rate Details
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -841,6 +940,16 @@ const MaterialRate = () => {
                       onClick={() => clear()}
                     >
                       Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => handleClose()}
+                    >
+                      Cancel
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={1}></Grid>

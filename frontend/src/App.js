@@ -44,6 +44,7 @@ import {
   ChallanEntryPage,
   EmployeePage,
   FuelExpensesPage,
+  MiningRoyaltyPage
 } from './routes/master.js';
 
 import { ToastContainer } from 'react-toastify';
@@ -193,6 +194,14 @@ const App = () => {
                   element={
                     <ProtectedRoute>
                       <LoadTypePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/master/royalty"
+                  element={
+                    <ProtectedRoute>
+                      <MiningRoyaltyPage />
                     </ProtectedRoute>
                   }
                 />

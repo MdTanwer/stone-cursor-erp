@@ -382,6 +382,11 @@ const routesadminmaster = [
         name: 'Load Type',
         icon: <SiTransportforlondon />,
       },
+      {
+        path: "/master/royalty",
+        name: "Mining Royalty",
+        icon: <MdMovieCreation />,
+      },
 
       {
         path: '/master/destination',

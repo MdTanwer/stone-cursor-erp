@@ -15,6 +15,7 @@ import PetrolPumpPage from '../pages/PetrolPumpPage.jsx';
 import ChallanEntryPage from '../pages/ChallanPage.jsx';
 import EmployeePage from '../pages/EmployeePage.jsx';
 import FuelExpensesPage from '../pages/FuelExpensesPage.jsx';
+import MiningRoyaltyPage from '../pages/MiningRoyaltyPage.jsx';
 
 export {
   UnitMasterPage,
@@ -34,4 +35,5 @@ export {
   ChallanEntryPage,
   EmployeePage,
   FuelExpensesPage,
+  MiningRoyaltyPage
 };
