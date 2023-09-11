@@ -15,6 +15,7 @@ import {
   Edit as EditIcon,
   Add as AddIcon,
   Delete as DeleIcon,
+  Refresh,
 } from '@material-ui/icons';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -46,7 +47,6 @@ import { useSelector } from 'react-redux';
 import MasterEmployeeComp from '../MasterPageComponent/MasterEmployeeComp';
 import MasterTransporterComp from '../MasterPageComponent/MasterTransporterComp';
 import MasterVehicleComp from '../MasterPageComponent/MasterVehicleComp';
-
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -96,26 +96,34 @@ export default function ChallanEntry(props) {
 
   const columns = [
     { title: 'Challan No.', field: 'challanNumber' },
-    { title: 'M Challan No.', field: 'mChallanNo' },
-    { title: 'Vehicle No.', field: 'vehicleNo' },
-    { title: 'Material', field: 'material' },
-    { title: 'Date & Time', field: 'currentDateTime' },
-    { title: 'Customer', field: 'customer' },
-    { title: 'transporter', field: 'transporter' },
-    { title: 'D.M. No.', field: 'dmNumber' },
-    { title: 'L.R. No.', field: 'lRNumber' },
-    { title: 'Destination', field: 'destination' },
-    { title: 'Royalty No.', field: 'royaltyNumber' },
+    { title: 'Manual Challan No.', field: 'mChallanNo' },
+    { title: 'Mine / Source Name', field: 'mineSourceName' },
+    { title: 'Site Incharge', field: 'siteInchargeName' },
+    {
+      title: 'Date & Time',
+      field: 'currentDateTime',
+      render: (rowData) =>
+        new Date(rowData.currentDateTime).toLocaleString('en-GB'),
+    },
+    { title: 'Customer Name', field: 'customerName' },
+    { title: 'Customer Phone No.', field: 'customerPhoneNumber' },
+    { title: 'Material', field: 'materialName' },
+    { title: 'Destination', field: 'customerDestination' },
+    { title: 'Quantity', field: 'quantity' },
+    { title: 'Unit', field: 'unit' },
+    { title: 'Transporter', field: 'transporter' },
+    { title: 'Manual Transporter', field: 'manualTransportName' },
+    { title: 'vehicle', field: 'vehicle' },
+    { title: 'Manual Vehicle', field: 'manualVehicleName' },
+    { title: 'Driver', field: 'driver' },
+    { title: 'Manual Driver', field: 'manualDrivereName' },
+    { title: 'Royalty Type', field: 'royaltyType' },
     { title: 'Loaded By', field: 'loadedBy' },
-    { title: 'Driver', field: 'driverName' },
-    { title: 'Site Incharge', field: 'siteIncharge' },
     { title: 'Load Type', field: 'loadType' },
     { title: 'Gross Weight', field: 'grossweight' },
+    { title: 'Manual Gross Weight', field: 'mGrossweight' },
     { title: 'Empty Weight', field: 'emptyWeight' },
     { title: 'Net Weight', field: 'netWeight' },
-    // { title: "FinYearId", field: "FinYearId" },
-    // { title: 'IsActiveForAll', field: 'IsActiveForAll' },
-    // { title: 'IsActive', field: 'IsActive' },
   ];
 
   const [open, setOpen] = useState(false);
@@ -360,7 +368,16 @@ export default function ChallanEntry(props) {
     getLoaderMaster();
     getLoadType();
     getMaxCustomerId();
-  }, [open, openUnitMaster, openSourceMine, openMasterCustomer, openMaterialpage, openSiteIncharge, openMasterTransporter, openMasterVehicle]);
+  }, [
+    open,
+    openUnitMaster,
+    openSourceMine,
+    openMasterCustomer,
+    openMaterialpage,
+    openSiteIncharge,
+    openMasterTransporter,
+    openMasterVehicle,
+  ]);
   // openUnitMaster, openSourceMine, openMasterCustomer, openMaterialpage, openSiteIncharge, openMasterTransporter, openMasterVehicle
 
   const getAllChallans = () => {
@@ -466,10 +483,7 @@ export default function ChallanEntry(props) {
     return maxID + 1;
   };
 
-
   // maxID OF all PopUp Componennt end
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -565,9 +579,7 @@ export default function ChallanEntry(props) {
     newFormData.append('quantity', challanEntryData.quantity);
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
-    // const { data } = await axios.post(`/challan/create-challan`, newForm);
-    // console.log('SUBMIT🔥🔥🔥', challanEntryData);
-    // console.log(data);
+
     try {
       const { data } = await axios.post(`/challan/create-challan`, newForm);
 
@@ -581,204 +593,6 @@ export default function ChallanEntry(props) {
       console.log(err);
     }
   };
-
-  //   const challanContent = `
-  //   <html>
-  //     <head>
-  //       <title>Challan</title>
-  //       <style>
-  //         @page {
-  //           size: landscape; /* Specify paper size as landscape */
-  //           margin: 0; /* Set margins to zero (or adjust as needed) */
-  //           mso-header-space: 0;
-  //           mso-footer-space: 0;
-  //           page-count: 1; /* Set the maximum number of pages to 1 */
-  //           page-break-inside: avoid; /* Avoid page breaks inside this element */
-  //           page-break-before: avoid; /* Allow page breaks before this element if needed */
-  //           overflow: hidden; /* Hide overflow content */
-  //         }
-  //         * {
-  //           padding: 0;
-  //           margin: 0;
-  //           box-sizing: border-box;
-  //         }
-  //         html {
-  //           page-break-inside: avoid; /* Avoid page breaks inside this element */
-  //           page-break-before: avoid; /* Allow page breaks before this element if needed */
-  //           overflow: hidden; /* Hide overflow content */
-  //         }
-  //         body {
-  //           font-family: 'Roboto', Arial, sans-serif;
-  //           font-size: 16px;
-  //           page-break-inside: avoid; /* Avoid page breaks inside this element */
-  //           page-break-before: avoid; /* Allow page breaks before this element if needed */
-  //           overflow: hidden; /* Hide overflow content */
-  //           padding: 3rem;
-  //         }
-  //         hr {
-  //           margin-block-start: 0;
-  //           margin-block-end: 0;
-  //         }
-  //         .container {
-  //           display: flex;
-  //           flex-direction: column;
-  //           row-gap: 1.3rem;
-  //           /* padding: 3rem; */
-  //         }
-  //         .section-1 {
-  //           display: flex;
-  //           justify-content: space-between;
-  //         }
-  //         .section-2 {
-  //           display: flex;
-  //           justify-content: flex-start;
-  //           justify-content: space-between;
-  //         }
-  //         .div-1-section-1 {
-  //           display: grid;
-  //           grid-template-columns: 1fr 1fr;
-  //           column-gap: 2rem;
-  //         }
-  //         .div-2-section-1 {
-  //           display: grid;
-  //           grid-template-columns: 1fr 1fr;
-  //           column-gap: 2rem;
-  //         }
-  //         .div-1-section-2 {
-  //           display: grid;
-  //           grid-template-columns: 1fr 1fr;
-  //           column-gap: 3.2rem;
-  //         }
-  //         .div-2-section-2 {
-  //           display: grid;
-  //           grid-template-columns: 1fr 1fr;
-  //           column-gap: 2rem;
-  //         }
-  //         .title {
-  //           display: flex;
-  //           flex-direction: column;
-  //           row-gap: 0.3rem;
-  //           align-items: center;
-  //         }
-  //         .title-text {
-  //           font-weight: 700;
-  //         }
-  //         .footer {
-  //           display: flex;
-  //           flex-direction: column;
-  //           align-items: center;
-  //         }
-  //         /* Add more styles as needed */
-  //       </style>
-  //       <link rel="preconnect" href="https://fonts.googleapis.com" />
-  //       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  //       <link
-  //         href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-  //         rel="stylesheet"
-  //       />
-  //     </head>
-  //     <body>
-  //       <div class="container">
-  //         <div class="title">
-  //           <h3 class="title-text">SSM</h3>
-  //           <h3 class="title-text">SARBIL STONE MINE</h3>
-  //           <h3 class="title-text">NMD</h3>
-  //         </div>
-  //         <hr />
-  //         <div class="section section-1">
-  //           <div class="div-1-section-1">
-  //             <p>CHALLAN NO. :</p>
-  //             <p>${challanEntryData.challanNumber}</p>
-  //             <p>CUSTOMER NAME :</p>
-  //             <p>${challanEntryData.customerName}</p>
-  //             <p>MOBILE NO. :</p>
-  //             <p>${challanEntryData.customerPhoneNumber}</p>
-  //             <p>DESTINATION :</p>
-  //             <p>${challanEntryData.customerDestination}</p>
-  //           </div>
-  //           <div class="div-2-section-1">
-  //             <p>VEHICLE NO. :</p>
-  //             <p>${
-  //               getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
-  //             }</p>
-  //             <p>MATERIAL NAME :</p>
-  //             <p>${challanEntryData.materialName}</p>
-  //             <p>SOURCE / MINE :</p>
-  //             <p>${challanEntryData.mineSourceName}</p>
-  //           </div>
-  //         </div>
-  //         <hr />
-  //         <div class="section section-2">
-  //           <div class="div-1-section-2">
-  //             <p>GROSS WEIGHT :</p>
-  //             <p>${challanEntryData.grossweight}</p>
-  //             <p>TARE WEIGHT :</p>
-  //             <p>${challanEntryData.emptyWeight}</p>
-  //             <p>NET WEIGHT :</p>
-  //             <p>${challanEntryData.netWeight}</p>
-  //           </div>
-  //           <div class="div-2-section-2">
-  //             <p>DATE :</p>
-  //             <p>${new Date().toLocaleDateString('en-GB')}</p>
-  //             <p>TIME :</p>
-  //             <p>${new Date().toLocaleTimeString('en-GB')}</p>
-  //             <p>NET WT IN WORDS</p>
-  //             <p>${challanEntryData.unit}</p>
-  //           </div>
-  //         </div>
-  //         <hr />
-
-  //         <div class="section">
-  //           <p>SITE INCHARGE SIGNATURE: </p>
-  //           <p>${challanEntryData.siteInchargeName}</p>
-  //         </div>
-  //         <hr />
-  //         <div class="footer">
-  //           <h4>THANK YOU</h4>
-  //           <h4>VISIT AGAIN</h4>
-  //         </div>
-  //       </div>
-  //     </body>
-  // </html>
-
-  // `;
-
-  // function convertHtmlToPdfAndPrint(htmlString) {
-  //   const pdf = new jsPDF({
-  //     orientation: 'landscape',
-  //     unit: 'mm',
-  //     format: 'a4',
-  //   });
-
-  //   pdf.html(htmlString, {
-  //     callback: function (pdf) {
-  //       pdf.autoPrint(); // Automatically print when the PDF is opened
-  //       // pdf.output(); // Open the PDF in a new window for printing
-  //     },
-  //   });
-  // }
-
-  // function convertHtmlToPdfAndPrintInSamePage(htmlString) {
-  //   const pdf = new jsPDF({
-  //     orientation: 'landscape',
-  //     unit: 'mm',
-  //     format: 'a4',
-  //   });
-
-  //   pdf.html(htmlString, {
-  //     callback: function (pdf) {
-  //       // Create a data URI for the PDF
-  //       const dataUri = pdf.output('datauristring');
-
-  //       // Create an iframe to display the PDF
-  //       const iframe = document.createElement('iframe');
-  //       iframe.setAttribute('src', dataUri);
-  //       iframe.setAttribute('width', '100%');
-  //       iframe.setAttribute('height', '600px'); // Adjust the height as needed
-  //       document.body.appendChild(iframe);
-  //     },
-  //   });
-  // }
 
   const handlePrint = (e) => {
     const printWindowWidth = 1100;
@@ -910,8 +724,9 @@ export default function ChallanEntry(props) {
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
-      }</p>
+              <p>${
+                getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
+              }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName}</p>
               <p>SOURCE / MINE :</p>
@@ -958,50 +773,20 @@ export default function ChallanEntry(props) {
     printWindow.document.open();
     printWindow.document.write(challanContent);
     printWindow.document.close();
-
-    // window.document.open();
-    // window.document.write(challanContent);
-    // window.document.close();
-    // window.print();
-
-    // Print the new window
     printWindow.print();
-
-    // Close the new window after printing (optional)
-    // printWindow.close();
-
-    //   // Create a new window or modal dialog
-    //   const printWindow = window.open('', '', 'width=600,height=800');
-
-    //   // Create a new document in the new window
-    //   const printDocument = printWindow.document;
-
-    //   // Get the specific portion of the form you want to print
-    //   const formPortionToPrint = document.getElementById('challanNumber'); // Replace 'portionToPrintId' with the actual ID of the div containing the portion you want to print
-
-    //   // Clone the div containing the portion to the new document
-    //   const clonedDiv = formPortionToPrint.cloneNode(true);
-
-    //   // Append the cloned div to the new document
-    //   printDocument.body.appendChild(clonedDiv);
-
-    //   // Optionally, you can add some styles to the new document for formatting
-    //   const style = printDocument.createElement('style');
-    //   style.innerHTML = `
-    //   /* Add your custom CSS styles here */
-    // `;
-    //   printDocument.head.appendChild(style);
-
-    //   // Print the new window
-    //   printWindow.print();
-
-    //   // Close the new window after printing (optional)
-    //   // printWindow.close();
   };
 
-  const handlePreview = () => { };
+  const handlePreview = () => {};
 
   const actions = [
+    {
+      icon: () => <Refresh />,
+      tooltip: 'Refresh Data',
+      isFreeAction: true,
+      onClick: () => {
+        getAllChallans();
+      },
+    },
     {
       icon: () => <EditIcon />,
       tooltip: 'Edit Factory',
@@ -1021,9 +806,8 @@ export default function ChallanEntry(props) {
 
   // const refresh = () => {};
 
-
   // const clear = () => {
-  //   // 
+  //   //
   //   refresh();
   // };
 
@@ -1405,7 +1189,7 @@ export default function ChallanEntry(props) {
                         sx={{ fontSize: '30px' }}
                         color='primary'
                         onClick={handleCustomerClick}
-                      // onClick={() => setOpenMasterCustomer(true)}
+                        // onClick={() => setOpenMasterCustomer(true)}
                       />
                       {openMasterCustomer && (
                         <MasterCustomerComp
@@ -2089,7 +1873,7 @@ export default function ChallanEntry(props) {
                   <Grid
                     container
                     spacing={2}
-                  // style={{ justifyContent: 'flex-end' }}
+                    // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
@@ -2097,7 +1881,7 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
+                        // className={classes.submit}
                       >
                         Save Chalan Entry
                       </Button>
@@ -2110,10 +1894,10 @@ export default function ChallanEntry(props) {
                         color='primary'
                         // className={classes.submit}
                         onClick={handlePrint}
-                      // onClick={convertHtmlToPdfAndPrint(challanContent)}
-                      // onClick={convertHtmlToPdfAndPrintInSamePage(
-                      //   challanContent
-                      // )}
+                        // onClick={convertHtmlToPdfAndPrint(challanContent)}
+                        // onClick={convertHtmlToPdfAndPrintInSamePage(
+                        //   challanContent
+                        // )}
                       >
                         Print
                       </Button>
@@ -2124,8 +1908,8 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
-                      // onClick={handlePreview}
+                        // className={classes.submit}
+                        // onClick={handlePreview}
                       >
                         Preview
                       </Button>
