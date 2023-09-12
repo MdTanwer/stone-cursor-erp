@@ -164,7 +164,7 @@ export default function ChallanEntry(props) {
     manualVehicleName: '',
     driver: '',
     manualDrivereName: '',
-    royaltyType: '',
+    royaltyType: 'None',
     loadedBy: '',
     loadType: '',
     grossweight: '',
@@ -177,6 +177,7 @@ export default function ChallanEntry(props) {
 
   const [selectedRowId, setSelectedRowId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showWeightBox, setShowWeightBox] = useState(false);
   const [customerDeleteName, setCustomerDeleteName] = useState('');
   ///////////////////// All masters data /////////////////
 
@@ -191,6 +192,7 @@ export default function ChallanEntry(props) {
   const [driversData, setDriversData] = useState([]);
   const [loadedBy, setLoadedBy] = useState([]);
   const [loadType, setLoadType] = useState([]);
+  const [miningRoyalty, setMiningRoyalty] = useState([]);
 
   ////////////////////////////////////////////////////////
 
@@ -358,11 +360,39 @@ export default function ChallanEntry(props) {
 
     return maxID + 1;
   };
+
+  const getMaxRoyaltyId = () => {
+    if (!miningRoyalty || miningRoyalty.length === 0) {
+      return 1;
+    }
+    const maxID = miningRoyalty.reduce((max, miningRoyalty) => {
+      const RoyalId = parseInt(miningRoyalty.royltyId);
+      if (RoyalId > max) {
+        return RoyalId;
+      } else {
+        return max;
+      }
+    }, 0);
+    return maxID + 1;
+  };
+
+  const GetMiningRoyalty = async () => {
+    try {
+      const response = await axios.get('/miningRoyalty/get/miningroyalty');
+
+      // console.log(response.data.materialmasters);
+      setMiningRoyalty(response.data.miningRoyalty);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //////////////////////////////////////////////////////////
   useEffect(() => {
     setChallanEntryData({
       ...challanEntryData,
       challanNumber: getMaxChallanNumber(),
+      royaltyType: 'None',
     });
     // getMaxChallanNumber();
     getAllChallans();
@@ -377,6 +407,7 @@ export default function ChallanEntry(props) {
     getdriversMaster();
     getLoaderMaster();
     getLoadType();
+    GetMiningRoyalty();
     getMaxCustomerId();
   }, [
     open,
@@ -512,7 +543,7 @@ export default function ChallanEntry(props) {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        emptyWeight: getEmptyWeight(value)?.vehicleWeight,
+        // emptyWeight: getEmptyWeight(value)?.vehicleWeight,
         manualVehicleName: '',
       });
       return;
@@ -565,7 +596,7 @@ export default function ChallanEntry(props) {
       manualVehicleName: '',
       driver: '',
       manualDrivereName: '',
-      royaltyType: '',
+      royaltyType: 'None',
       loadedBy: '',
       loadType: '',
       grossweight: '',
@@ -1457,6 +1488,20 @@ export default function ChallanEntry(props) {
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
+                            {/* <MenuItem
+                              style={{
+                                color: '#495057',
+                                backgroundColor: '#e9ecef',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                // border: '3px solid #adb5bd',
+                                borderRadius: '0.5rem',
+                                margin: '4px',
+                              }}
+                              value=''
+                            >
+                              Select Transporter
+                            </MenuItem> */}
                             {transportData.map((el) => (
                               <MenuItem
                                 key={el.transportId}
@@ -1588,6 +1633,12 @@ export default function ChallanEntry(props) {
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{
+                      backgroundColor:
+                        challanEntryData.vehicle !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                     disabled={
                       challanEntryData.vehicle === 'Others' ? false : true
                     }
@@ -1660,6 +1711,12 @@ export default function ChallanEntry(props) {
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{
+                      backgroundColor:
+                        challanEntryData.driver !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                     disabled={
                       challanEntryData.driver === 'Others' ? false : true
                     }
@@ -1694,13 +1751,19 @@ export default function ChallanEntry(props) {
                             name='royaltyType'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
+                            // defaultValue='None'
                             value={challanEntryData.royaltyType}
                             label='Select Royalty Type'
                             onChange={handleChange}
                           >
-                            <MenuItem value='Value 1'>Value 1</MenuItem>
+                            {miningRoyalty.map((el) => (
+                              <MenuItem
+                                value={el.royltyId}
+                              >{`${el.mineName} - ${el.royltyRate}`}</MenuItem>
+                            ))}
+                            {/* <MenuItem value='Value 1'>Value 1</MenuItem>
                             <MenuItem value='Value 2'>Value 2</MenuItem>
-                            <MenuItem value='Value 3'>Value 3</MenuItem>
+                            <MenuItem value='Value 3'>Value 3</MenuItem> */}
                             <MenuItem
                               style={{
                                 color: '#495057',
@@ -1817,9 +1880,30 @@ export default function ChallanEntry(props) {
                   </Grid>
                 </Grid>
 
+                <Grid item xs={12} sm={2}>
+                  <Button
+                    style={{
+                      height: '100%',
+                      backgroundColor: '#8ce99a',
+                      border: '3px solid #37b24d',
+                      // borderRadius: '0.5rem',
+                    }}
+                    name='addWeight'
+                    variant='contained'
+                    // color='secondary'
+                    fullWidth
+                    onClick={() => {
+                      setShowWeightBox(true);
+                    }}
+                    autoFocus
+                  >
+                    Add Weights
+                  </Button>
+                </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
-                    // disabled={true}
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={true}
                     value={challanEntryData.grossweight}
                     autoComplete='grossweight'
                     name='grossweight'
@@ -1829,14 +1913,12 @@ export default function ChallanEntry(props) {
                     label='Gross Weight'
                     onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
-                    // disabled={true}
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={true}
                     value={challanEntryData.mGrossweight}
                     autoComplete='mGrossweight'
                     name='mGrossweight'
@@ -1846,17 +1928,12 @@ export default function ChallanEntry(props) {
                     label='Manual Gross Weight'
                     onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
+                    style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    // value={
-                    //   getEmptyWeight(challanEntryData.vehicle)?.vehicleWeight
-                    // }
                     value={challanEntryData.emptyWeight}
                     autoComplete='emptyWeight'
                     name='emptyWeight'
@@ -1864,17 +1941,14 @@ export default function ChallanEntry(props) {
                     fullWidth
                     id='emptyWeight'
                     label='Empty Weight'
-                    // onChange={handleChange}
+                    onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     disabled={true}
                     value={challanEntryData.netWeight}
@@ -1964,6 +2038,120 @@ export default function ChallanEntry(props) {
             </form>
           </div>
         </DialogContent>
+      </Dialog>
+      <Dialog
+        // classes={{ paper: classes.customDialog }}
+        // className={classes.customDialog}
+        open={showWeightBox}
+        disableBackdropClick={true}
+        maxWidth='lg' // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
+        fullWidth={true}
+        onClose={() => setShowWeightBox(false)}
+        aria-labelledby='alert-dialog-title '
+        aria-describedby='alert-dialog-description '
+      >
+        <DialogTitle id='alert-dialog-title'>{'Enter Weights'}</DialogTitle>
+        <DialogContent style={{ padding: '1rem' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={challanEntryData.grossweight}
+                autoComplete='grossweight'
+                name='grossweight'
+                variant='outlined'
+                fullWidth
+                id='grossweight'
+                label='Gross Weight'
+                onChange={handleChange}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                disabled={true}
+                value={challanEntryData.mGrossweight}
+                autoComplete='mGrossweight'
+                name='mGrossweight'
+                variant='outlined'
+                fullWidth
+                id='mGrossweight'
+                label='Manual Gross Weight'
+                onChange={handleChange}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={challanEntryData.emptyWeight}
+                autoComplete='emptyWeight'
+                name='emptyWeight'
+                variant='outlined'
+                fullWidth
+                id='emptyWeight'
+                label='Empty Weight'
+                onChange={handleChange}
+                autoFocus
+                // InputLabelProps={{
+                //   shrink: true,
+                // }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                disabled={true}
+                value={challanEntryData.netWeight}
+                autoComplete='netWeight'
+                name='netWeight'
+                variant='outlined'
+                fullWidth
+                id='netWeight'
+                label='Net Weight'
+                // onChange={handleChange}
+                autoFocus
+                InputProps={{
+                  style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions style={{ padding: '1rem' }}>
+          <Grid container spacing={2}>
+            {/* <Grid item xs={12} sm={4}></Grid> */}
+            {/* <Grid item xs={12} sm={4}>
+              <Button
+                fullWidth
+                name='submit'
+                variant='contained'
+                onClick={() => setShowDeleteConfirm(false)}
+                color='primary'
+              >
+                No
+              </Button>
+            </Grid> */}
+            <Grid item xs={12} sm={12}>
+              <Button
+                name='add'
+                variant='contained'
+                color='primary'
+                fullWidth
+                onClick={() => {
+                  // handleDelete(selectedRowId);
+                  // getAllCustomers();
+                  setShowWeightBox(false);
+                }}
+                autoFocus
+              >
+                Add Weights
+              </Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
       </Dialog>
       <Dialog
         // classes={{ paper: classes.customDialog }}
