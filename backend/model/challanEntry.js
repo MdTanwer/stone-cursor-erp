@@ -84,19 +84,19 @@ const addNewChallanSchema = new mongoose.Schema({
     required: [true, 'Please enter Loaded type'],
   },
   grossweight: {
-    type: String,
+    type: Number,
     required: [true, 'Please enter Gross weight'],
   },
-  mGrossweight: {
-    type: String,
+  mGrossWeight: {
+    type: Number,
     required: [true, 'Please enter Gross weight'],
   },
   emptyWeight: {
-    type: String,
+    type: Number,
     required: [true, 'Please enter Empty weight'],
   },
   netWeight: {
-    type: String,
+    type: Number,
   },
 });
 
