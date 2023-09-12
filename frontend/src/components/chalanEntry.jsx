@@ -734,8 +734,9 @@ export default function ChallanEntry(props) {
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
-      }</p>
+              <p>${
+                getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
+              }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName}</p>
               <p>SOURCE / MINE :</p>
@@ -785,7 +786,7 @@ export default function ChallanEntry(props) {
     printWindow.print();
   };
 
-  const handlePreview = () => { };
+  const handlePreview = () => {};
 
   const handleDelete = async (id) => {
     try {
@@ -836,13 +837,6 @@ export default function ChallanEntry(props) {
       },
     },
   ];
-
-  // const refresh = () => {};
-
-  // const clear = () => {
-  //   //
-  //   refresh();
-  // };
 
   const downloadPdf = () => {
     const doc = new jsPDF();
@@ -1010,7 +1004,7 @@ export default function ChallanEntry(props) {
               <Grid container spacing={3}>
                 <Grid style={{ marginRight: '4.8rem' }} item xs={12} sm={1}>
                   <TextField
-                    style={{ width: '9.5rem' }}
+                    style={{ width: '9.5rem', backgroundColor: '#fff9db' }}
                     disabled={true}
                     value={challanEntryData.challanNumber}
                     // value={getMaxChallanNumber()}
@@ -1023,9 +1017,6 @@ export default function ChallanEntry(props) {
                     // onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
                   />
                 </Grid>
 
@@ -1157,9 +1148,8 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={2}>
                   <TextField
-                    style={{ width: '12rem' }}
+                    style={{ width: '12rem', backgroundColor: '#fff9db' }}
                     disabled={true}
-                    // value={challanEntryData.currentDateTime}
                     value={currentDateTime.toLocaleString('en-GB')}
                     autoComplete='currentDateTime'
                     name='currentDateTime'
@@ -1167,11 +1157,7 @@ export default function ChallanEntry(props) {
                     fullWidth
                     id='currentDateTime'
                     label='Challan Date & Time'
-                    // onChange={(e) => setEmployeeName(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
                   />
                 </Grid>
 
@@ -1238,6 +1224,7 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
                     value={challanEntryData.customerPhoneNumber}
@@ -1250,9 +1237,6 @@ export default function ChallanEntry(props) {
                     // onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -1374,7 +1358,7 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={2}>
                   <TextField
-                    // type='number'
+                    type='number'
                     // disabled={true}
                     value={challanEntryData.quantity}
                     autoComplete='quantity'
@@ -1528,8 +1512,13 @@ export default function ChallanEntry(props) {
                     id='manualTransportName'
                     label='Enter Transport If Not in List'
                     onChange={handleChange}
-                    // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    style={{
+                      backgroundColor:
+                        challanEntryData.transporter !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -1906,7 +1895,7 @@ export default function ChallanEntry(props) {
                   <Grid
                     container
                     spacing={2}
-                  // style={{ justifyContent: 'flex-end' }}
+                    // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
@@ -1914,7 +1903,7 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
+                        // className={classes.submit}
                       >
                         Save Chalan Entry
                       </Button>
@@ -1927,10 +1916,10 @@ export default function ChallanEntry(props) {
                         color='primary'
                         // className={classes.submit}
                         onClick={handlePrint}
-                      // onClick={convertHtmlToPdfAndPrint(challanContent)}
-                      // onClick={convertHtmlToPdfAndPrintInSamePage(
-                      //   challanContent
-                      // )}
+                        // onClick={convertHtmlToPdfAndPrint(challanContent)}
+                        // onClick={convertHtmlToPdfAndPrintInSamePage(
+                        //   challanContent
+                        // )}
                       >
                         Print
                       </Button>
@@ -1941,8 +1930,8 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
-                      // onClick={handlePreview}
+                        // className={classes.submit}
+                        // onClick={handlePreview}
                       >
                         Preview
                       </Button>
