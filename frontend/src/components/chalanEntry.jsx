@@ -1,5 +1,12 @@
 import React, { useState, Component, useEffect, forwardRef } from 'react';
 
+/////////////////// Date & TIme ///////////////////////////
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+////////////////////////////////////////////////////////////
 import { Link } from 'react-router-dom';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MaterialTable, { Column } from 'material-table';
@@ -50,6 +57,7 @@ import MasterVehicleComp from '../MasterPageComponent/MasterVehicleComp';
 import MasterDriverComp from '../MasterPageComponent/MasterDriverComp';
 import MasterLoaderComp from '../MasterPageComponent/MasterLoaderComp';
 import MasterLoadType from '../MasterPageComponent/MasterLoadType';
+import { Dayjs } from 'dayjs';
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -107,17 +115,21 @@ export default function ChallanEntry(props) {
     { title: 'MongoDB Challan ID', field: '_id', hidden: true },
     { title: 'Challan No.', field: 'challanNumber' },
     { title: 'Manual Challan No.', field: 'mChallanNo' },
-    { title: 'Mine / Source Name', field: 'mineSourceName' },
-    { title: 'Site Incharge', field: 'siteInchargeName' },
-    {
-      title: 'Date & Time',
-      field: 'currentDateTime',
-      render: (rowData) =>
-        new Date(rowData.currentDateTime).toLocaleString('en-GB'),
-    },
     { title: 'Customer Name', field: 'customerName' },
     { title: 'Customer Phone No.', field: 'customerPhoneNumber' },
     { title: 'Material', field: 'materialName' },
+    { title: 'Gross Weight', field: 'grossweight' },
+    { title: 'Manual Gross Weight', field: 'mGrossWeight' },
+    { title: 'Empty Weight', field: 'emptyWeight' },
+    { title: 'Net Weight', field: 'netWeight' },
+    { title: 'Mine / Source Name', field: 'mineSourceName' },
+    { title: 'Site Incharge', field: 'siteInchargeName' },
+    {
+      title: 'Date',
+      field: 'currentDate',
+      render: (rowData) =>
+        new Date(rowData.currentDate).toLocaleString('en-GB'),
+    },
     { title: 'Destination', field: 'customerDestination' },
     { title: 'Quantity', field: 'quantity' },
     { title: 'Unit', field: 'unit' },
@@ -130,10 +142,6 @@ export default function ChallanEntry(props) {
     { title: 'Royalty Type', field: 'royaltyType' },
     { title: 'Loaded By', field: 'loadedBy' },
     { title: 'Load Type', field: 'loadType' },
-    { title: 'Gross Weight', field: 'grossweight' },
-    { title: 'Manual Gross Weight', field: 'mGrossweight' },
-    { title: 'Empty Weight', field: 'emptyWeight' },
-    { title: 'Net Weight', field: 'netWeight' },
   ];
 
   const [open, setOpen] = useState(false);
@@ -148,17 +156,15 @@ export default function ChallanEntry(props) {
   const [openMasterLoader, setOpenMasterLoader] = useState(false);
   const [openMasterLoadtype, setOpenMasterLoadtype] = useState(false);
 
-  const [currentDateTime, setCurrentDateTime] = useState(
-    new Date().toLocaleString('en-GB')
-  );
-  const [customerNameChange, setCustomerNameChange] = useState('');
+  // const [currentDate, setCurrentDate] = useState();
+  // const [customerNameChange, setCustomerNameChange] = useState('');
   const [challanEntryData, setChallanEntryData] = useState({
     challanNumber: '',
     mChallanNo: '',
     mineSourceName: '',
     siteInchargeName: '',
     customerName: '',
-    currentDateTime: currentDateTime,
+    currentDate: dayjs(new Date()),
     customerPhoneNumber: null,
     materialName: '',
     customerDestination: '',
@@ -170,19 +176,28 @@ export default function ChallanEntry(props) {
     manualVehicleName: '',
     driver: '',
     manualDrivereName: '',
-    royaltyType: '',
+    royaltyType: 'None',
     loadedBy: '',
     loadType: '',
     grossweight: '',
-    mGrossweight: '',
+    mGrossWeight: '',
     emptyWeight: '',
     netWeight: '',
+  });
+
+  console.log(challanEntryData.currentDate.toLocaleString('en-GB'));
+  const [weightsData, setWeightsData] = useState({
+    grossweight: null,
+    mGrossWeight: null,
+    emptyWeight: null,
+    // netWeight: null,
   });
 
   console.log(challanEntryData);
 
   const [selectedRowId, setSelectedRowId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showWeightBox, setShowWeightBox] = useState(false);
   const [customerDeleteName, setCustomerDeleteName] = useState('');
   ///////////////////// All masters data /////////////////
 
@@ -191,12 +206,15 @@ export default function ChallanEntry(props) {
   const [customers, setCustomers] = useState([]);
   // const [material, setMaterial] = useState([]);
   const [materialRate, setMaterialRate] = useState([]);
+  const [uniqueCustomerName, setUniqueCustomerName] = useState([]);
+  console.log(uniqueCustomerName);
   const [allUnits, setAllUnits] = useState([]);
   const [transportData, setTransportData] = useState([]);
   const [vehiclesdata, setVehiclesdata] = useState([]);
   const [driversData, setDriversData] = useState([]);
   const [loadedBy, setLoadedBy] = useState([]);
   const [loadType, setLoadType] = useState([]);
+  const [miningRoyalty, setMiningRoyalty] = useState([]);
 
   ////////////////////////////////////////////////////////
 
@@ -230,21 +248,16 @@ export default function ChallanEntry(props) {
       });
   };
 
-  // const getMaterial = async () => {
-  //   try {
-  //     const response = await axios.get('materialmaster/get-materialmaster');
-  //     console.log(response.data.materialmasters);
-  //     setMaterial(response.data.materialmasters);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const getMaterialRate = async () => {
     try {
       const response = await axios.get('materialrate/get/materialrate');
       // console.log(response.data.materialrates);
       setMaterialRate(response.data.materialrates);
+      setUniqueCustomerName([
+        ...new Set(
+          response.data.materialrates.map((item) => item.customerName)
+        ),
+      ]);
     } catch (error) {
       console.log(error);
     }
@@ -364,11 +377,39 @@ export default function ChallanEntry(props) {
 
     return maxID + 1;
   };
+
+  const getMaxRoyaltyId = () => {
+    if (!miningRoyalty || miningRoyalty.length === 0) {
+      return 1;
+    }
+    const maxID = miningRoyalty.reduce((max, miningRoyalty) => {
+      const RoyalId = parseInt(miningRoyalty.royltyId);
+      if (RoyalId > max) {
+        return RoyalId;
+      } else {
+        return max;
+      }
+    }, 0);
+    return maxID + 1;
+  };
+
+  const GetMiningRoyalty = async () => {
+    try {
+      const response = await axios.get('/miningRoyalty/get/miningroyalty');
+
+      // console.log(response.data.materialmasters);
+      setMiningRoyalty(response.data.miningRoyalty);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //////////////////////////////////////////////////////////
   useEffect(() => {
     setChallanEntryData({
       ...challanEntryData,
       challanNumber: getMaxChallanNumber(),
+      royaltyType: 'None',
     });
     // getMaxChallanNumber();
     getAllChallans();
@@ -383,6 +424,7 @@ export default function ChallanEntry(props) {
     getdriversMaster();
     getLoaderMaster();
     getLoadType();
+    GetMiningRoyalty();
     getMaxCustomerId();
   }, [
     open,
@@ -558,24 +600,33 @@ export default function ChallanEntry(props) {
 
   // maxID OF all PopUp Componennt end
 
+  const handleDateChange = (newValue) => {
+    setChallanEntryData({
+      ...challanEntryData,
+      currentDate: newValue,
+    });
+    // setCurrentDate(newValue);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'customerName') {
-      const nameString = value.split(',')[0];
-      const phoneString = value.split(',')[1];
-      setCustomerNameChange(value);
-      setChallanEntryData({
-        ...challanEntryData,
-        [name]: nameString,
-        customerPhoneNumber: phoneString,
-      });
-      return;
-    }
+    // if (name === 'customerName') {
+    //   // const nameString = value.split(',')[0];
+    //   // const phoneString = value.split(',')[1];
+    //   // setCustomerNameChange(value);
+    //   setChallanEntryData({
+    //     ...challanEntryData,
+    //     [name]: value,
+    //     // [name]: nameString,
+    //     // customerPhoneNumber: phoneString,
+    //   });
+    //   return;
+    // }
     if (name === 'vehicle') {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        emptyWeight: getEmptyWeight(value)?.vehicleWeight,
+        // emptyWeight: getEmptyWeight(value)?.vehicleWeight,
         manualVehicleName: '',
       });
       return;
@@ -596,9 +647,28 @@ export default function ChallanEntry(props) {
       });
       return;
     }
+    if (value === 'None') {
+      setChallanEntryData({
+        ...challanEntryData,
+        [name]: value,
+        mGrossWeight: '',
+        netWeight:
+          parseInt(challanEntryData.grossweight) -
+          parseInt(challanEntryData.emptyWeight),
+      });
+      return;
+    }
 
     setChallanEntryData({
       ...challanEntryData,
+      [name]: value,
+    });
+  };
+
+  const handleWeightChange = (e) => {
+    const { name, value } = e.target;
+    setWeightsData({
+      ...weightsData,
       [name]: value,
     });
   };
@@ -608,7 +678,7 @@ export default function ChallanEntry(props) {
     handleReset();
   };
   const handleReset = () => {
-    setCustomerNameChange('');
+    // setCustomerNameChange('');
     setChallanEntryData({
       ...challanEntryData,
       challanNumber: getMaxChallanNumber(),
@@ -616,7 +686,7 @@ export default function ChallanEntry(props) {
       mineSourceName: '',
       siteInchargeName: '',
       customerName: '',
-      currentDateTime: currentDateTime,
+      currentDate: dayjs(new Date()),
       customerPhoneNumber: null,
       materialName: '',
       customerDestination: '',
@@ -628,10 +698,11 @@ export default function ChallanEntry(props) {
       manualVehicleName: '',
       driver: '',
       manualDrivereName: '',
-      royaltyType: '',
+      royaltyType: 'None',
       loadedBy: '',
       loadType: '',
       grossweight: '',
+      mGrossWeight: '',
       emptyWeight: '',
       netWeight: '',
     });
@@ -646,9 +717,17 @@ export default function ChallanEntry(props) {
       'customerPhoneNumber',
       challanEntryData.customerPhoneNumber
     );
-    newFormData.append('currentDateTime', currentDateTime);
+    newFormData.append('currentDate', challanEntryData.currentDate);
+    newFormData.append('grossweight', challanEntryData.grossweight);
+    newFormData.append('mGrossWeight', challanEntryData.mGrossWeight);
+    newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
+    newFormData.append(
+      'manualTransportName',
+      challanEntryData.manualTransportName
+    );
+    newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
     newFormData.append('emptyWeight', challanEntryData.emptyWeight);
-    newFormData.append('netWeight', challanEntryData.netWeight);
+    newFormData.append('netWeight', parseInt(challanEntryData.netWeight));
     newFormData.append('quantity', challanEntryData.quantity);
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
@@ -797,8 +876,9 @@ export default function ChallanEntry(props) {
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
-      }</p>
+              <p>${
+                getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
+              }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName}</p>
               <p>SOURCE / MINE :</p>
@@ -848,7 +928,7 @@ export default function ChallanEntry(props) {
     printWindow.print();
   };
 
-  const handlePreview = () => { };
+  const handlePreview = () => {};
 
   const handleDelete = async (id) => {
     try {
@@ -901,13 +981,6 @@ export default function ChallanEntry(props) {
     },
   ];
 
-  // const refresh = () => {};
-
-  // const clear = () => {
-  //   //
-  //   refresh();
-  // };
-
   const downloadPdf = () => {
     const doc = new jsPDF();
     doc.text('Sales Commission Details', 20, 10);
@@ -924,15 +997,15 @@ export default function ChallanEntry(props) {
   // };
 
   // Update the current date and time every second
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDateTime(new Date().toLocaleString('en-GB'));
-    }, 1000);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     setCurrentDate(new Date().toLocaleString('en-GB'));
+  //   }, 1000);
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
 
   const handleUnitClick = () => {
     setOpenUnitMaster(true);
@@ -1086,7 +1159,7 @@ export default function ChallanEntry(props) {
               <Grid container spacing={3}>
                 <Grid style={{ marginRight: '4.8rem' }} item xs={12} sm={1}>
                   <TextField
-                    style={{ width: '9.5rem' }}
+                    style={{ width: '9.5rem', backgroundColor: '#fff9db' }}
                     disabled={true}
                     value={challanEntryData.challanNumber}
                     // value={getMaxChallanNumber()}
@@ -1099,9 +1172,6 @@ export default function ChallanEntry(props) {
                     // onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
                   />
                 </Grid>
 
@@ -1137,6 +1207,7 @@ export default function ChallanEntry(props) {
                             Mine / Source Name
                           </InputLabel>
                           <Select
+                            required
                             name='mineSourceName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1149,20 +1220,12 @@ export default function ChallanEntry(props) {
                                 {el.sourceName}
                               </MenuItem>
                             ))}
-                            {/* <MenuItem value='Value 1'>Value 1</MenuItem>
-                            <MenuItem value='Value 2'>Value 2</MenuItem>
-                            <MenuItem value='Value 3'>Value 3</MenuItem> */}
                           </Select>
                         </FormControl>
                       </Box>
                     </Grid>
 
                     <Grid item xs={12} sm={2}>
-                      {/* <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
-                        // fontSize='large'
-                        color='primary'
-                      /> */}
                       <AddCircleIcon
                         sx={{ fontSize: '30px' }}
                         color='primary'
@@ -1196,6 +1259,7 @@ export default function ChallanEntry(props) {
                             Site Incharge Name
                           </InputLabel>
                           <Select
+                            required
                             name='siteInchargeName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1232,23 +1296,30 @@ export default function ChallanEntry(props) {
                 </Grid>
 
                 <Grid item xs={12} sm={2}>
-                  <TextField
-                    style={{ width: '12rem' }}
+                  <Box style={{ width: '12rem', backgroundColor: '#fff9db' }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        name='currentDate'
+                        label='Date picker'
+                        value={challanEntryData.currentDate}
+                        onChange={handleDateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+
+                  {/* <TextField
+                    style={{ width: '12rem', backgroundColor: '#fff9db' }}
                     disabled={true}
-                    // value={challanEntryData.currentDateTime}
-                    value={currentDateTime.toLocaleString('en-GB')}
-                    autoComplete='currentDateTime'
-                    name='currentDateTime'
+                    value={currentDate.toLocaleString('en-GB')}
+                    autoComplete='currentDate'
+                    name='currentDate'
                     variant='outlined'
                     fullWidth
-                    id='currentDateTime'
+                    id='currentDate'
                     label='Challan Date & Time'
-                    // onChange={(e) => setEmployeeName(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
-                  />
+                  /> */}
                 </Grid>
 
                 <Grid item xs={12} sm={3}>
@@ -1267,23 +1338,32 @@ export default function ChallanEntry(props) {
                             Select Customer
                           </InputLabel>
                           <Select
+                            required
                             name='customerName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={customerNameChange}
-                            // value={challanEntryData.customerName}
+                            // value={customerNameChange}
+                            value={challanEntryData.customerName}
                             label='Select Prior Year'
                             // onChange={handleCustomerNameChange}
                             onChange={handleChange}
                           >
-                            {customers.map((el) => (
+                            {uniqueCustomerName.map((name) => (
+                              <MenuItem
+                                key={`${name}-${Math.random()}`}
+                                value={name}
+                              >
+                                {name}
+                              </MenuItem>
+                            ))}
+                            {/* {customers.map((el) => (
                               <MenuItem
                                 key={el.customerId}
                                 value={`${el.customerName},${el.phoneNumber}`}
                               >
                                 {el.customerName}
                               </MenuItem>
-                            ))}
+                            ))} */}
                           </Select>
                         </FormControl>
                       </Box>
@@ -1314,6 +1394,7 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
                     value={challanEntryData.customerPhoneNumber}
@@ -1326,9 +1407,6 @@ export default function ChallanEntry(props) {
                     // onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#fff3bf' }, // Change 'yellow' to your desired background color
-                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -1351,6 +1429,7 @@ export default function ChallanEntry(props) {
                             Select Material
                           </InputLabel>
                           <Select
+                            required
                             name='materialName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1409,6 +1488,7 @@ export default function ChallanEntry(props) {
                             Customer Destination
                           </InputLabel>
                           <Select
+                            required
                             name='customerDestination'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1450,7 +1530,8 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={2}>
                   <TextField
-                    // type='number'
+                    required
+                    type='number'
                     // disabled={true}
                     value={challanEntryData.quantity}
                     autoComplete='quantity'
@@ -1481,6 +1562,7 @@ export default function ChallanEntry(props) {
                             Select Unit
                           </InputLabel>
                           <Select
+                            required
                             name='unit'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1542,13 +1624,28 @@ export default function ChallanEntry(props) {
                             Select Transporter
                           </InputLabel>
                           <Select
+                            required
                             name='transporter'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
                             value={challanEntryData.transporter}
-                            label='Select Prior Year'
+                            label='Select Transporter'
                             onChange={handleChange}
                           >
+                            {/* <MenuItem
+                              style={{
+                                color: '#495057',
+                                backgroundColor: '#e9ecef',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                // border: '3px solid #adb5bd',
+                                borderRadius: '0.5rem',
+                                margin: '4px',
+                              }}
+                              value=''
+                            >
+                              Select Transporter
+                            </MenuItem> */}
                             {transportData.map((el) => (
                               <MenuItem
                                 key={el.transportId}
@@ -1604,8 +1701,13 @@ export default function ChallanEntry(props) {
                     id='manualTransportName'
                     label='Enter Transport If Not in List'
                     onChange={handleChange}
-                    // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    style={{
+                      backgroundColor:
+                        challanEntryData.transporter !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                   />
                 </Grid>
 
@@ -1625,11 +1727,12 @@ export default function ChallanEntry(props) {
                             Select Vehicle
                           </InputLabel>
                           <Select
+                            required
                             name='vehicle'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
                             value={challanEntryData.vehicle}
-                            label='Select Prior Year'
+                            label='Select Vehicle'
                             onChange={handleChange}
                           >
                             {vehiclesdata.map((el) => (
@@ -1677,6 +1780,12 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{
+                      backgroundColor:
+                        challanEntryData.vehicle !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                     disabled={
                       challanEntryData.vehicle === 'Others' ? false : true
                     }
@@ -1709,11 +1818,12 @@ export default function ChallanEntry(props) {
                             Select Driver
                           </InputLabel>
                           <Select
+                            required
                             name='driver'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
                             value={challanEntryData.driver}
-                            label='Select Prior Year'
+                            label='Select Driver'
                             onChange={handleChange}
                           >
                             {driversData.map((el) => (
@@ -1759,6 +1869,12 @@ export default function ChallanEntry(props) {
 
                 <Grid item xs={12} sm={3}>
                   <TextField
+                    style={{
+                      backgroundColor:
+                        challanEntryData.driver !== 'Others'
+                          ? '#fff9db'
+                          : undefined,
+                    }}
                     disabled={
                       challanEntryData.driver === 'Others' ? false : true
                     }
@@ -1794,13 +1910,19 @@ export default function ChallanEntry(props) {
                             name='royaltyType'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
+                            // defaultValue='None'
                             value={challanEntryData.royaltyType}
                             label='Select Royalty Type'
                             onChange={handleChange}
                           >
-                            <MenuItem value='Value 1'>Value 1</MenuItem>
+                            {miningRoyalty.map((el) => (
+                              <MenuItem
+                                value={el.royltyId}
+                              >{`${el.mineName} - ${el.royltyRate}`}</MenuItem>
+                            ))}
+                            {/* <MenuItem value='Value 1'>Value 1</MenuItem>
                             <MenuItem value='Value 2'>Value 2</MenuItem>
-                            <MenuItem value='Value 3'>Value 3</MenuItem>
+                            <MenuItem value='Value 3'>Value 3</MenuItem> */}
                             <MenuItem
                               style={{
                                 color: '#495057',
@@ -1845,6 +1967,7 @@ export default function ChallanEntry(props) {
                             Select Loaded By
                           </InputLabel>
                           <Select
+                            required
                             name='loadedBy'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1897,6 +2020,7 @@ export default function ChallanEntry(props) {
                             Select Load Type
                           </InputLabel>
                           <Select
+                            required
                             name='loadType'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
@@ -1934,9 +2058,37 @@ export default function ChallanEntry(props) {
                   </Grid>
                 </Grid>
 
+                <Grid item xs={12} sm={2}>
+                  <Button
+                    style={{
+                      height: '100%',
+                      backgroundColor: '#8ce99a',
+                      border: '3px solid #37b24d',
+                      // borderRadius: '0.5rem',
+                    }}
+                    name='addWeight'
+                    variant='contained'
+                    // color='secondary'
+                    fullWidth
+                    onClick={() => {
+                      setShowWeightBox(true);
+                      setWeightsData({
+                        grossweight: challanEntryData.grossweight,
+                        mGrossWeight: challanEntryData.mGrossWeight,
+                        emptyWeight: challanEntryData.emptyWeight,
+                      });
+                    }}
+                    autoFocus
+                  >
+                    Add Weights
+                  </Button>
+                </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
-                    // disabled={true}
+                    required
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={true}
                     value={challanEntryData.grossweight}
                     autoComplete='grossweight'
                     name='grossweight'
@@ -1946,34 +2098,37 @@ export default function ChallanEntry(props) {
                     label='Gross Weight'
                     onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <TextField
-                    // disabled={true}
-                    value={challanEntryData.mGrossweight}
-                    autoComplete='mGrossweight'
-                    name='mGrossweight'
+                    // required
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={true}
+                    value={challanEntryData.mGrossWeight}
+                    autoComplete='mGrossWeight'
+                    name='mGrossWeight'
                     variant='outlined'
                     fullWidth
-                    id='mGrossweight'
+                    id='mGrossWeight'
                     label='Manual Gross Weight'
                     onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
+                    required
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    // value={
-                    //   getEmptyWeight(challanEntryData.vehicle)?.vehicleWeight
-                    // }
                     value={challanEntryData.emptyWeight}
                     autoComplete='emptyWeight'
                     name='emptyWeight'
@@ -1981,18 +2136,18 @@ export default function ChallanEntry(props) {
                     fullWidth
                     id='emptyWeight'
                     label='Empty Weight'
-                    // onChange={handleChange}
+                    onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
+                    required
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
                     value={challanEntryData.netWeight}
                     autoComplete='netWeight'
@@ -2003,16 +2158,16 @@ export default function ChallanEntry(props) {
                     label='Net Weight'
                     // onChange={handleChange}
                     autoFocus
-                    InputProps={{
-                      style: { backgroundColor: '#d3f9d8' }, // Change 'yellow' to your desired background color
-                    }}
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} style={{ marginTop: '1rem' }}>
                   <Grid
                     container
                     spacing={2}
-                  // style={{ justifyContent: 'flex-end' }}
+                    // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
@@ -2020,7 +2175,7 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
+                        // className={classes.submit}
                       >
                         Save Chalan Entry
                       </Button>
@@ -2033,29 +2188,18 @@ export default function ChallanEntry(props) {
                         color='primary'
                         // className={classes.submit}
                         onClick={handlePrint}
-                      // onClick={convertHtmlToPdfAndPrint(challanContent)}
-                      // onClick={convertHtmlToPdfAndPrintInSamePage(
-                      //   challanContent
-                      // )}
                       >
                         Print
                       </Button>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <Button
-                        // type='submit'
-                        fullWidth
-                        variant='contained'
-                        color='primary'
-                      // className={classes.submit}
-                      // onClick={handlePreview}
-                      >
+                    {/* <Grid item xs={12} sm={2}>
+                      <Button fullWidth variant='contained' color='primary'>
                         Preview
                       </Button>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
+                    </Grid> */}
+                    <Grid item xs={12} sm={3}>
                       <Button
-                        type='submit'
+                        // type='submit'
                         fullWidth
                         variant='contained'
                         color='primary'
@@ -2065,7 +2209,7 @@ export default function ChallanEntry(props) {
                         Reset Form
                       </Button>
                     </Grid>
-                    <Grid item xs={12} sm={2}>
+                    <Grid item xs={12} sm={3}>
                       <Button
                         variant='contained'
                         color='secondary'
@@ -2081,6 +2225,135 @@ export default function ChallanEntry(props) {
             </form>
           </div>
         </DialogContent>
+      </Dialog>
+      <Dialog
+        // classes={{ paper: classes.customDialog }}
+        // className={classes.customDialog}
+        open={showWeightBox}
+        disableBackdropClick={true}
+        maxWidth='md' // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
+        fullWidth={true}
+        onClose={() => {
+          setShowWeightBox(false);
+          setWeightsData({
+            grossweight: null,
+            mGrossWeight: null,
+            emptyWeight: null,
+            // netWeight: null,
+          });
+        }}
+        aria-labelledby='alert-dialog-title '
+        aria-describedby='alert-dialog-description '
+      >
+        <DialogTitle id='alert-dialog-title'>{'Enter Weights'}</DialogTitle>
+        <DialogContent style={{ padding: '1rem' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={weightsData.grossweight}
+                autoComplete='grossweight'
+                name='grossweight'
+                variant='outlined'
+                fullWidth
+                id='grossweight'
+                label='Gross Weight'
+                onChange={handleWeightChange}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                disabled={
+                  challanEntryData.royaltyType !== 'None' ? false : true
+                }
+                value={weightsData.mGrossWeight}
+                autoComplete='mGrossWeight'
+                name='mGrossWeight'
+                variant='outlined'
+                fullWidth
+                id='mGrossWeight'
+                label='Manual Gross Weight'
+                onChange={handleWeightChange}
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={weightsData.emptyWeight}
+                autoComplete='emptyWeight'
+                name='emptyWeight'
+                variant='outlined'
+                fullWidth
+                id='emptyWeight'
+                label='Empty Weight'
+                onChange={handleWeightChange}
+                autoFocus
+                // InputLabelProps={{
+                //   shrink: true,
+                // }}
+              />
+            </Grid>
+            {/* <Grid item xs={12} sm={3}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                disabled={true}
+                value={weightsData.netWeight}
+                autoComplete='netWeight'
+                name='netWeight'
+                variant='outlined'
+                fullWidth
+                id='netWeight'
+                label='Net Weight'
+                // onChange={handleWeightChange}
+                autoFocus
+              />
+            </Grid> */}
+          </Grid>
+        </DialogContent>
+        <DialogActions style={{ padding: '1rem' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <Button
+                name='add'
+                variant='contained'
+                color='primary'
+                fullWidth
+                onClick={() => {
+                  setChallanEntryData({
+                    ...challanEntryData,
+                    ...weightsData,
+                    netWeight: weightsData.mGrossWeight
+                      ? parseInt(weightsData.mGrossWeight) -
+                        parseInt(weightsData.emptyWeight)
+                      : parseInt(weightsData.grossweight) -
+                        parseInt(weightsData.emptyWeight),
+                  });
+                  setShowWeightBox(false);
+                  setTimeout(() => {
+                    setWeightsData({
+                      grossweight: null,
+                      mGrossWeight: null,
+                      emptyWeight: null,
+                      // netWeight: null,
+                    });
+                  }, 100);
+                }}
+                autoFocus
+              >
+                Add Weights
+              </Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
       </Dialog>
       <Dialog
         // classes={{ paper: classes.customDialog }}
