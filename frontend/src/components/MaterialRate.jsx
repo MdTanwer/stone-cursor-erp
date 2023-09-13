@@ -61,6 +61,9 @@ const MaterialRate = () => {
   const [openMaterialpage, setOpenMaterialpage] = useState(false);
   const [openMasterDestination, setOpenMasterDestination] = useState(false);
 
+  const [isMasterMaterialCompOpen, setIsMasterMaterialCompOpen] = useState(false);
+
+
   const [materialRate, setMaterialRate] = useState([]);
   const [materialRateId, setMaterialRateId] = useState("");
   const [updateMaterialRateId, setUpdateMaterialRateId] = useState("");
@@ -92,7 +95,7 @@ const MaterialRate = () => {
     setMaterialRateId(getMaxMaterialRateId());
     getAllCustomers();
     GetDestination();
-  }, [openMaterial, openMaterialpage]);
+  }, [openMaterial, openMaterialpage, openMasterCustomer]);
   // ======================================
   const GetMaterial = async () => {
     try {
@@ -179,11 +182,36 @@ const MaterialRate = () => {
     }, 0); // Initialize max with 0
     return maxID + 1;
   };
+
+
+  const getMaxCustomerId = () => {
+    if (!allCustomer || allCustomer.length === 0) {
+      return 1;
+    }
+
+    const maxID = allCustomer.reduce((max, allCustomer) => {
+      // Convert customerId to a number
+      const customerId = parseInt(allCustomer.customerId);
+
+      // Check if customerId is greater than the current max
+      if (customerId > max) {
+        return customerId; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+
+    return maxID + 1;
+  };
+
   //   ==================================================================
 
   // ====================================================================
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isMasterMaterialCompOpen) {
+      return;
+    }
     var materialRate = {
       materialRateId: materialRateId,
       materialName: materialName,
@@ -328,6 +356,7 @@ const MaterialRate = () => {
   };
   const handleMasterCompClick = () => {
     setOpenMaterialpage(true);
+    setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   const handleMasterDestinationClick = () => {
@@ -400,6 +429,7 @@ const MaterialRate = () => {
           maxWidth="md"
           open={openMaterial}
           onClose={handleClose}
+          disableBackdropClick={true}
           aria-labelledby="max-width-dialog-title"
         >
           <DialogTitle id="max-width-dialog-title">
@@ -561,23 +591,11 @@ const MaterialRate = () => {
                                   {el.customerName}
                                 </MenuItem>
                               ))}
-                              {/* <MenuItem value="MohammadMusharaf">
-                            Mohammad Musharaf
-                          </MenuItem>
-                          <MenuItem value="MdAfrozkhan">Md Afroz khan</MenuItem>
-                          <MenuItem value="ZafirulIslam">
-                            Zafirul Islam
-                          </MenuItem> */}
                             </Select>
                           </FormControl>
                         </Box>
                       </Grid>
                       <Grid item xs={12} sm={2}>
-                        {/* <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
-                        // fontSize='large'
-                        color='primary'
-                      /> */}
                         <AddCircleIcon
                           sx={{ fontSize: "30px" }}
                           color="primary"
@@ -587,8 +605,7 @@ const MaterialRate = () => {
                         {openMasterCustomer && (
                           <MasterCustomerComp
                             openMasterCustomer={openMasterCustomer}
-                            // onClose={handleCloseeCancle}
-
+                            getMaxCustomerId={getMaxCustomerId}
                             setOpenMasterCustomer={setOpenMasterCustomer}
                           />
                         )}
@@ -630,9 +647,6 @@ const MaterialRate = () => {
                                   {el.destinationName}
                                 </MenuItem>
                               ))}
-                              {/* <MenuItem value="Noida">Noida</MenuItem>
-                          <MenuItem value="ShaheenBagh">Shaheen Bagh</MenuItem>
-                          <MenuItem value="Jaitpur">Jaitpur</MenuItem> */}
                             </Select>
                           </FormControl>
                         </Box>
