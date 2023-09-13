@@ -37,8 +37,8 @@ router.post("/create-user", async (req, res, next) => {
     const activationToken = createActivationToken(user);
     // const activationToken = encodeURIComponent(createActivationToken(user));
 
-    const activationUrl = `https://stone-crusher-erp-base.vercel.app/activation/${activationToken}`;
-    // const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+    // const activationUrl = `https://stone-crusher-erp-base.vercel.app/activation/${activationToken}`;
+    const activationUrl = `http://localhost:3000/activation/${activationToken}`;
     // const activationUrl = `https://stone-crusher-erp-base.vercel.app/activation/${activationToken}`;
 
     try {

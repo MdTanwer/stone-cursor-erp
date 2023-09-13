@@ -20,7 +20,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { confirm } from 'react-confirm-box';
 
-import { Dialog, DialogContent, DialogTitle, } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import BankDetails from '../components/bankDetails';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -107,6 +107,7 @@ export default function Customer(props) {
   const [customerDeleteName, setCustomerDeleteName] = useState('');
 
   const [isActive, setIsActive] = useState(true);
+
   const [createdBy, setCreatedBy] = useState('');
   const columns = [
     { title: 'Customer ID', field: '_id', hidden: true },
@@ -130,8 +131,6 @@ export default function Customer(props) {
     { title: 'IFSC code', field: 'ifscCode' },
     { title: 'Bank Branch Address', field: 'branchAddress' },
     { title: 'Bank Account Type', field: 'accountType' },
-    // { title: 'Updated At', field: 'updatedAt' },
-    // { title: 'Created At', field: 'createdAt' },
   ];
 
   const getMaxCustomerId = () => {
@@ -177,24 +176,7 @@ export default function Customer(props) {
   useEffect(() => {
     handleCloseCancel();
     handleReset();
-    // const maxCustomerId = getMaxCustomerId();
-    // setCustomerData({
-    //   ...customerData,
-    //   customerId: maxCustomerId,
-    //   isActive: true,
-    //   customerName: '',
-    //   phoneNumber: '',
-    //   whatsAppNumber: '',
-    //   email: '',
-    //   panNumber: '',
-    //   gstNumber: '',
-    //   city: '',
-    //   pinCode: '',
-    //   customerAddress: '',
-    // });
     getAllCustomers();
-    // getAllCustomers();
-    // getMaxCustomerId();
   }, [success, deleteSuccess, updateSuccess]);
 
   const handleChange = (e) => {
@@ -256,21 +238,6 @@ export default function Customer(props) {
   const handleCloseCancel = () => {
     setOpen(false);
     handleReset();
-    // const maxCustomerId = getMaxCustomerId();
-    // setCustomerData({
-    //   ...customerData,
-    //   isActive: true,
-    //   customerId: maxCustomerId,
-    //   customerName: '',
-    //   phoneNumber: '',
-    //   whatsAppNumber: '',
-    //   email: '',
-    //   panNumber: '',
-    //   gstNumber: '',
-    //   city: '',
-    //   pinCode: '',
-    //   customerAddress: '',
-    // });
   };
   const handleReset = () => {
     const maxCustomerId = getMaxCustomerId();
@@ -335,7 +302,6 @@ export default function Customer(props) {
         setSelectedRowId(rowData._id);
         setShowDeleteConfirm(true);
         setCustomerDeleteName(rowData.customerName);
-        // handleDelete(rowData._id);
       },
     },
   ];

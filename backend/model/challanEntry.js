@@ -23,7 +23,7 @@ const addNewChallanSchema = new mongoose.Schema({
     required: [true, 'Please enter customer name'],
   },
 
-  currentDateTime: {
+  currentDate: {
     type: Date,
     // required: [true, 'Please enter customer PAN number'],
   },
@@ -84,19 +84,19 @@ const addNewChallanSchema = new mongoose.Schema({
     required: [true, 'Please enter Loaded type'],
   },
   grossweight: {
-    type: String,
+    type: Number,
     required: [true, 'Please enter Gross weight'],
   },
-  mGrossweight: {
-    type: String,
-    required: [true, 'Please enter Gross weight'],
+  mGrossWeight: {
+    type: Number,
+    // required: [true, 'Please enter Gross weight'],
   },
   emptyWeight: {
-    type: String,
+    type: Number,
     required: [true, 'Please enter Empty weight'],
   },
   netWeight: {
-    type: String,
+    type: Number,
   },
 });
 

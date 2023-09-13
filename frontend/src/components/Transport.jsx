@@ -418,6 +418,7 @@ export default function Transport(props) {
             Create New Transport
           </Fab>
         </Grid>
+
         <Grid item xs={12} sm={12}>
           <MaterialTable
             title=""
@@ -439,7 +440,7 @@ export default function Transport(props) {
               paginationPosition: "both",
               exportButton: true,
               exportAllData: true,
-              exportFileName: "CommissionRulesDetails",
+              exportFileName: "All Transports",
               addRowPosition: "last",
 
               showTextRowsSelected: false,
@@ -451,6 +452,7 @@ export default function Transport(props) {
             }}
           />
         </Grid>
+
       </Grid>
       <Dialog
         // onBackdropClick={handleClose}
@@ -488,17 +490,6 @@ export default function Transport(props) {
 
         <DialogContent>
           <div>
-            <ToastContainer
-              position="top-center"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
             {/* <h3>Create New Supplier</h3> */}
             <form className={classes.form} onSubmit={handleSubmit}>
               <Grid container spacing={2}>
@@ -506,7 +497,7 @@ export default function Transport(props) {
                   <TextField
                     disabled
                     type="number"
-                    value={transportId}
+                    value={getMaxtransportId()}
                     autoComplete="transportId"
                     name="transportId"
                     variant="outlined"
@@ -527,6 +518,7 @@ export default function Transport(props) {
                     fullWidth
                     id="transportname"
                     label="Transport Name"
+                    required
                     // onChange={handleChange}
                     onChange={(e) => setTransportname(e.target.value)}
                     autoFocus
@@ -551,7 +543,7 @@ export default function Transport(props) {
                   <TextField
                     value={whatsappnumber}
                     // required
-                    type="whatsappnumber"
+                    type="number"
                     autoComplete="whatsappnumber"
                     name="whatsappnumber"
                     variant="outlined"
@@ -625,7 +617,7 @@ export default function Transport(props) {
                   <TextField
                     value={pincode}
                     // required
-                    type="pincode"
+                    type="number"
                     autoComplete="pincode"
                     name="pincode"
                     variant="outlined"
@@ -721,13 +713,13 @@ export default function Transport(props) {
                       label="Account Number"
                       onChange={(e) => setAccountNumber(e.target.value)}
 
-                      // onChange={handleChange}
-                      // onChange={(e) =>
-                      //   dispatch(addbankDetails({ accountNumber: e.target.value }))
-                      // }
-                      // onChange={(e) => setAccountNumber(e.target.value)}
-                      // error={!!errors.accountno}
-                      // helperText={errors.accountno}
+                    // onChange={handleChange}
+                    // onChange={(e) =>
+                    //   dispatch(addbankDetails({ accountNumber: e.target.value }))
+                    // }
+                    // onChange={(e) => setAccountNumber(e.target.value)}
+                    // error={!!errors.accountno}
+                    // helperText={errors.accountno}
                     />
                   </Grid>
 
@@ -742,13 +734,13 @@ export default function Transport(props) {
                       label="Ifsc Code"
                       onChange={(e) => setIfscCode(e.target.value)}
 
-                      // onChange={handleChange}
-                      // onChange={(e) =>
-                      //   dispatch(addbankDetails({ ifscCode: e.target.value }))
-                      // }
-                      // onChange={(e) => setIfscCode(e.target.value)}
-                      // error={!!errors.ifsc}
-                      // helperText={errors.ifsc}
+                    // onChange={handleChange}
+                    // onChange={(e) =>
+                    //   dispatch(addbankDetails({ ifscCode: e.target.value }))
+                    // }
+                    // onChange={(e) => setIfscCode(e.target.value)}
+                    // error={!!errors.ifsc}
+                    // helperText={errors.ifsc}
                     />
                   </Grid>
 
@@ -763,11 +755,11 @@ export default function Transport(props) {
                       label="Branch Aaddress"
                       onChange={(e) => setBranchAddress(e.target.value)}
 
-                      // onChange={handleChange}
-                      // onChange={(e) =>
-                      //   dispatch(addbankDetails({ branchAddress: e.target.value }))
-                      // }
-                      // onChange={(e) => setBranchAddress(e.target.value)}
+                    // onChange={handleChange}
+                    // onChange={(e) =>
+                    //   dispatch(addbankDetails({ branchAddress: e.target.value }))
+                    // }
+                    // onChange={(e) => setBranchAddress(e.target.value)}
                     />
                   </Grid>
 
@@ -789,7 +781,7 @@ export default function Transport(props) {
                     fullWidth
                     variant="contained"
                     color="primary"
-                    // onClick={() => handleReset()}
+                  // onClick={() => handleReset()}
                   >
                     Save Details
                   </Button>
@@ -1093,13 +1085,13 @@ export default function Transport(props) {
                         label="Account Number"
                         onChange={(e) => setAccountNumber(e.target.value)}
 
-                        // onChange={handleChange}
-                        // onChange={(e) =>
-                        //   dispatch(addbankDetails({ accountNumber: e.target.value }))
-                        // }
-                        // onChange={(e) => setAccountNumber(e.target.value)}
-                        // error={!!errors.accountno}
-                        // helperText={errors.accountno}
+                      // onChange={handleChange}
+                      // onChange={(e) =>
+                      //   dispatch(addbankDetails({ accountNumber: e.target.value }))
+                      // }
+                      // onChange={(e) => setAccountNumber(e.target.value)}
+                      // error={!!errors.accountno}
+                      // helperText={errors.accountno}
                       />
                     </Grid>
 
@@ -1114,13 +1106,13 @@ export default function Transport(props) {
                         label="Ifsc Code"
                         onChange={(e) => setIfscCode(e.target.value)}
 
-                        // onChange={handleChange}
-                        // onChange={(e) =>
-                        //   dispatch(addbankDetails({ ifscCode: e.target.value }))
-                        // }
-                        // onChange={(e) => setIfscCode(e.target.value)}
-                        // error={!!errors.ifsc}
-                        // helperText={errors.ifsc}
+                      // onChange={handleChange}
+                      // onChange={(e) =>
+                      //   dispatch(addbankDetails({ ifscCode: e.target.value }))
+                      // }
+                      // onChange={(e) => setIfscCode(e.target.value)}
+                      // error={!!errors.ifsc}
+                      // helperText={errors.ifsc}
                       />
                     </Grid>
 
@@ -1135,11 +1127,11 @@ export default function Transport(props) {
                         label="Branch Aaddress"
                         onChange={(e) => setBranchAddress(e.target.value)}
 
-                        // onChange={handleChange}
-                        // onChange={(e) =>
-                        //   dispatch(addbankDetails({ branchAddress: e.target.value }))
-                        // }
-                        // onChange={(e) => setBranchAddress(e.target.value)}
+                      // onChange={handleChange}
+                      // onChange={(e) =>
+                      //   dispatch(addbankDetails({ branchAddress: e.target.value }))
+                      // }
+                      // onChange={(e) => setBranchAddress(e.target.value)}
                       />
                     </Grid>
 
@@ -1162,7 +1154,7 @@ export default function Transport(props) {
                       fullWidth
                       variant="contained"
                       color="primary"
-                      // onClick={() => handleReset()}
+                    // onClick={() => handleReset()}
                     >
                       Save Details
                     </Button>

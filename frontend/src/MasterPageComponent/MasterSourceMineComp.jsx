@@ -213,7 +213,7 @@ const MasterSourceMineComp = ({ openSourceMine, setOpenSourceMine, getMaxSourceI
                                     <TextField
                                         type="sourceAddress"
                                         value={sourceAddress}
-                                        required
+
                                         autoComplete="sourceAddress"
                                         name="sourceAddress"
                                         variant="outlined"
@@ -244,7 +244,7 @@ const MasterSourceMineComp = ({ openSourceMine, setOpenSourceMine, getMaxSourceI
                                         color="primary"
                                     // className={classes.submit}
                                     >
-                                        Save Site Details
+                                        Save Mine Details
                                     </Button>
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
