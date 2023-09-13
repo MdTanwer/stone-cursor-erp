@@ -34,7 +34,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import {
   Card,
-  Dialog,
+  // Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -43,6 +43,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { Dialog } from '@material-ui/core';
 import BankDetails from './bankDetails';
 import MasterUnitComp from '../MasterPageComponent/MasterUnitComp';
 import MasterSourceMineComp from '../MasterPageComponent/MasterSourceMineComp';
@@ -277,6 +278,17 @@ export default function ChallanEntry(props) {
     });
     // console.log(materialRateInfo);
     return vehicle;
+  };
+
+  const getCustomerPhoneNo = (custName) => {
+    // let materialRateInfo = materialRate.filter((item) => {
+    //   return item.customerName.trim() === custName.trim();
+    // });
+    let customer = customers.find((item) => {
+      return item.customerName.trim() === custName.trim();
+    });
+    // console.log(materialRateInfo);
+    return customer;
   };
 
   const getAllUnits = async () => {
@@ -627,7 +639,7 @@ export default function ChallanEntry(props) {
       customerPhoneNumber: null,
       materialName: '',
       customerDestination: '',
-      quantity: null,
+      quantity: '',
       unit: '',
       transporter: '',
       manualTransportName: '',
@@ -1321,7 +1333,11 @@ export default function ChallanEntry(props) {
                     style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
-                    value={challanEntryData.customerPhoneNumber}
+                    value={
+                      getCustomerPhoneNo(challanEntryData.customerName)
+                        ?.phoneNumber
+                    }
+                    // value={challanEntryData.customerPhoneNumber}
                     autoComplete='customerPhoneNumber'
                     name='customerPhoneNumber'
                     variant='outlined'
