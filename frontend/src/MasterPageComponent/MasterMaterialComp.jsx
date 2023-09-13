@@ -161,6 +161,7 @@ export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId,
           maxWidth="md"
           open={openMaterialpage}
           onClose={handleClose}
+          onBackdropClick={false}
           aria-labelledby="max-width-dialog-title"
         >
           <DialogTitle id="max-width-dialog-title">
@@ -228,27 +229,7 @@ export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId,
                       autoFocus
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={5}>
-                  <Box sx={{ minWidth: 20 }}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Material Type
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        // value={materialType}
-                        label="Select Prior Year"
-                        variant="outlined"
-                        // onChange={handleMaterialTypeChange}
-                      >
-                        <MenuItem value={1}>Type1</MenuItem>
-                        <MenuItem value={1}>Type2</MenuItem>
-                        <MenuItem value={1}>Type3</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </Grid> */}
+
                   <Grid item xs={12} sm={4}>
                     <TextField
                       type="description"
@@ -262,88 +243,7 @@ export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId,
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={3}>
-                  <TextField
-                    type="Rate"
-                    // disabled={isDisable}
-                    value={rate}
-                    autoComplete="Rate"
-                    name="Rate"
-                    variant="outlined"
-                    fullWidth
-                    id="Rate"
-                    label="Rate "
-                    onChange={(e) => setRate(e.target.value)}
-                    autoFocus
-                  />
-                </Grid> */}
-                  {/* <Grid item xs={12} sm={2}>
-                  <TextField
-                    type="amount"
-                    // disabled={isDisable}
-                    value={amount}
-                    autoComplete="amount"
-                    name="amount"
-                    variant="outlined"
-                    fullWidth
-                    id="amount"
-                    label="Amount "
-                    onChange={(e) => setAmount(e.target.value)}
-                    autoFocus
-                  />
-                </Grid> */}
 
-                  {/* <Grid item xs={12} sm={3}>
-              <TextField
-                disabled={isDisable}
-                value={location}
-                autoComplete='location'
-                name='location'
-                variant='outlined'
-                fullWidth
-                id='location'
-                label='Location'
-                onChange={(e) => setLocation(e.target.value)}
-                autoFocus
-              />
-            </Grid> */}
-                  {/* <Grid item xs={12} sm={4}>
-                  <Box sx={{ minWidth: 20 }}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Supplier
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        // value={Supplier}
-                        label="Select Prior Year"
-                        // onChange={handlesupplierChange}
-                      >
-                        <MenuItem value={1}>Supplier1</MenuItem>
-                        <MenuItem value={1}>Supplier2</MenuItem>
-                        <MenuItem value={1}>Supplier3</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </Grid> */}
-
-                  {/* <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled={isDisable}
-                    value={supplierAddress}
-                    autoComplete="supplierAddress"
-                    name="supplierAddress"
-                    variant="outlined"
-                    fullWidth
-                    id="supplierAddress"
-                    label="Supplier Address"
-                    onChange={(e) => setSupplierAddress(e.target.value)}
-                    autoFocus
-                    multiline
-                    minRows={2}
-                  />
-                </Grid> */}
                   <Grid item xs={12} sm={1}>
                     <label>IsActive</label>
 
