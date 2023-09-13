@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const MiningRoyalty = () => {
-  const classes = useStyles;
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [miningRoyalty, setMiningRoyalty] = useState([]);
   const [royltyId, setRoyltyId] = useState("");
@@ -69,6 +69,7 @@ const MiningRoyalty = () => {
   const [mineSource, setMineSource] = useState([]);
 
   const [openSourceMine, setOpenSourceMine] = useState(false);
+  const [updateRoyaltyID, setUpdateRoyaltyID] = useState("");
   const [update, setUpdate] = useState(false);
   const [mongodbId, setMongodbId] = useState();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -137,8 +138,7 @@ const MiningRoyalty = () => {
 
       if (response.status === 201) {
         toast.success("Record has been added successfully!");
-        setOpen(false);
-        console.log(response);
+        handleClose()
       } else {
         toast("Invalid Information!");
       }
@@ -156,39 +156,37 @@ const MiningRoyalty = () => {
 
     try {
       const response = await axios.put(endpoint, {
-        royltyId,
-        mineName: mineName,
-        locationName: locationName,
-        royltyRate: royltyRate,
-        gstRate: gstRate,
-        igst: igst,
-        isActive: isActive,
+
+        updateRoyaltyID,
+        mineName,
+        locationName,
+        royltyRate,
+        gstRate,
+        igst,
+        isActive,
       });
 
       toast.success("Material Updated successfully!");
+      handleClose()
     } catch (error) {
       console.error("An error occurred while updating the unit:", error);
       // //   // Handle the error in your UI, maybe show a notification or error message
     }
-    setUpdate(false);
-    setOpen(false);
-    GetMiningRoyalty();
+
   };
   // ====================================
   const onClickDelete = async (rowData) => {
     axios
       .delete(`/miningRoyalty/deleteminingroyalty/${rowData._id}`)
       .then((res) => {
-        debugger;
         console.log(res);
         toast.success("Record has been deleted successfully!");
+        handleClose()
       })
       .catch((err) => {
         toast("Invalid  Information!");
         console.log(err);
       });
-    debugger;
-    // alert("Delete = " + rowData.CustId);
     return;
   };
   // ============================================
@@ -218,8 +216,11 @@ const MiningRoyalty = () => {
   };
 
   const handleClose = () => {
+    clear()
     setOpen(false);
     setUpdate(false);
+    GetMiningRoyalty();
+
   };
   const clear = () => {
     setMineName("");
@@ -266,6 +267,7 @@ const MiningRoyalty = () => {
         setRoyltyRate(rowData.royltyRate);
         setGstRate(rowData.gstRate);
         setIgst(rowData.igst);
+        setUpdateRoyaltyID(rowData.royltyId)
       },
     },
     {
@@ -338,6 +340,7 @@ const MiningRoyalty = () => {
             />
           </Grid>
         </Grid>
+
         <Dialog
           disableBackdropClick
           fullWidth
@@ -463,7 +466,7 @@ const MiningRoyalty = () => {
                       InputLabelProps={{
                         shrink: true,
                       }}
-                      // onChange={(e) => setLocationName(e.target.value)}
+                    // onChange={(e) => setLocationName(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
@@ -523,7 +526,7 @@ const MiningRoyalty = () => {
                       fullWidth
                       variant="contained"
                       color="primary"
-                      // className={classes.submit}
+                    // className={classes.submit}
                     >
                       Save Mining Royalty Details
                     </Button>
@@ -554,6 +557,7 @@ const MiningRoyalty = () => {
             </div>
           </DialogContent>
         </Dialog>
+
         <div>
           <Dialog
             disableBackdropClick
@@ -602,7 +606,7 @@ const MiningRoyalty = () => {
                     <Grid item xs={12} sm={2}>
                       <TextField
                         disabled={true}
-                        value={royltyId}
+                        value={updateRoyaltyID}
                         autoComplete="royltyId"
                         name="royltyId"
                         variant="outlined"
@@ -680,7 +684,7 @@ const MiningRoyalty = () => {
                         InputLabelProps={{
                           shrink: true,
                         }}
-                        // onChange={(e) => setLocationName(e.target.value)}
+                      // onChange={(e) => setLocationName(e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={12} sm={4}>
@@ -740,7 +744,7 @@ const MiningRoyalty = () => {
                         fullWidth
                         variant="contained"
                         color="primary"
-                        // className={classes.submit}
+                      // className={classes.submit}
                       >
                         Save Mining Royalty Details
                       </Button>
@@ -772,6 +776,7 @@ const MiningRoyalty = () => {
             </DialogContent>
           </Dialog>
         </div>
+
       </div>
       <div>
         <Dialog
@@ -797,6 +802,7 @@ const MiningRoyalty = () => {
               </span>{" "}
               record?
             </DialogContentText>
+
           </DialogContent>
           <DialogActions>
             <Grid container spacing={2}>

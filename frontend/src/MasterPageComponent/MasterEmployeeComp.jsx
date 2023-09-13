@@ -194,8 +194,8 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                 if (res.status === 201) {
                     toast.success("Record has been added successfully!");
 
-                    console.log(res);
-                    setOpen(false);
+                    handleClose()
+                    resetemployee();
                 } else {
                     toast.error("Invalid  Information!");
                 }
@@ -205,7 +205,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                 toast.error("Invalid Employee Information!");
             });
 
-        resetemployee();
+
     };
 
 
@@ -309,7 +309,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                             name="empName"
                                             variant="outlined"
                                             fullWidth
-                                            // required
+                                            required
                                             id="empName"
                                             label="Employee Name"
                                             onChange={(e) => setEmpName(e.target.value)}
@@ -364,7 +364,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={phoneNumber}
                                             // required
-                                            type="phoneNumber"
+                                            type="number"
                                             autoComplete="phoneNumber"
                                             name="phoneNumber"
                                             variant="outlined"
@@ -379,7 +379,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={whatshapNumber}
                                             // required
-                                            type="whatshapNumber"
+                                            type="number"
                                             autoComplete="whatshapNumber"
                                             name="whatshapNumber"
                                             variant="outlined"
@@ -420,7 +420,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={panNumber}
                                             // required
-                                            type="panNumber"
+                                            type="text"
                                             autoComplete="panNumber"
                                             name="panNumber"
                                             variant="outlined"
@@ -435,7 +435,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={adharNumber}
                                             // required
-                                            type="adharNumber"
+                                            type="number"
                                             autoComplete="adharNumber"
                                             name="adharNumber"
                                             variant="outlined"
@@ -450,7 +450,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={city}
                                             // required
-                                            type="city"
+                                            type="text"
                                             autoComplete="city"
                                             name="city"
                                             variant="outlined"
@@ -466,7 +466,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                         <TextField
                                             value={pinCode}
                                             // required
-                                            type="pinCode"
+                                            type="number"
                                             autoComplete="pinCode"
                                             name="pinCode"
                                             variant="outlined"
@@ -570,7 +570,7 @@ export default function MasterEmployeeComp({ openSiteIncharge, getMaxEmpId, setO
                                     <Grid item xs={12} sm={4}>
                                         <TextField
                                             variant="outlined"
-                                            type="text"
+                                            type="number"
                                             value={accountNumber}
                                             fullWidth
                                             id="accountno"

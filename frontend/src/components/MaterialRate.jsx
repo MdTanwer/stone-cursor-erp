@@ -70,7 +70,7 @@ const MaterialRate = () => {
   const [rate, setRate] = useState("");
   const [transportRate, setTransportRate] = useState("");
   const [materialRateDelete, setMaterialRateDelete] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openMaterial, setOpenMaterial] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [update, setUpdate] = useState(false);
   const [mongodbId, setMongodbId] = useState();
@@ -92,12 +92,12 @@ const MaterialRate = () => {
     setMaterialRateId(getMaxMaterialRateId());
     getAllCustomers();
     GetDestination();
-  }, [open]);
+  }, [openMaterial, openMaterialpage]);
   // ======================================
   const GetMaterial = async () => {
     try {
       const response = await axios.get("materialmaster/get-materialmaster");
-      debugger;
+
       // console.log(response.data.materialmasters);
       setMaterial(response.data.materialmasters);
     } catch (error) {
@@ -128,16 +128,20 @@ const MaterialRate = () => {
       });
   };
 
+
+
   const GetMaterialRate = async () => {
     try {
       const response = await axios.get("materialrate/get/materialrate");
-      debugger;
+
       // console.log(response.data.materialrates);
       setMaterialRate(response.data.materialrates);
     } catch (error) {
       console.log(error);
     }
   };
+
+
   // ===================For Automatic Id generator==================
   const getMaxMaterialRateId = () => {
     if (!materialRate || materialRate.length === 0) {
@@ -153,23 +157,30 @@ const MaterialRate = () => {
     }, 0);
     return maxID + 1;
   };
+
+  const getMaxMaterialId = () => {
+    if (!material || material.length === 0) {
+      // Handle the case where data.customer is null or empty
+      // setCustomerData({
+      //   ...customerData,
+      //   customerId: 1,
+      // });
+      return 1;
+    }
+    const maxID = material.reduce((max, material) => {
+      // Convert customerId to a number
+      const materialId = parseInt(material.materialId);
+      // Check if customerId is greater than the current max
+      if (materialId > max) {
+        return materialId; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+    return maxID + 1;
+  };
   //   ==================================================================
-  //   useEffect(() => {
-  //     // Make an Axios request to your API
-  //     debugger;
-  //     axios
-  //       .get("materialmaster/get-materialmaster")
-  //       .then((response) => {
-  //         // Assuming your API returns an array of options
-  //         setOptions(response.data.materialmasters);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching data:", error);
-  //       });
-  //   }, []);
-  //   const handleSelection = (event) => {
-  //     setSelectedOption(event.target.value);
-  //   };
+
   // ====================================================================
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -189,47 +200,49 @@ const MaterialRate = () => {
       );
 
       if (response.status === 201) {
-        toast.success("Record has been added successfully!");
+        toast.success("Material Rate has been added successfully!");
+        handleClose()
         console.log(response);
       } else {
-        toast("Invalid Information!");
+        toast.error("Invalid MaterialRate Information!");
+        setOpenMaterial(true)
       }
     } catch (error) {
       console.log(error);
-      toast("Invalid Material Information!");
+      toast.error("Invalid MaterialRate Information!");
+      setOpenMaterial(true)
     }
-    setOpen(!open);
-    //  alert("added success");
-    setRate("");
-    setMaterialName("");
-    setCustomerName("");
-    setTransportRate("");
   };
+
+
   const handleUpdateSubmit = async (event) => {
-    debugger;
+
     event.preventDefault();
     const endpoint = `/materialrate/updatematerialrate/${mongodbId}`;
 
     try {
       const response = await axios.put(endpoint, {
         materialRateId,
-        materialName: materialName,
-        locationName: locationName,
-        customerName: customerName,
-        rate: rate,
-        transportRate: transportRate,
-        isActive: isActive,
+        materialName,
+        locationName,
+        customerName,
+        rate,
+        transportRate,
+        isActive,
       });
 
       toast.success("Material Updated successfully!");
+      handleClose()
     } catch (error) {
-      console.error("An error occurred while updating the unit:", error);
+
+      console.error("An error occurred while updating the Material Rate:", error);
+      setUpdate(true);
       // //   // Handle the error in your UI, maybe show a notification or error message
     }
-    setUpdate(false);
-    setOpen(false);
-    GetMaterialRate();
   };
+
+
+
   const checkChanged = (e) => {
     setIsActive(!isActive);
     // const [name, checked] = e.target;
@@ -245,35 +258,33 @@ const MaterialRate = () => {
   };
 
   const handleClose = () => {
+    clear()
     setUpdate(false);
-    setOpen(false);
-    setRate("");
-    setMaterialName("");
-    setCustomerName("");
-    setTransportRate("");
+    setOpenMaterial(false);
+    GetMaterialRate();
   };
   const clear = () => {
     setRate("");
-
     setMaterialName("");
     setCustomerName("");
     setLocationName("");
     setTransportRate("");
-    GetMaterialRate();
+
   };
   const onClickDelete = async (rowData) => {
     axios
       .delete(`/materialrate/deletematerialrate/${rowData._id}`)
       .then((res) => {
-        debugger;
+
         console.log(res);
         toast.success("Record has been deleted successfully!");
+        handleClose()
       })
       .catch((err) => {
         toast("Invalid  Information!");
         console.log(err);
       });
-    debugger;
+
     // alert("Delete = " + rowData.CustId);
     return;
   };
@@ -308,6 +319,9 @@ const MaterialRate = () => {
       },
     },
   ];
+
+
+
   const handleCustomerClick = () => {
     setOpenMasterCustomer(true);
     // setOpenSourceMine(true)
@@ -335,7 +349,7 @@ const MaterialRate = () => {
               variant="extended"
               aria-label="add"
               fullWidth
-              onClick={() => setOpen(true)}
+              onClick={() => setOpenMaterial(true)}
             >
               Create Material Rate
             </Fab>
@@ -384,7 +398,7 @@ const MaterialRate = () => {
         <Dialog
           fullWidth
           maxWidth="md"
-          open={open}
+          open={openMaterial}
           onClose={handleClose}
           aria-labelledby="max-width-dialog-title"
         >
@@ -436,6 +450,7 @@ const MaterialRate = () => {
                       label="MaterialRateId"
                       onChange={(e) => setMaterialRateId(e.target.value)}
                       autoFocus
+
                     />
                   </Grid>
                   <Grid item xs={12} sm={5}>
@@ -461,7 +476,7 @@ const MaterialRate = () => {
                               onChange={handlematerialChange}
                               variant="outlined"
                               label="Select Prior Year"
-                              // value={materialName}
+                              value={materialName}
                             >
                               <MenuItem value="">Select Material</MenuItem>
                               {material.map((item) => (
@@ -484,6 +499,7 @@ const MaterialRate = () => {
                       {openMaterialpage && (
                         <MasterMaterialComp
                           openMaterialpage={openMaterialpage}
+                          getMaxMaterialId={getMaxMaterialId}
                           setOpenMaterialpage={setOpenMaterialpage}
                         />
                       )}
@@ -566,12 +582,13 @@ const MaterialRate = () => {
                           sx={{ fontSize: "30px" }}
                           color="primary"
                           onClick={handleCustomerClick}
-                          // onClick={() => setOpenMasterCustomer(true)}
+                        // onClick={() => setOpenMasterCustomer(true)}
                         />
                         {openMasterCustomer && (
                           <MasterCustomerComp
                             openMasterCustomer={openMasterCustomer}
                             // onClose={handleCloseeCancle}
+
                             setOpenMasterCustomer={setOpenMasterCustomer}
                           />
                         )}
@@ -677,7 +694,7 @@ const MaterialRate = () => {
                       fullWidth
                       variant="contained"
                       color="primary"
-                      // className={classes.submit}
+                    // className={classes.submit}
                     >
                       Save Material Rate Details
                     </Button>
@@ -708,6 +725,7 @@ const MaterialRate = () => {
             </div>
           </DialogContent>
         </Dialog>
+
         <Dialog
           fullWidth
           maxWidth="md"
@@ -750,17 +768,6 @@ const MaterialRate = () => {
           </DialogTitle>
           <DialogContent>
             <div>
-              <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-              />
               <form className={classes.form} onSubmit={handleUpdateSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={2}>
@@ -927,7 +934,7 @@ const MaterialRate = () => {
                       fullWidth
                       variant="contained"
                       color="primary"
-                      // className={classes.submit}
+                    // className={classes.submit}
                     >
                       Update Material Rate Details
                     </Button>

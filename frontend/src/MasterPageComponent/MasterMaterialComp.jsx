@@ -17,22 +17,6 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import {
-  AddBox,
-  ArrowDownward,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Clear,
-  DeleteOutline,
-  Edit,
-  FilterList,
-  Refresh,
-  SaveAlt,
-  Search,
-  ViewColumn,
-} from "@material-ui/icons";
-import MaterialTable from "material-table";
 import React, { forwardRef, useEffect, useState } from "react";
 import {
   Edit as EditIcon,
@@ -78,12 +62,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 // =====================================================================
 
-export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpage }) {
-  const columns = [
-    { title: "Material Id", field: "materialId" },
-    { title: "Material Name", field: "materialName" },
-    { title: "Description", field: "description" },
-  ];
+export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId, setOpenMaterialpage }) {
+
   const [materialId, setMaterialId] = useState("");
   const [materialName, setMaterialName] = useState("");
   const [description, setDescription] = useState();
@@ -104,50 +84,25 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
   useEffect(() => {
     GetMaterial();
     setMaterialId(getMaxMaterialId());
-  }, [open]);
+  }, [openMaterialpage]);
 
   const GetMaterial = async () => {
     try {
       const response = await axios.get("materialmaster/get-materialmaster");
-      debugger;
-      console.log(response.data.materialmasters);
       setMaterial(response.data.materialmasters);
     } catch (error) {
       console.log(error);
     }
   };
-  // =================================================
-  // for Count add in material id
-  const getMaxMaterialId = () => {
-    if (!material || material.length === 0) {
-      // Handle the case where data.customer is null or empty
-      // setCustomerData({
-      //   ...customerData,
-      //   customerId: 1,
-      // });
-      return 1;
-    }
-    const maxID = material.reduce((max, material) => {
-      // Convert customerId to a number
-      const materialId = parseInt(material.materialId);
-      // Check if customerId is greater than the current max
-      if (materialId > max) {
-        return materialId; // Update max if customerId is greater
-      } else {
-        return max; // Keep the current max if customerId is not greater
-      }
-    }, 0); // Initialize max with 0
-    return maxID + 1;
-  };
-  // =========================================================
 
-  console.log(isActive);
+  // console.log(isActive);
   const checkChanged = (e) => {
     setIsActive(!isActive);
     // const [name, checked] = e.target;
   };
   //const handleSubmit = (event) => {
-  const handleSubmit = async (event) => {
+  const handlematerialSubmit = async (event) => {
+    debugger
     event.preventDefault();
     var material = {
       materialId: materialId,
@@ -160,7 +115,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
       updatedAt: updatedAt,
     };
 
-    debugger;
+
     console.log(material);
     try {
       const response = await axios.post(
@@ -170,24 +125,23 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
 
       if (response.status === 201) {
         toast.success("Record has been added successfully!");
+        handleClose()
         console.log(response);
       } else {
-        toast("Invalid Information!");
+        toast.error("Invalid Information!");
+        setOpenMaterialpage(true)
       }
     } catch (error) {
       console.log(error);
-      toast("Invalid Material Information!");
+      toast.error("Invalid Material Information!");
+      setOpenMaterialpage(true)
     }
-    setOpen(!open);
-    //  alert("added success");
-    setMaterialName("");
-    setDescription("");
-    GetMaterial();
+
   };
 
 
   const clear = () => {
-    // debugger;
+    // 
     // setMaterialId("");
     setMaterialName("");
     setDescription("");
@@ -195,11 +149,8 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
   // ========================================================
   const handleClose = () => {
     setOpenMaterialpage(false)
-    setOpen(false);
-    setUpdate(false);
-    // setMaterialId("");
-    setMaterialName("");
-    setDescription("");
+    clear()
+    GetMaterial()
   };
   return (
     <>
@@ -246,7 +197,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
           </DialogTitle>
           <DialogContent>
             <div>
-              <form className={classes.form} onSubmit={handleSubmit}>
+              <form className={classes.form} onSubmit={handlematerialSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={2}>
                     <TextField
@@ -405,7 +356,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       size="medium"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"
                       fullWidth
@@ -416,14 +367,24 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       Save Material Details
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       variant="contained"
                       color="primary"
                       fullWidth
                       onClick={() => clear()}
                     >
-                      Clear
+                      Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => handleClose()}
+                    >
+                      Cancel
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={1}></Grid>

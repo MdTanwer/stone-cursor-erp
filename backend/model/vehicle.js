@@ -10,16 +10,16 @@ const vehicleSchema = new mongoose.Schema({
   },
   vehicleModel: {
     type: Number,
-    required: [true, "Please enter your vehicleModel!"],
+    // required: [true, "Please enter your vehicleModel!"],
   },
   vehicleOwnerName: {
     type: String,
-    required: [true, "Please enter your vehicleOwnerName!"],
+    // required: [true, "Please enter your vehicleOwnerName!"],
   },
 
   vehicleWeight: {
     type: Number,
-    required: [true, "Please enter your vehicleWeight!"],
+    // required: [true, "Please enter your vehicleWeight!"],
   },
   vehicleTypes: {
     type: String,
@@ -30,6 +30,14 @@ const vehicleSchema = new mongoose.Schema({
     // required: [true, "Please enter your vehicleTypes!"],
   },
   isActive: {
+    type: Boolean,
+    default: true,
+  },
+  isPermitted: {
+    type: Boolean,
+    default: true,
+  },
+  isLicensed: {
     type: Boolean,
     default: true,
   },

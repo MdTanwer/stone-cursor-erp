@@ -30,9 +30,11 @@ import {
 } from "@mui/material";
 import BankDetails from "../components/bankDetails";
 import { useDispatch, useSelector } from "react-redux";
-
-import { DialogContentText, Fab } from "@material-ui/core";
 import DropdownComp from "../components/Helper Component/DropDownComp";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DialogContentText, Fab } from "@material-ui/core";
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function MasterTransporterComp({ openMasterTransporter, setOpenMasterTransporter, getMaxtransportId }) {
+export default function MasterDriverComp({ openMasterDriver, getMaxDriverID, setOpenMasterDriver }) {
     // const {
     //   accountHolderName,
     //   bankName,
@@ -93,56 +95,41 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
 
     const [open, setOpen] = useState(false);
     const [updateOpen, setUpdateOpen] = useState(false);
+    // const [active, setActive] = useState(true);
 
-    const [transportData, setTransportData] = useState([]);
+    const [driversData, setDriversData] = useState([]);
     useEffect(() => {
-        getTransport();
-        getMaxtransportId()
-        setTransportId(getMaxtransportId());
-    }, [openMasterTransporter]);
-    const getTransport = async () => {
+        getdriversMaster();
+        setDriverID(getMaxDriverID);
+    }, [open, updateOpen]);
+    const getdriversMaster = async () => {
         try {
-            const response = await axios.get("transport/get-transport");
+            const response = await axios.get("driverMaster/get-driverMaster");
 
-            setTransportData(response.data.transports);
-            // console.log(transportData);
+            setDriversData(response.data.driverMasters);
+            // console.log(driversData);
         } catch (error) {
             console.log(error);
         }
     };
 
-    const columns = [
-        { title: "Transport ID", field: "transportId" },
-        { title: "Transport Name", field: "transportname" },
-        { title: "Mobile No.", field: "phonenumber" },
-        { title: "Whatsapp No.", field: "whatsappnumber" },
-        { title: "Email", field: "transportEmail" },
-        { title: "GST No.", field: "gstn" },
-        { title: "PAN No.", field: "pannumber" },
-        { title: "City", field: "city" },
-        { title: "Pin Code", field: "pincode" },
-        { title: " Address", field: "address" },
-        { title: "Bank Account Holder Name", field: "accountHolderName" },
-        { title: "Bank Name", field: "bankName" },
-        { title: "Bank Account No.", field: "accountNumber" },
-        { title: "IFSC code", field: "ifscCode" },
-        { title: "Bank Branch Address", field: "branchAddress" },
-        { title: "Bank Account Type", field: "accountType" },
-    ];
-    const [mongodbId, setMongodbId] = useState("");
-    const [startDatevalue, setStartDatevalue] = useState("");
-    const [transportId, setTransportId] = useState("");
-    const [updatetransportId, setUpdatetransportId] = useState("");
-    const [transportname, setTransportname] = useState("");
-    const [phonenumber, setPhonenumber] = useState("");
-    const [whatsappnumber, setWhatsappnumber] = useState("");
-    const [transportEmail, setTransportEmail] = useState("");
-    const [pannumber, setPannumber] = useState("");
-    const [gstn, setGstn] = useState("");
-    const [city, setCity] = useState("");
-    const [pincode, setPincode] = useState("");
-    const [address, setAddress] = useState("");
 
+    const [mongodbId, setMongodbId] = useState("");
+    const [typesofDL, setTypesofDL] = useState("");
+    const [startDatevalue, setStartDatevalue] = useState("");
+    const [driverID, setDriverID] = useState("");
+    const [updatedriverID, setUpdateDriverID] = useState("");
+    const [driverName, setDriverName] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
+    const [driverEmail, setDriverEmail] = useState("");
+    const [panNumber, setPanNumber] = useState("");
+    const [drivingLicenseNumber, setDrivingLicenseNumber] = useState("");
+    const [city, setCity] = useState("");
+    const [zipCode, setZipCode] = useState("");
+    const [authorityCentre, setAuthorityCentre] = useState("");
+    const [driverAddress, setDriverAddress] = useState("");
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [driverDelete, setDriverDelete] = useState("");
 
     //bank details
     const [accountHolderName, setAccountHolderName] = useState("");
@@ -152,18 +139,17 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
     const [branchAddress, setBranchAddress] = useState("");
     const [accountType, setAccountType] = useState("");
 
-
-    // const getMaxtransportId = () => {
-    //     if (!transportData || transportData.length === 0) {
+    // const getMaxDriverID = () => {
+    //     if (!driversData || driversData.length === 0) {
     //         // Handle the case where data.customer is null or empty
     //         return 1;
     //     }
-    //     const maxID = transportData.reduce((max, transportData) => {
+    //     const maxID = driversData.reduce((max, driversData) => {
     //         // Convert customerId to a number
-    //         const transportId = parseInt(transportData.transportId);
+    //         const driverID = parseInt(driversData.driverID);
     //         // Check if customerId is greater than the current max
-    //         if (transportId > max) {
-    //             return transportId; // Update max if customerId is greater
+    //         if (driverID > max) {
+    //             return driverID; // Update max if customerId is greater
     //         } else {
     //             return max; // Keep the current max if customerId is not greater
     //         }
@@ -175,17 +161,18 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
         debugger;
         event.preventDefault();
         var data = {
-            transportId: transportId,
-            transportname: transportname,
-            phonenumber: phonenumber,
-            transportEmail: transportEmail,
-            pannumber: pannumber,
-            whatsappnumber: whatsappnumber,
+            driverID: driverID,
+            driverName: driverName,
+            mobileNumber: mobileNumber,
+            driverEmail: driverEmail,
+            panNumber: panNumber,
+            typesofDL: typesofDL,
+            drivingLicenseNumber: drivingLicenseNumber,
             startDatevalue: startDatevalue,
             city: city,
-            gstn: gstn,
-            pincode: pincode,
-            address: address,
+            zipCode: zipCode,
+            authorityCentre: authorityCentre,
+            driverAddress: driverAddress,
             accountHolderName: accountHolderName,
             bankName: bankName,
             accountNumber: accountNumber,
@@ -196,42 +183,49 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
         debugger;
         console.log(data);
         axios
-            .post("transport/create-transport", data)
+            .post("driverMaster/create-driverMaster", data)
             .then((res) => {
                 if (res.status === 201) {
-                    toast.success("Transport Submited successfully!");
-                    handleCloseCancle()
+                    toast.success("Driver Added successfully!");
+                    handleCloseCancle();
+
                 } else {
                     toast.error("Invalid  Information!");
-                    setOpenMasterTransporter(true)
                 }
             })
             .catch((err) => {
                 console.log(err);
-                toast.error("Invalid Transport Information!");
-                setOpenMasterTransporter(true)
+                toast.error("Invalid Driver Master Information!");
             });
 
     };
 
+    const handleCheckChange = (e) => {
+        const { name, checked } = e.target; // Use 'checked' instead of 'value'
+        console.log(name, checked);
+        console.log(e.target.checked.value);
+    };
+
 
     const handleCloseCancle = () => {
-        setOpenMasterTransporter(false)
+        setOpenMasterDriver(false)
         handleReset();
-        getTransport();
+        getdriversMaster();
     };
+
     const handleReset = () => {
-        setTransportId();
-        setTransportname("");
-        setPhonenumber("");
-        setTransportEmail("");
-        setPannumber("");
-        setWhatsappnumber("");
+        setDriverID();
+        setDriverName("");
+        setMobileNumber("");
+        setDriverEmail("");
+        setPanNumber("");
+        setDrivingLicenseNumber("");
         setCity("");
-        setGstn("");
-        setPincode("");
+        setZipCode("");
+        setAuthorityCentre("");
         setStartDatevalue("");
-        setAddress("");
+        setDriverAddress("");
+        setTypesofDL("");
         setAccountHolderName("");
         setBankName("");
         setAccountNumber("");
@@ -241,14 +235,13 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
     };
 
 
-
     return (
         <>
+
             <Dialog
-                // onBackdropClick={handleClose}
                 fullWidth
                 maxWidth="md"
-                open={openMasterTransporter}
+                open={openMasterDriver}
                 onClose={handleCloseCancle}
                 aria-labelledby="max-width-dialog-title"
                 disableBackdropClick={true}
@@ -263,7 +256,7 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                     >
                         <Grid style={{ justifyItems: "flex-end" }} item xs={12} sm={11}>
                             <Typography variant="h5" fontWeight={700}>
-                                Create New Transport
+                                Create New Driver
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={1}>
@@ -280,6 +273,17 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
 
                 <DialogContent>
                     <div>
+                        <ToastContainer
+                            position="top-center"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                        />
                         {/* <h3>Create New Supplier</h3> */}
                         <form className={classes.form} onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
@@ -287,30 +291,29 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                     <TextField
                                         disabled
                                         type="number"
-                                        value={getMaxtransportId()}
-                                        autoComplete="transportId"
-                                        name="transportId"
+                                        value={driverID}
+                                        autoComplete="driverID"
+                                        name="driverID"
                                         variant="outlined"
                                         fullWidth
-                                        id="transportId"
-                                        label="Transport ID"
-                                        onChange={(e) => setTransportId(e.target.value)}
+                                        id="driverID"
+                                        label="Driver ID"
+                                        onChange={(e) => setDriverID(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
                                     <TextField
                                         disabled={isDisable}
-                                        value={transportname}
-                                        autoComplete="transportname"
-                                        name="transportname"
+                                        value={driverName}
+                                        autoComplete="driverName"
+                                        name="driverName"
                                         variant="outlined"
                                         fullWidth
-                                        id="transportname"
-                                        label="Transport Name"
-                                        required
+                                        id="driverName"
+                                        label="Driver Name"
                                         // onChange={handleChange}
-                                        onChange={(e) => setTransportname(e.target.value)}
+                                        onChange={(e) => setDriverName(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
@@ -318,29 +321,15 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                     <TextField
                                         type="number"
                                         disabled={isDisable}
-                                        value={phonenumber}
-                                        autoComplete="phonenumber"
-                                        name="phonenumber"
+                                        value={mobileNumber}
+                                        autoComplete="mobileNumber"
+                                        name="mobileNumber"
                                         variant="outlined"
                                         fullWidth
-                                        id="phonenumber"
+                                        id="mobileNumber"
                                         label="Mobile Number"
-                                        onChange={(e) => setPhonenumber(e.target.value)}
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        value={whatsappnumber}
-                                        // required
-                                        type="number"
-                                        autoComplete="whatsappnumber"
-                                        name="whatsappnumber"
-                                        variant="outlined"
-                                        fullWidth
-                                        id="whatsappnumber"
-                                        label="Whatsapp Number"
-                                        onChange={(e) => setWhatsappnumber(e.target.value)}
+                                        // onChange={handleChange}
+                                        onChange={(e) => setMobileNumber(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
@@ -348,46 +337,79 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                     <TextField
                                         type="email"
                                         disabled={isDisable}
-                                        value={transportEmail}
+                                        value={driverEmail}
                                         autoComplete="email"
-                                        name="email"
+                                        name="driverEmail"
                                         variant="outlined"
                                         fullWidth
                                         id="email"
                                         label="Email"
-                                        onChange={(e) => setTransportEmail(e.target.value)}
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        disabled={isDisable}
-                                        value={pannumber}
-                                        autoComplete="pannumber"
-                                        name="pannumber"
-                                        variant="outlined"
-                                        fullWidth
-                                        id="pannumber"
-                                        label="Pan Number"
-                                        onChange={(e) => setPannumber(e.target.value)}
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        disabled={isDisable}
-                                        value={gstn}
-                                        autoComplete="gstn"
-                                        name="gstn"
-                                        variant="outlined"
-                                        fullWidth
-                                        id="gstn"
-                                        label="GST No."
                                         // onChange={handleChange}
-                                        onChange={(e) => setGstn(e.target.value)}
+                                        onChange={(e) => setDriverEmail(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        disabled={isDisable}
+                                        value={panNumber}
+                                        autoComplete="panNumber"
+                                        name="panNumber"
+                                        variant="outlined"
+                                        fullWidth
+                                        id="panNumber"
+                                        label="Pan Number"
+                                        // onChange={handleChange}
+                                        onChange={(e) => setPanNumber(e.target.value)}
+                                        autoFocus
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <DropdownComp
+                                        // required
+                                        dropDownLable={"Types of DL"}
+                                        ddselectlabel={"Types of DL"}
+                                        dropDownValue={typesofDL}
+                                        menuItemArray={[
+                                            "Heavy Passenger Vehicle (HPV) License",
+                                            "Commercial Driving License (CDL)",
+                                            "All India Driving Permit (AIDP)",
+                                        ]}
+                                        setDropDownValue={setTypesofDL}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        value={drivingLicenseNumber}
+                                        // required
+                                        type="drivingLicenseNumber"
+                                        autoComplete="drivingLicenseNumber"
+                                        name="drivingLicenseNumber"
+                                        variant="outlined"
+                                        fullWidth
+                                        id="drivingLicenseNumber"
+                                        label="DL No"
+                                        // onChange={handleChange}
+                                        onChange={(e) => setDrivingLicenseNumber(e.target.value)}
+                                        autoFocus
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            label="DL Expiry Date"
+                                            // disabled={isDateRangeEnableDisable}
+                                            value={startDatevalue}
+                                            onChange={(newValue) => {
+                                                setStartDatevalue(newValue);
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField variant="outlined" fullWidth {...params} />
+                                            )}
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+
                                 <Grid item xs={12} sm={4}>
                                     <TextField
                                         disabled={isDisable}
@@ -398,43 +420,57 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                         fullWidth
                                         id="city"
                                         label="City"
-                                        // onChange={handleChange}
                                         onChange={(e) => setCity(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
                                     <TextField
-                                        value={pincode}
-                                        // required
-                                        type="number"
-                                        autoComplete="pincode"
-                                        name="pincode"
+                                        disabled={isDisable}
+                                        value={zipCode}
+                                        autoComplete="zipCode"
+                                        name="zipCode"
                                         variant="outlined"
                                         fullWidth
-                                        id="pincode"
+                                        id="zipCode"
                                         label="Pin Code"
-                                        // onChange={handleChange}
-                                        onChange={(e) => setPincode(e.target.value)}
+                                        onChange={(e) => setZipCode(e.target.value)}
                                         autoFocus
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={8}>
+                                <Grid item xs={12} sm={4}>
                                     <TextField
-                                        disabled={isDisable}
-                                        value={address}
-                                        autoComplete="address"
-                                        name="address"
+                                        value={authorityCentre}
+                                        // required
+                                        type="authorityCentre"
+                                        autoComplete="authorityCentre"
+                                        name="authorityCentre"
                                         variant="outlined"
                                         fullWidth
-                                        id="address"
-                                        label=" Address"
-                                        onChange={(e) => setAddress(e.target.value)}
+                                        id="authorityCentre"
+                                        label="Authority Centre"
+                                        onChange={(e) => setAuthorityCentre(e.target.value)}
+                                        autoFocus
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        disabled={isDisable}
+                                        value={driverAddress}
+                                        autoComplete="driverAddress"
+                                        name="driverAddress"
+                                        variant="outlined"
+                                        // rows={2}
+                                        fullWidth
+                                        id="driverAddress"
+                                        label="Driver Address"
+                                        onChange={(e) => setDriverAddress(e.target.value)}
                                         autoFocus
                                         multiline
                                         minRows={1}
                                     />
                                 </Grid>
+
                                 <Grid item xs={12} sm={2}>
                                     <label>IsActive</label>
 
@@ -446,7 +482,6 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                         size="medium"
                                     />
                                 </Grid>
-
                                 <Grid container spacing={1}>
                                     <Grid
                                         style={{ marginBottom: "1rem", marginTop: "1rem" }}
@@ -564,6 +599,7 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                         />
                                     </Grid>
                                 </Grid>
+
                                 <Grid item xs={12} sm={4}>
                                     <Button
                                         name="submit"
