@@ -9,8 +9,8 @@ import { Provider } from "react-redux";
 import Store from "./redux/store";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:8000/api/v2";
-// axios.defaults.baseURL = "https://stone-crusher-erp-base-api.vercel.app/api/v2";
+// axios.defaults.baseURL = "http://localhost:8000/api/v2";
+axios.defaults.baseURL = "https://stone-crusher-erp-base-api.vercel.app/api/v2";
 
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
