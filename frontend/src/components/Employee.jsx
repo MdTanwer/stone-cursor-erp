@@ -193,9 +193,8 @@ export default function Employee(props) {
       .then((res) => {
         if (res.status === 201) {
           toast.success("Record has been added successfully!");
-
-          console.log(res);
           setOpen(false);
+          resetemployee();
         } else {
           toast.error("Invalid  Information!");
         }
@@ -205,7 +204,7 @@ export default function Employee(props) {
         toast.error("Invalid Employee Information!");
       });
 
-    resetemployee();
+
   };
 
   const handleUpdateSubmit = async (event) => {
@@ -310,10 +309,6 @@ export default function Employee(props) {
         // onClickDelete(rowData);
         setShowDeleteConfirm(rowData);
         setEmpDeleteName(rowData.empName);
-        // onClickDelete(rowData);
-        // handleDelete(rowData.empId);
-        // dispatch(getAllVehicle());
-        // console.log(rowData);
       },
     },
   ];
@@ -382,13 +377,13 @@ export default function Employee(props) {
                 filtering: true,
                 paging: true,
                 pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-                pageSize: 5,
+                pageSize: 10,
                 paginationType: "stepped",
                 showFirstLastPageButtons: false,
                 paginationPosition: "both",
                 exportButton: true,
                 exportAllData: true,
-                exportFileName: "vehicle",
+                exportFileName: "All Employee",
                 addRowPosition: "first",
                 // actionsColumnIndex: -1,
                 // selection: true,
@@ -407,6 +402,9 @@ export default function Employee(props) {
             />
           </Grid>
         </Grid>
+
+
+
         <Dialog
           // onBackdropClick={handleClose}
           fullWidth
@@ -442,17 +440,6 @@ export default function Employee(props) {
 
           <DialogContent>
             <div>
-              {/* <ToastContainer
-                  position="top-center"
-                  autoClose={5000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                /> */}
               {/* <h3>Create New Supplier</h3> */}
               <form className={classes.form} onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -463,7 +450,8 @@ export default function Employee(props) {
                       // value={getMaxVehicleId()}
                       // disabled={isDisable}
                       disabled
-                      value={empId}
+                      // value={empId}
+                      value={getMaxEmpId()}
                       autoComplete="empId"
                       name="empId"
                       variant="outlined"
@@ -483,7 +471,7 @@ export default function Employee(props) {
                       name="empName"
                       variant="outlined"
                       fullWidth
-                      // required
+                      required
                       id="empName"
                       label="Employee Name"
                       onChange={(e) => setEmpName(e.target.value)}
@@ -538,7 +526,7 @@ export default function Employee(props) {
                     <TextField
                       value={phoneNumber}
                       // required
-                      type="phoneNumber"
+                      type="number"
                       autoComplete="phoneNumber"
                       name="phoneNumber"
                       variant="outlined"
@@ -553,7 +541,7 @@ export default function Employee(props) {
                     <TextField
                       value={whatshapNumber}
                       // required
-                      type="whatshapNumber"
+                      type="number"
                       autoComplete="whatshapNumber"
                       name="whatshapNumber"
                       variant="outlined"
@@ -566,15 +554,15 @@ export default function Employee(props) {
                   </Grid>
 
                   {/* <Grid item xs={12} sm={4}>
-                      <DropdownComp
-                        required
-                        dropDownLable={"Vehicle Fuel Types"}
-                        ddselectlabel={"Vehicle Fuel Types"}
-                        dropDownValue={panNumber}
-                        menuItemArray={["Petrol", "Diesel", "CNG"]}
-                        setDropDownValue={setpanNumber}
-                      />
-                    </Grid> */}
+                        <DropdownComp
+                          required
+                          dropDownLable={"Vehicle Fuel Types"}
+                          ddselectlabel={"Vehicle Fuel Types"}
+                          dropDownValue={panNumber}
+                          menuItemArray={["Petrol", "Diesel", "CNG"]}
+                          setDropDownValue={setpanNumber}
+                        />
+                      </Grid> */}
                   <Grid item xs={12} sm={4}>
                     <TextField
                       value={email}
@@ -594,7 +582,7 @@ export default function Employee(props) {
                     <TextField
                       value={panNumber}
                       // required
-                      type="panNumber"
+                      type="text"
                       autoComplete="panNumber"
                       name="panNumber"
                       variant="outlined"
@@ -609,7 +597,7 @@ export default function Employee(props) {
                     <TextField
                       value={adharNumber}
                       // required
-                      type="adharNumber"
+                      type="number"
                       autoComplete="adharNumber"
                       name="adharNumber"
                       variant="outlined"
@@ -624,7 +612,7 @@ export default function Employee(props) {
                     <TextField
                       value={city}
                       // required
-                      type="city"
+                      type="text"
                       autoComplete="city"
                       name="city"
                       variant="outlined"
@@ -640,7 +628,7 @@ export default function Employee(props) {
                     <TextField
                       value={pinCode}
                       // required
-                      type="pinCode"
+                      type="number"
                       autoComplete="pinCode"
                       name="pinCode"
                       variant="outlined"
@@ -671,8 +659,8 @@ export default function Employee(props) {
                   {/* <BankDetails /> ======================================================================*/}
 
                   {/* <Typography variant="h5" fontWeight={700} my={5}>
-                    Add Bank Details
-                  </Typography> */}
+                      Add Bank Details
+                    </Typography> */}
 
                   <Grid
                     style={{ justifyItems: "flex-end" }}
@@ -744,7 +732,7 @@ export default function Employee(props) {
                   <Grid item xs={12} sm={4}>
                     <TextField
                       variant="outlined"
-                      type="text"
+                      type="number"
                       value={accountNumber}
                       fullWidth
                       id="accountno"
@@ -816,6 +804,7 @@ export default function Employee(props) {
             </div>
           </DialogContent>
         </Dialog>
+
       </div>
       <div>
         <Dialog

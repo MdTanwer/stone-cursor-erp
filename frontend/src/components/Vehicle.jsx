@@ -116,17 +116,33 @@ export default function Vehicle(props) {
 
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
-  const [checked, setChecked] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [VehicleDeleteName, setVehicleDeleteName] = useState("");
-  const checkChanged = (state) => {
-    setChecked(!checked);
+
+
+
+  const [isPermitted, setIsPermitted] = useState(true);
+  const [isLicensed, setIsLicensed] = useState(true);
+  const [isActive, setIsActive] = useState(true);
+
+  const handleIsPermittedChange = () => {
+    setIsPermitted(!isPermitted);
   };
+
+  const handleIsLicensedChange = () => {
+    setIsLicensed(!isLicensed);
+  };
+
+  const handleIsActiveChange = () => {
+    setIsActive(!isActive);
+  };
+
+
   const [allVehiclechecked, setAllVehiclechecked] = useState(false);
   // debugger;
   const AllVehicleChanged = (state) => {
     setAllVehiclechecked(!allVehiclechecked);
-    // setIsDisable(!allVehiclechecked);
+
   };
 
   const classes = useStyles();
@@ -167,29 +183,6 @@ export default function Vehicle(props) {
     return maxID + 1;
   };
 
-  // const successMessageBox = (successMsg) => {
-  //   toast.success(successMsg, {
-  //     position: "top-center",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //   });
-  // };
-  // const errorMessageBox = (errorMsg) => {
-  //   toast.error(errorMsg, {
-  //     position: "top-center",
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //   });
-  // };
-
   const handleSubmit = async (event) => {
     debugger;
     event.preventDefault();
@@ -202,18 +195,18 @@ export default function Vehicle(props) {
       vehicleWeight: vehicleWeight,
       vehicleTypes: vehicleTypes,
       vehicleFuelTypes: vehicleFuelTypes,
+      isPermitted: isPermitted,
+      isLicensed: isLicensed,
+      isActive: isActive
     };
-
-    debugger;
     console.log(data);
     axios
       .post("vehicle/create-vehicle", data)
       .then((res) => {
         if (res.status === 201) {
-          toast.success("Record has been added successfully!");
+          toast.success("Vehicle has been added successfully!");
+          handleClose()
 
-          console.log(res);
-          setOpen(false);
         } else {
           toast.error("Invalid  Information!");
         }
@@ -223,7 +216,7 @@ export default function Vehicle(props) {
         toast.error("Invalid Vehicle Information!");
       });
 
-    resetvehicle();
+
 
   };
 
@@ -247,44 +240,37 @@ export default function Vehicle(props) {
         vehicleWeight,
         vehicleTypes,
         vehicleFuelTypes,
+        isPermitted,
+        isLicensed,
+        isActive
       });
 
-      toast.success("Vehicle Updated successfully!");
+      toast.success("Vehicle has been Updated successfully!");
+      handleClose()
     } catch (error) {
-      console.error("An error occurred while updating the unit:", error);
+      console.error("An error occurred while updating the Vehicle:", error);
       // Handle the error in your UI, maybe show a notification or error message
     }
-    resetvehicle();
-    setUpdateOpen(false);
-    setOpen(false);
-    GetVehicle();
+
     // dispatch(getAllUnitMaster());
   };
 
   const onClickDelete = async (rowData) => {
-    debugger;
-
-    debugger;
-
     axios
       .delete(`/vehicle/delete-vehicle/${rowData._id}`)
       .then((res) => {
         debugger;
         console.log(res);
 
-        alert("Record has been deleted successfully!");
+        toast.success("Vehicle has been deleted successfully!");
+        handleClose()
       })
       .catch((err) => {
-        alert("Invalid  Information!");
-        console.log(err);
+        toast.error("Invalid  Information!");
+        // console.log(err);
       });
-    debugger;
-    // alert("Delete = " + rowData.CustId);
     return;
   };
-  console.log("You click No!");
-
-  GetVehicle();
 
   // const handleDelete = (vehicleId) => {
   //   debugger;
@@ -310,6 +296,9 @@ export default function Vehicle(props) {
         setVehicleOwnerName(rowData.vehicleOwnerName);
         setVehicleFuelTypes(rowData.vehicleFuelTypes);
         setVehicleWeighte(rowData.vehicleWeight);
+        setIsActive(rowData.isActive);
+        setIsLicensed(rowData.isLicensed);
+        setIsPermitted(rowData.isPermitted);
         // refresh();
         // UpdateVehicle(rowData.Id);
       },
@@ -344,6 +333,7 @@ export default function Vehicle(props) {
     setOpen(false);
     resetvehicle();
     setUpdateOpen(false);
+    GetVehicle();
   };
 
   return (
@@ -442,17 +432,6 @@ export default function Vehicle(props) {
 
           <DialogContent>
             <div>
-              {/* <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-              /> */}
               {/* <h3>Create New Supplier</h3> */}
               <form className={classes.form} onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
@@ -476,14 +455,14 @@ export default function Vehicle(props) {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
-                      type="licensePlateNumber"
+                      type="text"
                       // disabled={isDisable}
                       value={licensePlateNumber}
                       autoComplete="licensePlateNumber"
                       name="licensePlateNumber"
                       variant="outlined"
                       fullWidth
-                      // required
+                      required
                       id="licensePlateNumber"
                       label="License Plate Number"
                       onChange={(e) => setLicensePlateNumber(e.target.value)}
@@ -494,7 +473,7 @@ export default function Vehicle(props) {
                     <TextField
                       value={vehicleModel}
                       // required
-                      type="vehicleModel"
+                      type="number"
                       autoComplete="vehicleModel"
                       name="vehicleModel"
                       variant="outlined"
@@ -509,7 +488,7 @@ export default function Vehicle(props) {
                     <TextField
                       value={vehicleOwnerName}
                       // required
-                      type="vehicleOwnerName"
+                      type="text"
                       autoComplete="vehicleOwnerName"
                       name="vehicleOwnerName"
                       variant="outlined"
@@ -551,7 +530,7 @@ export default function Vehicle(props) {
                     <TextField
                       value={vehicleWeight}
                       // required
-                      type="vehicleWeight"
+                      type="number"
                       autoComplete="vehicleWeight"
                       name="vehicleWeight"
                       variant="outlined"
@@ -563,7 +542,7 @@ export default function Vehicle(props) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={2}>
+                  {/* <Grid item xs={12} sm={2}>
                     <label>IsPermitted</label>
 
                     <Checkbox
@@ -595,7 +574,36 @@ export default function Vehicle(props) {
                       color="primary"
                       size="medium"
                     />
+                  </Grid> */}
+
+                  <Grid item xs={12} sm={2}>
+                    <label>IsPermitted</label>
+                    <Checkbox
+                      checked={isPermitted}
+                      onChange={handleIsPermittedChange}
+                      color="primary"
+                      size="medium"
+                    />
                   </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <label>IsLicensed</label>
+                    <Checkbox
+                      checked={isLicensed}
+                      onChange={handleIsLicensedChange}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <label>IsActive</label>
+                    <Checkbox
+                      checked={isActive}
+                      onChange={handleIsActiveChange}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <Button
                       type="submit"
@@ -633,6 +641,7 @@ export default function Vehicle(props) {
             </div>
           </DialogContent>
         </Dialog>
+
       </div>
       <div>
         <Dialog
@@ -791,7 +800,7 @@ export default function Vehicle(props) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={2}>
+                  {/* <Grid item xs={12} sm={2}>
                     <label>IsPermitted</label>
 
                     <Checkbox
@@ -823,6 +832,34 @@ export default function Vehicle(props) {
                       defaultChecked
                       checked={checked}
                       onChange={checkChanged}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid> */}
+
+                  <Grid item xs={12} sm={2}>
+                    <label>IsPermitted</label>
+                    <Checkbox
+                      checked={isPermitted}
+                      onChange={handleIsPermittedChange}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <label>IsLicensed</label>
+                    <Checkbox
+                      checked={isLicensed}
+                      onChange={handleIsLicensedChange}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <label>IsActive</label>
+                    <Checkbox
+                      checked={isActive}
+                      onChange={handleIsActiveChange}
                       color="primary"
                       size="medium"
                     />

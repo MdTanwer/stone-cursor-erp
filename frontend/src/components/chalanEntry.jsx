@@ -47,6 +47,9 @@ import { useSelector } from 'react-redux';
 import MasterEmployeeComp from '../MasterPageComponent/MasterEmployeeComp';
 import MasterTransporterComp from '../MasterPageComponent/MasterTransporterComp';
 import MasterVehicleComp from '../MasterPageComponent/MasterVehicleComp';
+import MasterDriverComp from '../MasterPageComponent/MasterDriverComp';
+import MasterLoaderComp from '../MasterPageComponent/MasterLoaderComp';
+import MasterLoadType from '../MasterPageComponent/MasterLoadType';
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -141,6 +144,9 @@ export default function ChallanEntry(props) {
   const [openSiteIncharge, setOpenSiteIncharge] = useState(false);
   const [openMasterTransporter, setOpenMasterTransporter] = useState(false);
   const [openMasterVehicle, setOpenMasterVehicle] = useState(false);
+  const [openMasterDriver, setOpenMasterDriver] = useState(false);
+  const [openMasterLoader, setOpenMasterLoader] = useState(false);
+  const [openMasterLoadtype, setOpenMasterLoadtype] = useState(false);
 
   const [currentDateTime, setCurrentDateTime] = useState(
     new Date().toLocaleString('en-GB')
@@ -387,6 +393,9 @@ export default function ChallanEntry(props) {
     openSiteIncharge,
     openMasterTransporter,
     openMasterVehicle,
+    openMasterDriver,
+    openMasterLoader,
+    openMasterLoadtype
   ]);
   // openUnitMaster, openSourceMine, openMasterCustomer, openMaterialpage, openSiteIncharge, openMasterTransporter, openMasterVehicle
 
@@ -486,6 +495,60 @@ export default function ChallanEntry(props) {
       // Check if customerId is greater than the current max
       if (vehicleId > max) {
         return vehicleId; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+    return maxID + 1;
+  };
+
+  const getloaderMaxId = () => {
+    if (!loadedBy || loadedBy.length === 0) {
+      // Handle the case where loadedBy.customer is null or empty
+      return 1;
+    }
+    const maxID = loadedBy.reduce((max, loadedBy) => {
+      // Convert customerId to a number
+      const loaderId = parseInt(loadedBy.loaderId);
+      // Check if customerId is greater than the current max
+      if (loaderId > max) {
+        return loaderId; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+    return maxID + 1;
+  };
+
+  const getMaxDriverID = () => {
+    if (!driversData || driversData.length === 0) {
+      // Handle the case where data.customer is null or empty
+      return 1;
+    }
+    const maxID = driversData.reduce((max, driversData) => {
+      // Convert customerId to a number
+      const driverID = parseInt(driversData.driverID);
+      // Check if customerId is greater than the current max
+      if (driverID > max) {
+        return driverID; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+    return maxID + 1;
+  };
+
+  const getloadTypeMaxId = () => {
+    if (!loadType || loadType.length === 0) {
+      // Handle the case where loadType.customer is null or empty
+      return 1;
+    }
+    const maxID = loadType.reduce((max, loadType) => {
+      // Convert customerId to a number
+      const loadTypeId = parseInt(loadType.loadTypeId);
+      // Check if customerId is greater than the current max
+      if (loadTypeId > max) {
+        return loadTypeId; // Update max if customerId is greater
       } else {
         return max; // Keep the current max if customerId is not greater
       }
@@ -809,6 +872,7 @@ export default function ChallanEntry(props) {
     }
   };
 
+
   const actions = [
     {
       icon: () => <Refresh />,
@@ -897,6 +961,18 @@ export default function ChallanEntry(props) {
   };
   const handleVechicleClick = () => {
     setOpenMasterVehicle(true);
+    // setOpenSourceMine(true)
+  };
+  const handleDriverClick = () => {
+    setOpenMasterDriver(true);
+    // setOpenSourceMine(true)
+  };
+  const handleLoaderClick = () => {
+    setOpenMasterLoader(true);
+    // setOpenSourceMine(true)
+  };
+  const handleLoadtypeClick = () => {
+    setOpenMasterLoadtype(true);
     // setOpenSourceMine(true)
   };
   return (
@@ -1532,6 +1608,7 @@ export default function ChallanEntry(props) {
                     autoFocus
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={3}>
                   <Grid
                     container
@@ -1597,6 +1674,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid item xs={12} sm={3}>
                   <TextField
                     disabled={
@@ -1614,6 +1692,7 @@ export default function ChallanEntry(props) {
                     autoFocus
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={3}>
                   <Grid
                     container
@@ -1665,10 +1744,19 @@ export default function ChallanEntry(props) {
                         sx={{ fontSize: '30px' }}
                         // fontSize='large'
                         color='primary'
+                        onClick={handleDriverClick}
                       />
+                      {openMasterDriver && (
+                        <MasterDriverComp
+                          openMasterDriver={openMasterDriver}
+                          getMaxDriverID={getMaxDriverID}
+                          setOpenMasterDriver={setOpenMasterDriver}
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid item xs={12} sm={3}>
                   <TextField
                     disabled={
@@ -1686,6 +1774,7 @@ export default function ChallanEntry(props) {
                     autoFocus
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={4}>
                   <Grid
                     container
@@ -1739,6 +1828,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                   </Grid>
                 </Grid>
+
                 <Grid item xs={12} sm={4}>
                   <Grid
                     container
@@ -1779,7 +1869,15 @@ export default function ChallanEntry(props) {
                         sx={{ fontSize: '30px' }}
                         // fontSize='large'
                         color='primary'
+                        onClick={handleLoaderClick}
                       />
+                      {openMasterLoader && (
+                        <MasterLoaderComp
+                          openMasterLoader={openMasterLoader}
+                          getloaderMaxId={getloaderMaxId}
+                          setOpenMasterLoader={setOpenMasterLoader}
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -1823,7 +1921,15 @@ export default function ChallanEntry(props) {
                         sx={{ fontSize: '30px' }}
                         // fontSize='large'
                         color='primary'
+                        onClick={handleLoadtypeClick}
                       />
+                      {openMasterLoadtype && (
+                        <MasterLoadType
+                          openMasterLoadtype={openMasterLoadtype}
+                          getloadTypeMaxId={getloadTypeMaxId}
+                          setOpenMasterLoadtype={setOpenMasterLoadtype}
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </Grid>

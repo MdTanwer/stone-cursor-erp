@@ -8,7 +8,7 @@ const transportSchema = new mongoose.Schema({
   },
   transportname: {
     type: String,
-    // required: [true, "Please enter your name!"],
+    required: [true, "Please enter Transport name!"],
   },
 
   phonenumber: {
