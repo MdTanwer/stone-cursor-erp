@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 import MaterialTable, { Column } from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,22 +15,30 @@ import {
   Add as AddIcon,
   Delete as DeleIcon,
   Refresh,
-} from "@material-ui/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+} from '@material-ui/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   createunitmaster,
   deleteUnitMaster,
   getAllUnitMaster,
   updateUnitMaster,
-} from "../redux/actions/unitmaster";
-import { server } from "../server";
+} from '../redux/actions/unitmaster';
+import { server } from '../server';
 
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Typography } from "@material-ui/core";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  Typography,
+} from '@material-ui/core';
 
-const label = { inputProps: { "aria-label": "Checkbox demo" } };
+const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -54,10 +61,9 @@ const useStyles = makeStyles((theme) => ({
   deleteName: {
     color: 'red', // Your desired color
     fontWeight: 'bold',
-    fontSize: '20px' // Your desired font weight or other styles
+    fontSize: '20px', // Your desired font weight or other styles
     // Add any other custom styles you want
   },
-
 }));
 
 export default function UnitMaster(props) {
@@ -67,31 +73,29 @@ export default function UnitMaster(props) {
   console.log(unitmasters);
   const columns = [
     // { title: "Unit ID", field: "_id" },
-    { title: "Unit ID", field: "unitmasterId" },
-    { title: "Name", field: "unitName" },
-    { title: "ShortName", field: "unitShortName" },
-    { title: "Description", field: "description" },
+    { title: 'Unit ID', field: 'unitmasterId' },
+    { title: 'Name', field: 'unitName' },
+    { title: 'ShortName', field: 'unitShortName' },
+    { title: 'Description', field: 'description' },
   ];
 
   //   const [unitId, setUnitId] = useState("");
   const [open, setOpen] = useState(false);
   const [updateopen, setUpdateOpen] = useState(false);
-  const [unitmasterId, setUnitmasterId] = useState("");
-  const [mongodbid, setMongodbid] = useState("");
-  const [updateUnitmasterId, setUpdateUnitmasterId] = useState("");
-  const [unitName, setUnitName] = useState("");
-  const [unitShortName, setUnitShortName] = useState("");
-  const [description, setDescription] = useState("");
+  const [unitmasterId, setUnitmasterId] = useState('');
+  const [mongodbid, setMongodbid] = useState('');
+  const [updateUnitmasterId, setUpdateUnitmasterId] = useState('');
+  const [unitName, setUnitName] = useState('');
+  const [unitShortName, setUnitShortName] = useState('');
+  const [description, setDescription] = useState('');
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [unitDeleteName, setUnitDeleteName] = useState("");
-
+  const [unitDeleteName, setUnitDeleteName] = useState('');
 
   // const [unitUpdateName, setUnitUpdateName] = useState("");
   // const [unitUpdateShortName, setUnitShortUpdateName] = useState("");
   // const [updateDescription, setUpdateDescription] = useState("");
-
 
   const dispatch = useDispatch();
 
@@ -111,7 +115,7 @@ export default function UnitMaster(props) {
     // BindRowData();
     getMaxCustomerId();
 
-    setUnitmasterId(getMaxCustomerId())
+    setUnitmasterId(getMaxCustomerId());
   }, [open, showDeleteConfirm]);
 
   const classes = useStyles();
@@ -121,10 +125,10 @@ export default function UnitMaster(props) {
 
     try {
       const newForm = new FormData();
-      newForm.append("unitmasterId", unitmasterId);
-      newForm.append("unitName", unitName);
-      newForm.append("unitShortName", unitShortName);
-      newForm.append("description", description);
+      newForm.append('unitmasterId', unitmasterId);
+      newForm.append('unitName', unitName);
+      newForm.append('unitShortName', unitShortName);
+      newForm.append('description', description);
 
       // Assuming createunitmaster is an asynchronous action
       await dispatch(
@@ -137,45 +141,37 @@ export default function UnitMaster(props) {
       );
 
       // If the dispatch succeeds, show a success message
-      toast.success("Unit Created successfully!");
+      toast.success('Unit Created successfully!');
       handleCloseCancle();
     } catch (error) {
       // If an error occurs during form submission or dispatching,
       // show an error message to the user
-      console.error("Error occurred:", error);
-      toast.error("Error creating Unit. Please try again later.");
+      console.error('Error occurred:', error);
+      toast.error('Error creating Unit. Please try again later.');
     }
   };
 
-
-  const handleUpdateSubmit = async (event,) => {
-
+  const handleUpdateSubmit = async (event) => {
     debugger;
     // const id = rowData._id
     event.preventDefault();
     const endpoint = `/unitmaster/update-unitmaster/${mongodbid}`;
     // const endpoint = `/unitmaster/update-unitmaster/${updateUnitmasterId}`;
 
-
     try {
       const response = await axios.put(endpoint, {
-
         updateUnitmasterId,
         unitName,
         unitShortName,
         description,
       });
 
-
-      toast.success("Unit Updated successfully!");
-      handleCloseCancle()
-
+      toast.success('Unit Updated successfully!');
+      handleCloseCancle();
     } catch (error) {
-      console.error("An error occurred while updating the unit:", error);
+      console.error('An error occurred while updating the unit:', error);
       // Handle the error in your UI, maybe show a notification or error message
     }
-
-
   };
 
   const handleDelete = (id) => {
@@ -186,18 +182,15 @@ export default function UnitMaster(props) {
   };
 
   const handleCloseCancle = () => {
-    handleReset()
+    handleReset();
     setOpen(false);
-    setUpdateOpen(false)
+    setUpdateOpen(false);
     dispatch(getAllUnitMaster());
-
-
-
   };
   const handleReset = () => {
-    setUnitName("");
-    setUnitShortName("");
-    setDescription("");
+    setUnitName('');
+    setUnitShortName('');
+    setDescription('');
   };
 
   const actions = [
@@ -210,10 +203,10 @@ export default function UnitMaster(props) {
       },
     },
     {
-      icon: () => <EditIcon color="primary" />,
+      icon: () => <EditIcon color='primary' />,
       tooltip: 'Edit Unit',
       onClick: (event, rowData) => {
-        setUpdateOpen(true)
+        setUpdateOpen(true);
         setMongodbid(rowData._id);
         // setUpdateUnitmasterId(rowData._id);
         setUpdateUnitmasterId(rowData.unitmasterId);
@@ -229,7 +222,7 @@ export default function UnitMaster(props) {
     },
 
     {
-      icon: () => <DeleIcon color="secondary" />,
+      icon: () => <DeleIcon color='secondary' />,
       tooltip: 'Delete Unit',
       onClick: (event, rowData) => {
         // onClickDelete(rowData);
@@ -237,18 +230,16 @@ export default function UnitMaster(props) {
 
         // handleDelete(rowData._id)
 
-        debugger
+        debugger;
         setSelectedRowId(rowData._id);
         setShowDeleteConfirm(true);
-        setUnitDeleteName(rowData.unitName)
+        setUnitDeleteName(rowData.unitName);
         dispatch(getAllUnitMaster());
 
         // console.log(rowData);
       },
     },
   ];
-
-
 
   const getMaxCustomerId = () => {
     if (!unitmasters || unitmasters.length === 0) {
@@ -268,7 +259,6 @@ export default function UnitMaster(props) {
     return maxID + 1;
   };
 
-
   const row = [];
 
   unitmasters &&
@@ -284,7 +274,6 @@ export default function UnitMaster(props) {
     });
 
   // };
-
 
   return (
     <>
@@ -308,7 +297,7 @@ export default function UnitMaster(props) {
           </Grid>
           <Grid item xs={12} sm={12}>
             <MaterialTable
-              title=""
+              title=''
               columns={columns}
               // rows={row}
               data={row}
@@ -317,20 +306,20 @@ export default function UnitMaster(props) {
               options={{
                 sorting: true,
                 search: true,
-                searchFieldAlignment: "right",
+                searchFieldAlignment: 'right',
                 searchAutoFocus: true,
-                searchFieldVariant: "standard",
+                searchFieldVariant: 'standard',
                 filtering: true,
                 paging: true,
                 pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
                 pageSize: 10,
-                paginationType: "stepped",
+                paginationType: 'stepped',
                 showFirstLastPageButtons: false,
-                paginationPosition: "both",
+                paginationPosition: 'both',
                 exportButton: true,
                 exportAllData: true,
-                exportFileName: "All Units",
-                addRowPosition: "first",
+                exportFileName: 'All Units',
+                addRowPosition: 'first',
                 // actionsColumnIndex: -1,
                 // selection: true,
                 // showSelectAllCheckbox: false,
@@ -342,8 +331,8 @@ export default function UnitMaster(props) {
                 grouping: true,
                 columnsButton: true,
                 rowStyle: (data, index) =>
-                  index % 2 === 0 ? { background: "#f5f5f5" } : null,
-                headerStyle: { background: "#f44336", color: "#fff" },
+                  index % 2 === 0 ? { background: '#f5f5f5' } : null,
+                headerStyle: { background: '#f44336', color: '#fff' },
               }}
             />
           </Grid>
@@ -354,7 +343,6 @@ export default function UnitMaster(props) {
           fullWidth
           maxWidth='md'
           open={open}
-
           // disableBackdropClick={true}
           onClose={handleCloseCancle}
           aria-labelledby='max-width-dialog-title'
@@ -405,14 +393,14 @@ export default function UnitMaster(props) {
                     <TextField
                       value={unitmasterId}
                       required
-                      type="unitName"
-                      autoComplete="unitName"
-                      name="unitName"
-                      variant="outlined"
+                      type='unitName'
+                      autoComplete='unitName'
+                      name='unitName'
+                      variant='outlined'
                       fullWidth
                       disabled
-                      id="unitName"
-                      label="UINO"
+                      id='unitName'
+                      label='UINO'
                       // onChange={(e) => setUiNo(e.target.value)}
                       autoFocus
                     />
@@ -421,13 +409,13 @@ export default function UnitMaster(props) {
                     <TextField
                       value={unitName}
                       required
-                      type="unitName"
-                      autoComplete="unitName"
-                      name="unitName"
-                      variant="outlined"
+                      type='unitName'
+                      autoComplete='unitName'
+                      name='unitName'
+                      variant='outlined'
                       fullWidth
-                      id="unitName"
-                      label="Unit Name"
+                      id='unitName'
+                      label='Unit Name'
                       onChange={(e) => setUnitName(e.target.value)}
                       autoFocus
                     />
@@ -436,13 +424,13 @@ export default function UnitMaster(props) {
                   <Grid item xs={12} sm={5}>
                     <TextField
                       value={unitShortName}
-                      type="unitShortName"
-                      autoComplete="unitShortName"
-                      name="unitShortName"
-                      variant="outlined"
+                      type='unitShortName'
+                      autoComplete='unitShortName'
+                      name='unitShortName'
+                      variant='outlined'
                       fullWidth
-                      id="unitShortName"
-                      label="Unit Short Name"
+                      id='unitShortName'
+                      label='Unit Short Name'
                       onChange={(e) => setUnitShortName(e.target.value)}
                       autoFocus
                     />
@@ -451,13 +439,13 @@ export default function UnitMaster(props) {
                   <Grid item xs={12} sm={12}>
                     <TextField
                       value={description}
-                      type="description"
-                      autoComplete="description"
-                      name="description"
-                      variant="outlined"
+                      type='description'
+                      autoComplete='description'
+                      name='description'
+                      variant='outlined'
                       fullWidth
-                      id="description"
-                      label="Description"
+                      id='description'
+                      label='Description'
                       onChange={(e) => setDescription(e.target.value)}
                       autoFocus
                     />
@@ -504,7 +492,7 @@ export default function UnitMaster(props) {
                       fullWidth
                       variant='contained'
                       color='primary'
-                    // className={classes.submit}
+                      // className={classes.submit}
                     >
                       Save Unit Details
                     </Button>
@@ -567,7 +555,6 @@ export default function UnitMaster(props) {
           open={updateopen}
           disableBackdropClick={true}
           onClose={handleCloseCancle}
-
           aria-labelledby='max-width-dialog-title'
         >
           <DialogTitle id='max-width-dialog-title'>
@@ -615,15 +602,14 @@ export default function UnitMaster(props) {
                   <Grid item xs={12} sm={2}>
                     <TextField
                       value={updateUnitmasterId}
-
-                      type="updateUnitmasterId"
-                      autoComplete="updateUnitmasterId"
-                      name="updateUnitmasterId"
-                      variant="outlined"
+                      type='updateUnitmasterId'
+                      autoComplete='updateUnitmasterId'
+                      name='updateUnitmasterId'
+                      variant='outlined'
                       fullWidth
                       disabled
-                      id="updateUnitmasterId"
-                      label="UINo"
+                      id='updateUnitmasterId'
+                      label='UINo'
                       // onChange={(e) => setUiNo(e.target.value)}
                       autoFocus
                     />
@@ -633,13 +619,13 @@ export default function UnitMaster(props) {
                     <TextField
                       value={unitName}
                       required
-                      type="unitName"
-                      autoComplete="unitName"
-                      name="unitName"
-                      variant="outlined"
+                      type='unitName'
+                      autoComplete='unitName'
+                      name='unitName'
+                      variant='outlined'
                       fullWidth
-                      id="unitName"
-                      label="Unit Name"
+                      id='unitName'
+                      label='Unit Name'
                       onChange={(e) => setUnitName(e.target.value)}
                       autoFocus
                     />
@@ -648,13 +634,13 @@ export default function UnitMaster(props) {
                   <Grid item xs={12} sm={5}>
                     <TextField
                       value={unitShortName}
-                      type="unitShortName"
-                      autoComplete="unitShortName"
-                      name="unitShortName"
-                      variant="outlined"
+                      type='unitShortName'
+                      autoComplete='unitShortName'
+                      name='unitShortName'
+                      variant='outlined'
                       fullWidth
-                      id="unitShortName"
-                      label="Unit Short Name"
+                      id='unitShortName'
+                      label='Unit Short Name'
                       onChange={(e) => setUnitShortName(e.target.value)}
                       autoFocus
                     />
@@ -663,18 +649,17 @@ export default function UnitMaster(props) {
                   <Grid item xs={12} sm={12}>
                     <TextField
                       value={description}
-                      type="description"
-                      autoComplete="description"
-                      name="description"
-                      variant="outlined"
+                      type='description'
+                      autoComplete='description'
+                      name='description'
+                      variant='outlined'
                       fullWidth
-                      id="description"
-                      label="Description"
+                      id='description'
+                      label='Description'
                       onChange={(e) => setDescription(e.target.value)}
                       autoFocus
                     />
                   </Grid>
-
 
                   {/* <Grid item xs={12} sm={5}></Grid> */}
                   <Grid item xs={12} sm={4}>
@@ -684,7 +669,7 @@ export default function UnitMaster(props) {
                       fullWidth
                       variant='contained'
                       color='primary'
-                    // className={classes.submit}
+                      // className={classes.submit}
                     >
                       Update Unit Details
                     </Button>
@@ -717,8 +702,6 @@ export default function UnitMaster(props) {
             </div>
           </DialogContent>
         </Dialog>
-
-
       </div>
 
       <Dialog
@@ -726,17 +709,20 @@ export default function UnitMaster(props) {
         // className={classes.customDialog}
         open={showDeleteConfirm}
         disableBackdropClick={true}
-        maxWidth="sm" // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
+        maxWidth='sm' // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
         fullWidth={true}
         onClose={() => setShowDeleteConfirm(false)}
-        aria-labelledby="alert-dialog-title "
-
-        aria-describedby="alert-dialog-description "
+        aria-labelledby='alert-dialog-title '
+        aria-describedby='alert-dialog-description '
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>{'Confirm Delete'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this <span className={classes.deleteName}>{`' ${unitDeleteName} '`}</span> record?
+          <DialogContentText id='alert-dialog-description'>
+            Are you sure you want to delete this{' '}
+            <span
+              className={classes.deleteName}
+            >{`' ${unitDeleteName} '`}</span>{' '}
+            record?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -748,7 +734,8 @@ export default function UnitMaster(props) {
                 name='submit'
                 variant='contained'
                 onClick={() => setShowDeleteConfirm(false)}
-                color="primary">
+                color='primary'
+              >
                 No
               </Button>
             </Grid>
