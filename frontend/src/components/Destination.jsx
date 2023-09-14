@@ -149,17 +149,17 @@ export default function Destination() {
       .then((res) => {
         if (res.status === 201) {
           toast.success("Destination Added Successfully");
+          handleClose()
           console.log(res);
         } else {
           toast.err("Invalid  Information!");
+          setOpen(true)
         }
       })
       .catch((err) => {
-        console.log(err);
-
         toast.err("Invalid Destination Information!");
+        setOpen(true)
       });
-    handleClose();
   };
 
   const handleUpdateSubmit = async (event) => {
@@ -177,14 +177,13 @@ export default function Destination() {
       });
 
       toast.success("Destination Updated successfully!");
+      handleClose()
     } catch (error) {
-      console.error("An error occurred while updating the unit:", error);
+      console.error("An error occurred while updating the Destination:", error);
+      setUpdateOpen(true)
       // Handle the error in your UI, maybe show a notification or error message
     }
-    handleReset();
-    setUpdateOpen(false);
-    setOpen(false);
-    GetDestination();
+
   };
   const handleReset = () => {
     debugger;
@@ -203,16 +202,16 @@ export default function Destination() {
         debugger;
         console.log(res);
         toast.success("Destination Deleted Successfully");
+        handleClose()
       })
       .catch((err) => {
         toast.err("Invalid  Information!");
-        console.log(err);
+
       });
     debugger;
     // alert("Delete = " + rowData.CustId);
     return;
   };
-  console.log("You click No!");
 
   const actions = [
     {
@@ -247,16 +246,13 @@ export default function Destination() {
       },
     },
   ];
-  const refresh = () => { };
-  const clear = () => {
-    debugger;
-    refresh();
-  };
+
   // ========================================================
   const handleClose = () => {
     setOpen(false);
     handleReset();
     setUpdateOpen(false);
+    GetDestination()
   };
   return (
     <>
@@ -463,7 +459,7 @@ export default function Destination() {
                       variant="contained"
                       color="secondary"
                       fullWidth
-                      onClick={() => clear()}
+                      onClick={() => handleReset()}
                     >
                       Cancel
                     </Button>
@@ -629,7 +625,7 @@ export default function Destination() {
                       variant="contained"
                       color="secondary"
                       fullWidth
-                      onClick={() => clear()}
+                      onClick={() => handleReset()}
                     >
                       Cancel
                     </Button>
