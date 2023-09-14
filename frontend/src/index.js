@@ -9,16 +9,15 @@ import { Provider } from 'react-redux';
 import Store from './redux/store';
 import axios from 'axios';
 
-axios.defaults.baseURL =
-  process.env.REACT_APP_NODE_ENV === 'DEVELOPMENT'
-    ? 'http://localhost:8000/api/v2'
-    : 'https://stone-crusher-erp-base-api.vercel.app/api/v2';
 
-// axios.defaults.baseURL = "https://stone-crusher-erp-base-api.vercel.app/api/v2";
+// axios.defaults.baseURL = "http://localhost:8000/api/v2";
+axios.defaults.baseURL = "https://stone-crusher-erp-base-api.vercel.app/api/v2";
+
 
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework-git-dev-zaf-stack.vercel.app/api/v2";
+//edits
 ReactDOM.render(
   <Provider store={Store}>
     <ContextProvider>
