@@ -67,6 +67,8 @@ const MiningRoyalty = () => {
   const [isActive, setIsActive] = useState(true);
 
   const [mineSource, setMineSource] = useState([]);
+  const [isMasterMaterialCompOpen, setIsMasterMaterialCompOpen] = useState(false);
+
 
   const [openSourceMine, setOpenSourceMine] = useState(false);
   const [updateRoyaltyID, setUpdateRoyaltyID] = useState("");
@@ -78,19 +80,20 @@ const MiningRoyalty = () => {
   const columns = [
     { title: "Royalty ID ", field: "royltyId" },
     { title: "Mine Name", field: "mineName" },
-    { title: "Location Name ", field: "locationName" },
-    { title: " Roylty Rate", field: "royltyRate" },
-    { title: "Gst Rate ", field: "gstRate" },
-    { title: " Igst", field: "igst" },
+    // { title: "Location Name ", field: "locationName" },
+    { title: " Roylty Rate", field: "royltyRate", render: (rowData) => `${rowData.royltyRate} %` },
+    { title: "Gst Rate ", field: "gstRate", render: (rowData) => `${rowData.gstRate} %` },
+    { title: " Igst", field: "igst", render: (rowData) => `${rowData.igst} %` },
     { title: "Active ", field: "isActive" },
   ];
+
   useEffect(() => {
     getMaxRoyaltyId();
     setRoyltyId(getMaxRoyaltyId());
     getMineSource();
 
     GetMiningRoyalty();
-  }, [open]);
+  }, [open, openSourceMine]);
 
   const getMaxRoyaltyId = () => {
     if (!miningRoyalty || miningRoyalty.length === 0) {
@@ -120,6 +123,9 @@ const MiningRoyalty = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isMasterMaterialCompOpen) {
+      return;
+    }
 
     var miningRoyalty = {
       royltyId: royltyId,
@@ -150,7 +156,9 @@ const MiningRoyalty = () => {
   };
   // ====================================
   const handleUpdateSubmit = async (event) => {
-    debugger;
+    if (isMasterMaterialCompOpen) {
+      return;
+    }
     event.preventDefault();
     const endpoint = `/miningRoyalty/updateminingroyalty/${mongodbId}`;
 
@@ -244,8 +252,15 @@ const MiningRoyalty = () => {
   const handleMineChange = (e) => {
     setMineName(e.target.value);
   };
+  // const handleMineLocationChange = (e) => {
+  //   setLocationName(e.target.value)
+  // };
+
+
   const handleMineSourceClick = () => {
     setOpenSourceMine(true);
+    setIsMasterMaterialCompOpen(true);
+
     // setOpenSourceMine(true)
   };
   const actions = [
@@ -457,12 +472,16 @@ const MiningRoyalty = () => {
                     <TextField
                       type="locationName"
                       value={getLocation(mineName)?.sourceAddress}
+                      style={{ backgroundColor: '#fff9db' }}
+                      disabled
+
                       autoComplete="locationName"
                       name="locationName"
                       variant="outlined"
                       fullWidth
                       id="locationName"
                       label="Location Name"
+                      // onChange={handleMineLocationChange}
                       InputLabelProps={{
                         shrink: true,
                       }}
