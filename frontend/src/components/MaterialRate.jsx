@@ -95,7 +95,8 @@ const MaterialRate = () => {
     setMaterialRateId(getMaxMaterialRateId());
     getAllCustomers();
     GetDestination();
-  }, [openMaterial, openMaterialpage, openMasterCustomer]);
+    getdestinationMaxId()
+  }, [openMaterial, openMaterialpage, openMasterCustomer, openMasterDestination]);
   // ======================================
   const GetMaterial = async () => {
     try {
@@ -204,6 +205,25 @@ const MaterialRate = () => {
     return maxID + 1;
   };
 
+  const getdestinationMaxId = () => {
+    if (!destination || destination.length === 0) {
+      // Handle the case where destination.customer is null or empty
+      return 1;
+    }
+    const maxID = destination.reduce((max, destination) => {
+      // Convert customerId to a number
+      const destinationId = parseInt(destination.destinationId);
+      // Check if customerId is greater than the current max
+      if (destinationId > max) {
+        return destinationId; // Update max if customerId is greater
+      } else {
+        return max; // Keep the current max if customerId is not greater
+      }
+    }, 0); // Initialize max with 0
+    return maxID + 1;
+  };
+
+
   //   ==================================================================
 
   // ====================================================================
@@ -244,13 +264,16 @@ const MaterialRate = () => {
 
 
   const handleUpdateSubmit = async (event) => {
+    if (isMasterMaterialCompOpen) {
+      return;
+    }
 
     event.preventDefault();
     const endpoint = `/materialrate/updatematerialrate/${mongodbId}`;
 
     try {
       const response = await axios.put(endpoint, {
-        materialRateId,
+        updateMaterialRateId,
         materialName,
         locationName,
         customerName,
@@ -299,6 +322,10 @@ const MaterialRate = () => {
     setTransportRate("");
 
   };
+
+  const updateReset = () => {
+    GetMaterialRate()
+  }
   const onClickDelete = async (rowData) => {
     axios
       .delete(`/materialrate/deletematerialrate/${rowData._id}`)
@@ -336,6 +363,8 @@ const MaterialRate = () => {
         setRate(rowData.rate);
         setTransportRate(rowData.transportRate);
         setMaterialName(rowData.materialName);
+        setCustomerName(rowData.customerName);
+        setLocationName(rowData.locationName)
       },
     },
     {
@@ -352,6 +381,7 @@ const MaterialRate = () => {
 
   const handleCustomerClick = () => {
     setOpenMasterCustomer(true);
+    setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   const handleMasterCompClick = () => {
@@ -361,6 +391,7 @@ const MaterialRate = () => {
   };
   const handleMasterDestinationClick = () => {
     setOpenMasterDestination(true);
+    setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   return (
@@ -660,6 +691,7 @@ const MaterialRate = () => {
                         <MasterDestination
                           openMasterDestination={openMasterDestination}
                           setOpenMasterDestination={setOpenMasterDestination}
+                          getdestinationMaxId={getdestinationMaxId}
                         />
                       )}
                     </Grid>
@@ -740,12 +772,13 @@ const MaterialRate = () => {
           </DialogContent>
         </Dialog>
 
+
         <Dialog
           fullWidth
           maxWidth="md"
-          disableBackdropClick
           open={update}
           onClose={handleClose}
+          disableBackdropClick={true}
           aria-labelledby="max-width-dialog-title"
         >
           <DialogTitle id="max-width-dialog-title">
@@ -765,7 +798,7 @@ const MaterialRate = () => {
                     variant="h5"
                     fontWeight={700}
                   >
-                    Update Material Rate
+                    Create Material Rate
                   </Typography>
                 </Grid>
               </Grid>
@@ -796,37 +829,61 @@ const MaterialRate = () => {
                       label="MaterialRateId"
                       onChange={(e) => setMaterialRateId(e.target.value)}
                       autoFocus
+
                     />
                   </Grid>
                   <Grid item xs={12} sm={5}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Select Material
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          onChange={handlematerialChange}
-                          variant="outlined"
-                          label="Select Prior Year"
-                        >
-                          <MenuItem value="">Select Material</MenuItem>
-                          {material.map((item) => (
-                            <MenuItem
-                              key={item.materialName}
-                              value={item.materialName}
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={11}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
                             >
-                              {item.materialName}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
+                              Select Material
+                            </InputLabel>
+                            <Select
+                              labelId="demo-simple-select-label"
+                              onChange={handlematerialChange}
+                              variant="outlined"
+                              label="Select Prior Year"
+                              value={materialName}
+                            >
+                              <MenuItem value="">Select Material</MenuItem>
+                              {material.map((item) => (
+                                <MenuItem
+                                  key={item.materialName}
+                                  value={item.materialName}
+                                >
+                                  {item.materialName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <AddCircleIcon
+                        sx={{ fontSize: "30px" }}
+                        color="primary"
+                        onClick={handleMasterCompClick}
+                      />
+                      {openMaterialpage && (
+                        <MasterMaterialComp
+                          openMaterialpage={openMaterialpage}
+                          getMaxMaterialId={getMaxMaterialId}
+                          setOpenMaterialpage={setOpenMaterialpage}
+                        />
+                      )}
+                    </Grid>
                   </Grid>
-
                   {/* <Grid item xs={12} sm={5}>
                     <Box sx={{ minWidth: 20 }}>
                       <FormControl fullWidth>
@@ -853,56 +910,109 @@ const MaterialRate = () => {
                   </Grid> */}
 
                   <Grid item xs={12} sm={5}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Select Customer
-                        </InputLabel>
-                        <Select
-                          variant="outlined"
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={customerName}
-                          label="Select Prior Year"
-                          onChange={handlecustomerChange}
-                        >
-                          <MenuItem value="MohammadMusharaf">
-                            Mohammad Musharaf
-                          </MenuItem>
-                          <MenuItem value="MdAfrozkhan">Md Afroz khan</MenuItem>
-                          <MenuItem value="ZafirulIslam">
-                            Zafirul Islam
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={10}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
+                            >
+                              Select Customer
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={customerName}
+                              label="Select Prior Year"
+                              onChange={handlecustomerChange}
+                            >
+                              {allCustomer.map((el) => (
+                                <MenuItem key={el._id} value={el.customerName}>
+                                  {el.customerName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={2}>
+                        <AddCircleIcon
+                          sx={{ fontSize: "30px" }}
+                          color="primary"
+                          onClick={handleCustomerClick}
+                        // onClick={() => setOpenMasterCustomer(true)}
+                        />
+                        {openMasterCustomer && (
+                          <MasterCustomerComp
+                            openMasterCustomer={openMasterCustomer}
+                            getMaxCustomerId={getMaxCustomerId}
+                            setOpenMasterCustomer={setOpenMasterCustomer}
+                          />
+                        )}
+                      </Grid>
+                    </Grid>
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
-                    <Box sx={{ minWidth: 20 }}>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          id="demo-simple-select-label"
-                          variant="outlined"
-                        >
-                          Location/Destination
-                        </InputLabel>
-                        <Select
-                          variant="outlined"
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={locationName}
-                          label="Location/Destination"
-                          onChange={handleLocationChange}
-                        >
-                          <MenuItem value="Noida">Noida</MenuItem>
-                          <MenuItem value="ShaheenBagh">Shaheen Bagh</MenuItem>
-                          <MenuItem value="Jaitpur">Jaitpur</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Box>
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ flexSpacing: "2rem" }}
+                      xs={12}
+                      sm={12}
+                      alignItems="center"
+                    >
+                      <Grid item xs={12} sm={10}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
+                            >
+                              Location/Destination
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={locationName}
+                              label="Location/Destination"
+                              onChange={handleLocationChange}
+                            >
+                              {destination.map((el) => (
+                                <MenuItem
+                                  key={el._id}
+                                  value={el.destinationName}
+                                >
+                                  {el.destinationName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                      <AddCircleIcon
+                        sx={{ fontSize: "30px" }}
+                        color="primary"
+                        onClick={handleMasterDestinationClick}
+                      />
+                      {openMasterDestination && (
+                        <MasterDestination
+                          openMasterDestination={openMasterDestination}
+                          setOpenMasterDestination={setOpenMasterDestination}
+                          getdestinationMaxId={getdestinationMaxId}
+                        />
+                      )}
+                    </Grid>
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
@@ -950,7 +1060,7 @@ const MaterialRate = () => {
                       color="primary"
                     // className={classes.submit}
                     >
-                      Update Material Rate Details
+                      Save Material Rate Details
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={4}>
@@ -958,7 +1068,7 @@ const MaterialRate = () => {
                       variant="contained"
                       color="primary"
                       fullWidth
-                      onClick={() => clear()}
+                      onClick={() => updateReset()}
                     >
                       Reset
                     </Button>
@@ -979,6 +1089,7 @@ const MaterialRate = () => {
             </div>
           </DialogContent>
         </Dialog>
+
       </div>
       <div>
         <Dialog

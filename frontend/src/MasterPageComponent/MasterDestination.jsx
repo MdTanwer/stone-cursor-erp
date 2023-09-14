@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 export default function MasterDestination({
   openMasterDestination,
   setOpenMasterDestination,
+  getdestinationMaxId
 }) {
   const columns = [
     { title: "Destination Id", field: "destinationId" },
@@ -100,7 +101,7 @@ export default function MasterDestination({
     GetDestination();
     setDestinationId(getdestinationMaxId());
     debugger;
-  }, [open, updateOpen, showDeleteConfirm]);
+  }, [open, updateOpen, showDeleteConfirm, openMasterDestination]);
 
   const GetDestination = () => {
     debugger;
@@ -115,27 +116,9 @@ export default function MasterDestination({
         console.log(err);
       });
   };
-  // GetDestination();
-  const getdestinationMaxId = () => {
-    if (!data || data.length === 0) {
-      // Handle the case where data.customer is null or empty
-      return 1;
-    }
-    const maxID = data.reduce((max, data) => {
-      // Convert customerId to a number
-      const destinationId = parseInt(data.destinationId);
-      // Check if customerId is greater than the current max
-      if (destinationId > max) {
-        return destinationId; // Update max if customerId is greater
-      } else {
-        return max; // Keep the current max if customerId is not greater
-      }
-    }, 0); // Initialize max with 0
-    return maxID + 1;
-  };
 
   const classes = useStyles();
-  // const [data, setData] = useState([]);
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -152,43 +135,21 @@ export default function MasterDestination({
       .then((res) => {
         if (res.status === 201) {
           toast.success("Destination Added Successfully");
+          handleClose()
           console.log(res);
         } else {
           toast.err("Invalid  Information!");
+          setOpenMasterDestination(true)
         }
       })
       .catch((err) => {
         console.log(err);
 
         toast.err("Invalid Destination Information!");
+        setOpenMasterDestination(true)
       });
-    handleClose();
   };
 
-  const handleUpdateSubmit = async (event) => {
-    debugger;
-    // const id = rowData._id
-    event.preventDefault();
-    const endpoint = `/destinationmaster/update-destination/${mongoDbId}`;
-    // const endpoint = `/unitmaster/update-unitmaster/${updateUnitmasterId}`;
-    try {
-      const response = await axios.put(endpoint, {
-        updateDestinationId,
-        destinationName,
-        description,
-        isActive,
-      });
-
-      toast.success("Destination Updated successfully!");
-    } catch (error) {
-      console.error("An error occurred while updating the unit:", error);
-      // Handle the error in your UI, maybe show a notification or error message
-    }
-    handleReset();
-    setUpdateOpen(false);
-    setOpen(false);
-    GetDestination();
-  };
   const handleReset = () => {
     debugger;
     setDestinationId();
@@ -196,71 +157,12 @@ export default function MasterDestination({
     setDescription("");
   };
 
-  // ==================================================
-  const onClickDelete = async (rowData) => {
-    debugger;
-    debugger;
-    axios
-      .delete(`/destinationmaster/delete-destination/${rowData._id}`)
-      .then((res) => {
-        debugger;
-        console.log(res);
-        toast.success("Destination Deleted Successfully");
-      })
-      .catch((err) => {
-        toast.err("Invalid  Information!");
-        console.log(err);
-      });
-    debugger;
-    // alert("Delete = " + rowData.CustId);
-    return;
-  };
-  console.log("You click No!");
 
-  const actions = [
-    {
-      icon: () => <Refresh />,
-      tooltip: "Refresh Data",
-      isFreeAction: true,
-      onClick: (event, rowData) => {
-        GetDestination();
-      },
-    },
-    {
-      icon: () => <EditIcon color="primary" />,
-      tooltip: "Edit Destination",
-      onClick: (event, rowData) => {
-        setUpdateOpen(true);
-        setMongoDbId(rowData._id);
-        setUpdateDestinationId(rowData.destinationId);
-        setDestinationName(rowData.destinationName);
-        setDescription(rowData.description);
-        setIsActive(rowData.isActive);
-      },
-    },
-    {
-      icon: () => <DeleIcon color="secondary" />,
-      tooltip: "Delete Destination",
-      onClick: (event, rowData) => {
-        setShowDeleteConfirm(true);
-        setSelectedRowId(rowData);
-        setDestinationDeleteName(rowData.destinationName);
-        // onClickDelete(rowData);
-        // GetDestination();
-      },
-    },
-  ];
-  const refresh = () => {};
-  const clear = () => {
-    debugger;
-    refresh();
-  };
   // ========================================================
   const handleClose = () => {
-    setOpen(false);
     handleReset();
-    setUpdateOpen(false);
     setOpenMasterDestination(false);
+    GetDestination()
   };
   return (
     <>
@@ -319,7 +221,7 @@ export default function MasterDestination({
               />
               <form
                 className={classes.form}
-                onSubmit={handleSubmit}
+                // onSubmit={handleSubmit}
                 onReset={handleReset}
               >
                 <Grid container spacing={2}>
@@ -382,11 +284,12 @@ export default function MasterDestination({
 
                   <Grid item xs={12} sm={4}>
                     <Button
-                      type="submit"
+                      // type="submit"
+                      onClick={handleSubmit}
                       fullWidth
                       variant="contained"
                       color="primary"
-                      // className={classes.submit}
+                    // className={classes.submit}
                     >
                       Save Destination Name
                     </Button>
@@ -408,7 +311,7 @@ export default function MasterDestination({
                       variant="contained"
                       color="secondary"
                       fullWidth
-                      onClick={() => clear()}
+                      onClick={() => handleClose()}
                     >
                       Cancel
                     </Button>

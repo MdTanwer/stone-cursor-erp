@@ -5,6 +5,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+
+//edits
+
 // const corsOptions = {
 //   origin: ['https://stone-crusher-erp-base.vercel.app'],
 //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

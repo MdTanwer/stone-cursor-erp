@@ -1,8 +1,4 @@
 import React, { useState, Component, useEffect, forwardRef } from 'react';
-import { server } from '../server';
-import { Link } from 'react-router-dom';
-
-import MaterialTable, { Column } from 'material-table';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -11,39 +7,28 @@ import { TextField, Typography } from '@mui/material';
 import axios from 'axios';
 // import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
 import Checkbox from '@mui/material/Checkbox';
-import {
-  Edit as EditIcon,
-  Add as AddIcon,
-  Delete as DeleIcon,
-  Refresh,
-} from '@material-ui/icons';
-// import { Refresh } from '@material-ui/icons';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { confirm } from 'react-confirm-box';
 
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Fab,
-  Tooltip,
-} from '@mui/material';
+// import {
+//   DialogActions,
+//   DialogContent,
+//   DialogTitle,
+// } from '@mui/material';
 import BankDetails from '../components/bankDetails';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createNewCustomer,
   createNewCustomerFail,
   createNewCustomerReq,
-  deleteCustomer,
-  deleteCustomerFailed,
-  deleteCustomerRequest,
 } from '../redux/customer/customerSlice';
-import DropdownComp from '../components/Helper Component/DropDownComp';
-import CustomerUpdateForm from '../components/Helper Component/CustomerUpdate';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@material-ui/core';
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -80,11 +65,12 @@ export default function MasterCustomerComp({
     branchAddress,
     accountType,
   } = useSelector((state) => state.bank);
+
   const { name, email } = useSelector((state) => state.user.user);
   console.log(name, email);
-  const { success, deleteSuccess, updateSuccess } = useSelector(
-    (state) => state.customer
-  );
+  // const { success, deleteSuccess, updateSuccess } = useSelector(
+  //   (state) => state.customer
+  // );
 
   const [isDisable, setIsDisable] = useState(false);
   const classes = useStyles();
@@ -107,11 +93,11 @@ export default function MasterCustomerComp({
 
   console.log(customerData);
 
-  const [rowId, setRowId] = useState('');
-  const [open, setOpen] = useState(false);
-  const [updateOpen, setUpdateOpen] = useState(false);
-  const [isActive, setIsActive] = useState(true);
-  const [createdBy, setCreatedBy] = useState('');
+  // const [rowId, setRowId] = useState('');
+  // const [open, setOpen] = useState(false);
+  // const [updateOpen, setUpdateOpen] = useState(false);
+  // const [isActive, setIsActive] = useState(true);
+  // const [createdBy, setCreatedBy] = useState('');
 
   useEffect(() => {
     setCustomerData({
@@ -191,21 +177,6 @@ export default function MasterCustomerComp({
   const handleCloseCancel = () => {
     setOpenMasterCustomer(false);
     handleReset();
-    // const maxCustomerId = getMaxCustomerId();
-    // setCustomerData({
-    //   ...customerData,
-    //   isActive: true,
-    //   customerId: maxCustomerId,
-    //   customerName: '',
-    //   phoneNumber: '',
-    //   whatsAppNumber: '',
-    //   email: '',
-    //   panNumber: '',
-    //   gstNumber: '',
-    //   city: '',
-    //   pinCode: '',
-    //   customerAddress: '',
-    // });
   };
 
   const handleReset = () => {
@@ -233,7 +204,7 @@ export default function MasterCustomerComp({
         fullWidth
         maxWidth='md'
         open={openMasterCustomer}
-        // disableBackdropClick={true}
+        disableBackdropClick={true}
         onClose={handleCloseCancel}
         aria-labelledby='max-width-dialog-title'
       >
@@ -265,18 +236,7 @@ export default function MasterCustomerComp({
 
         <DialogContent>
           <div>
-            <ToastContainer
-              position='bottom-center'
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
-            <form className={classes.form} onSubmit={handleSubmit}>
+            <form className={classes.form} >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={2}>
                   <TextField
@@ -441,11 +401,12 @@ export default function MasterCustomerComp({
                 <Grid item xs={12} sm={4}>
                   <Button
                     name='submit'
-                    type='submit'
+                    // type='submit'
+                    onClick={handleSubmit}
                     fullWidth
                     variant='contained'
                     color='primary'
-                    // className={classes.submit}
+                  // className={classes.submit}
                   >
                     Save Customer Details
                   </Button>

@@ -1,4 +1,5 @@
 import React, { useState, Component, useEffect, forwardRef } from 'react';
+import numberToWords from 'number-to-words';
 
 /////////////////// Date & TIme ///////////////////////////
 import dayjs from 'dayjs';
@@ -34,7 +35,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import {
   Card,
-  // Dialog,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -43,11 +44,10 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Dialog } from '@material-ui/core';
 import BankDetails from './bankDetails';
 import MasterUnitComp from '../MasterPageComponent/MasterUnitComp';
 import MasterSourceMineComp from '../MasterPageComponent/MasterSourceMineComp';
-import MasterCustomerComp from '../MasterPageComponent/MasterCustomerComp';
+// import MasterCustomerComp from '../MasterPageComponent/MasterCustomerComp';
 import MasterMaterialComp from '../MasterPageComponent/MasterMaterialComp';
 
 import { useSelector } from 'react-redux';
@@ -112,6 +112,36 @@ export default function ChallanEntry(props) {
     return maxID + 1;
   };
 
+  const initialState = {
+    challanNumber: getMaxChallanNumber(),
+    mChallanNo: '',
+    mineSourceName: '',
+    siteInchargeName: '',
+    customerName: '',
+    currentDate: '',
+    customerPhoneNumber: null,
+    materialName: '',
+    customerDestination: '',
+    quantity: '',
+    unit: '',
+    transporter: '',
+    manualTransportName: '',
+    vehicle: '',
+    manualVehicleName: '',
+    driver: '',
+    manualDrivereName: '',
+    royaltyType: 'None',
+    loadedBy: '',
+    loadType: '',
+    grossweight: '',
+    grossWeightDateTime: '',
+    mGrossWeight: '',
+    mGrossWeightDateTime: '',
+    emptyWeight: '',
+    emptyWeightDateTime: '',
+    netWeight: '',
+  };
+
   const columns = [
     { title: 'MongoDB Challan ID', field: '_id', hidden: true },
     { title: 'Challan No.', field: 'challanNumber' },
@@ -129,7 +159,7 @@ export default function ChallanEntry(props) {
       title: 'Date',
       field: 'currentDate',
       render: (rowData) =>
-        new Date(rowData.currentDate).toLocaleString('en-GB'),
+        new Date(rowData.currentDate).toLocaleDateString('en-GB'),
     },
     { title: 'Destination', field: 'customerDestination' },
     { title: 'Quantity', field: 'quantity' },
@@ -148,8 +178,8 @@ export default function ChallanEntry(props) {
   const [open, setOpen] = useState(false);
   const [openUnitMaster, setOpenUnitMaster] = useState(false);
   const [openSourceMine, setOpenSourceMine] = useState(false);
-  const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
-  const [openMaterialpage, setOpenMaterialpage] = useState(false);
+  // const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
+  // const [openMaterialpage, setOpenMaterialpage] = useState(false);
   const [openSiteIncharge, setOpenSiteIncharge] = useState(false);
   const [openMasterTransporter, setOpenMasterTransporter] = useState(false);
   const [openMasterVehicle, setOpenMasterVehicle] = useState(false);
@@ -160,38 +190,17 @@ export default function ChallanEntry(props) {
   // const [currentDate, setCurrentDate] = useState();
   // const [customerNameChange, setCustomerNameChange] = useState('');
   const [challanEntryData, setChallanEntryData] = useState({
-    challanNumber: '',
-    mChallanNo: '',
-    mineSourceName: '',
-    siteInchargeName: '',
-    customerName: '',
-    currentDate: dayjs(new Date()),
-    customerPhoneNumber: null,
-    materialName: '',
-    customerDestination: '',
-    quantity: null,
-    unit: '',
-    transporter: '',
-    manualTransportName: '',
-    vehicle: '',
-    manualVehicleName: '',
-    driver: '',
-    manualDrivereName: '',
-    royaltyType: 'None',
-    loadedBy: '',
-    loadType: '',
-    grossweight: '',
-    mGrossWeight: '',
-    emptyWeight: '',
-    netWeight: '',
+    ...initialState,
   });
 
-  console.log(challanEntryData.currentDate.toLocaleString('en-GB'));
+  console.log(challanEntryData.currentDate);
   const [weightsData, setWeightsData] = useState({
     grossweight: null,
     mGrossWeight: null,
     emptyWeight: null,
-    // netWeight: null,
+    grossWeightDateTime: '',
+    mGrossWeightDateTime: '',
+    emptyWeightDateTime: '',
   });
 
   console.log(challanEntryData);
@@ -208,7 +217,6 @@ export default function ChallanEntry(props) {
   // const [material, setMaterial] = useState([]);
   const [materialRate, setMaterialRate] = useState([]);
   const [uniqueCustomerName, setUniqueCustomerName] = useState([]);
-  console.log(uniqueCustomerName);
   const [allUnits, setAllUnits] = useState([]);
   const [transportData, setTransportData] = useState([]);
   const [vehiclesdata, setVehiclesdata] = useState([]);
@@ -216,7 +224,7 @@ export default function ChallanEntry(props) {
   const [loadedBy, setLoadedBy] = useState([]);
   const [loadType, setLoadType] = useState([]);
   const [miningRoyalty, setMiningRoyalty] = useState([]);
-
+  const [currentDate, setCurrentDate] = useState(dayjs(new Date()));
   ////////////////////////////////////////////////////////
 
   /////////////////////// Get all Masters start ///////////////////
@@ -370,25 +378,25 @@ export default function ChallanEntry(props) {
     return vehicle;
   };
 
-  const getMaxCustomerId = () => {
-    if (!customers || customers.length === 0) {
-      return 1;
-    }
+  // const getMaxCustomerId = () => {
+  //   if (!customers || customers.length === 0) {
+  //     return 1;
+  //   }
 
-    const maxID = customers.reduce((max, customer) => {
-      // Convert customerId to a number
-      const customerId = parseInt(customer.customerId);
+  //   const maxID = customers.reduce((max, customer) => {
+  //     // Convert customerId to a number
+  //     const customerId = parseInt(customer.customerId);
 
-      // Check if customerId is greater than the current max
-      if (customerId > max) {
-        return customerId; // Update max if customerId is greater
-      } else {
-        return max; // Keep the current max if customerId is not greater
-      }
-    }, 0); // Initialize max with 0
+  //     // Check if customerId is greater than the current max
+  //     if (customerId > max) {
+  //       return customerId; // Update max if customerId is greater
+  //     } else {
+  //       return max; // Keep the current max if customerId is not greater
+  //     }
+  //   }, 0); // Initialize max with 0
 
-    return maxID + 1;
-  };
+  //   return maxID + 1;
+  // };
 
   const getMaxRoyaltyId = () => {
     if (!miningRoyalty || miningRoyalty.length === 0) {
@@ -418,8 +426,10 @@ export default function ChallanEntry(props) {
 
   //////////////////////////////////////////////////////////
   useEffect(() => {
+    setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
       ...challanEntryData,
+      currentDate: dayjs(new Date()).$d.toLocaleDateString(),
       challanNumber: getMaxChallanNumber(),
       royaltyType: 'None',
     });
@@ -437,19 +447,16 @@ export default function ChallanEntry(props) {
     getLoaderMaster();
     getLoadType();
     GetMiningRoyalty();
-
   }, [
     open,
     openUnitMaster,
     openSourceMine,
-    openMasterCustomer,
-    openMaterialpage,
     openSiteIncharge,
     openMasterTransporter,
     openMasterVehicle,
     openMasterDriver,
     openMasterLoader,
-    openMasterLoadtype
+    openMasterLoadtype,
   ]);
   // openUnitMaster, openSourceMine, openMasterCustomer, openMaterialpage, openSiteIncharge, openMasterTransporter, openMasterVehicle
 
@@ -613,27 +620,24 @@ export default function ChallanEntry(props) {
   // maxID OF all PopUp Componennt end
 
   const handleDateChange = (newValue) => {
+    setCurrentDate(newValue);
     setChallanEntryData({
       ...challanEntryData,
-      currentDate: newValue,
+      currentDate: newValue.$d.toLocaleDateString('en-GB'),
+      // currentDate: newValue.$d.toLocaleDateString('en-GB'),
     });
-    // setCurrentDate(newValue);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // if (name === 'customerName') {
-    //   // const nameString = value.split(',')[0];
-    //   // const phoneString = value.split(',')[1];
-    //   // setCustomerNameChange(value);
-    //   setChallanEntryData({
-    //     ...challanEntryData,
-    //     [name]: value,
-    //     // [name]: nameString,
-    //     // customerPhoneNumber: phoneString,
-    //   });
-    //   return;
-    // }
+    if (name === 'customerName') {
+      setChallanEntryData({
+        ...challanEntryData,
+        [name]: value,
+        customerPhoneNumber: getCustomerPhoneNo(value).phoneNumber,
+      });
+      return;
+    }
     if (name === 'vehicle') {
       setChallanEntryData({
         ...challanEntryData,
@@ -679,44 +683,74 @@ export default function ChallanEntry(props) {
 
   const handleWeightChange = (e) => {
     const { name, value } = e.target;
-    setWeightsData({
+    if (name === 'grossweight') {
+      setWeightsData({
+        ...weightsData,
+        [name]: value,
+        grossWeightDateTime: new Date().toLocaleString('en-GB'),
+      });
+      return;
+    }
+    if (name === 'mGrossWeight') {
+      setWeightsData({
+        ...weightsData,
+        [name]: value,
+        mGrossWeightDateTime: new Date().toLocaleString('en-GB'),
+      });
+      return;
+    }
+    if (name === 'emptyWeight') {
+      setWeightsData({
+        ...weightsData,
+        [name]: value,
+        emptyWeightDateTime: new Date().toLocaleString('en-GB'),
+      });
+      return;
+    }
+  };
+
+  const handleAddWeightsOnClick = () => {
+    setChallanEntryData({
+      ...challanEntryData,
       ...weightsData,
-      [name]: value,
+      netWeight: weightsData.mGrossWeight
+        ? parseInt(weightsData.mGrossWeight) - parseInt(weightsData.emptyWeight)
+        : parseInt(weightsData.grossweight) - parseInt(weightsData.emptyWeight),
+    });
+    setShowWeightBox(false);
+    setTimeout(() => {
+      resetWeightData();
+    }, 100);
+  };
+
+  const resetWeightData = () => {
+    setWeightsData({
+      grossweight: null,
+      mGrossWeight: null,
+      emptyWeight: null,
+      grossWeightDateTime: '',
+      mGrossWeightDateTime: '',
+      emptyWeightDateTime: '',
+      // netWeight: null,
     });
   };
 
+  const handleWeightsClose = () => {
+    setShowWeightBox(false);
+    resetWeightData();
+  };
   const handleCloseCancel = () => {
     setOpen(false);
     handleReset();
   };
+
+
   const handleReset = () => {
-    // setCustomerNameChange('');
+    setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
-      ...challanEntryData,
-      challanNumber: getMaxChallanNumber(),
-      mChallanNo: '',
-      mineSourceName: '',
-      siteInchargeName: '',
-      customerName: '',
-      currentDate: dayjs(new Date()),
-      customerPhoneNumber: null,
-      materialName: '',
-      customerDestination: '',
-      quantity: '',
-      unit: '',
-      transporter: '',
-      manualTransportName: '',
-      vehicle: '',
-      manualVehicleName: '',
-      driver: '',
-      manualDrivereName: '',
-      royaltyType: 'None',
-      loadedBy: '',
-      loadType: '',
-      grossweight: '',
-      mGrossWeight: '',
-      emptyWeight: '',
-      netWeight: '',
+      // ...challanEntryData,
+      ...initialState,
+      currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
     });
   };
 
@@ -731,22 +765,34 @@ export default function ChallanEntry(props) {
     );
     newFormData.append('currentDate', challanEntryData.currentDate);
     newFormData.append('grossweight', challanEntryData.grossweight);
+    newFormData.append(
+      'grossWeightDateTime',
+      challanEntryData.grossWeightDateTime
+    );
     newFormData.append('mGrossWeight', challanEntryData.mGrossWeight);
+    newFormData.append(
+      'mGrossWeightDateTime',
+      challanEntryData.mGrossWeightDateTime
+    );
     newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
     newFormData.append(
       'manualTransportName',
       challanEntryData.manualTransportName
     );
-    newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
     newFormData.append('emptyWeight', challanEntryData.emptyWeight);
+    newFormData.append(
+      'emptyWeightDateTime',
+      challanEntryData.emptyWeightDateTime
+    );
+    newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
     newFormData.append('netWeight', parseInt(challanEntryData.netWeight));
     newFormData.append('quantity', challanEntryData.quantity);
+
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
 
     try {
       const { data } = await axios.post(`/challan/create-challan`, newForm);
-
       if (data?.success === true) {
         toast.success('Challan Added Successfully');
         getAllChallans();
@@ -828,21 +874,30 @@ export default function ChallanEntry(props) {
             display: grid;
             grid-template-columns: 1fr 1fr;
             column-gap: 2rem;
+            row-gap: 0.5rem;
+
           }
           .div-2-section-1 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             column-gap: 2rem;
+            row-gap: 0.5rem;
           }
           .div-1-section-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             column-gap: 3.2rem;
+            row-gap: 0.5rem;
           }
           .div-2-section-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             column-gap: 2rem;
+            row-gap: 0.5rem;
+          }
+          .div-2-section-2-p {
+            display: inline-block;
+            margin-right: 1rem;
           }
           .title {
             display: flex;
@@ -880,46 +935,55 @@ export default function ChallanEntry(props) {
               <p>CHALLAN NO. :</p>
               <p>${challanEntryData.challanNumber}</p>
               <p>CUSTOMER NAME :</p>
-              <p>${challanEntryData.customerName}</p>
+              <p>${challanEntryData.customerName || ''}</p>
               <p>MOBILE NO. :</p>
-              <p>${challanEntryData.customerPhoneNumber}</p>
+              <p>${challanEntryData.customerPhoneNumber || ''}</p>
               <p>DESTINATION :</p>
-              <p>${challanEntryData.customerDestination}</p>
+              <p>${challanEntryData.customerDestination || ''}</p>
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${getVehicleNumber(challanEntryData.vehicle)?.licensePlateNumber
+              <p>${getVehicleNumber(challanEntryData.vehicle)
+        ?.licensePlateNumber || ''
       }</p>
               <p>MATERIAL NAME :</p>
-              <p>${challanEntryData.materialName}</p>
+              <p>${challanEntryData.materialName || ''}</p>
               <p>SOURCE / MINE :</p>
-              <p>${challanEntryData.mineSourceName}</p>
+              <p>${challanEntryData.mineSourceName || ''}</p>
             </div>
           </div>
           <hr />
           <div class="section section-2">
             <div class="div-1-section-2">
               <p>GROSS WEIGHT :</p>
-              <p>${challanEntryData.grossweight}</p>
+              <p>${(challanEntryData.mGrossWeight
+        ? challanEntryData.mGrossWeight
+        : challanEntryData.grossweight) || 0
+      }</p>
               <p>TARE WEIGHT :</p>
-              <p>${challanEntryData.emptyWeight}</p>
+              <p>${challanEntryData.emptyWeight || 0}</p>
               <p>NET WEIGHT :</p>
-              <p>${challanEntryData.netWeight}</p>
+              <p>${challanEntryData.netWeight || 0}</p>
             </div>
             <div class="div-2-section-2">
-              <p>DATE :</p>
-              <p>${new Date().toLocaleDateString('en-GB')}</p>
-              <p>TIME :</p>
-              <p>${new Date().toLocaleTimeString('en-GB')}</p>
-              <p>NET WT IN WORDS</p>
-              <p>${challanEntryData.unit}</p>
+            <p>${(challanEntryData.mGrossWeightDateTime
+        ? challanEntryData.mGrossWeightDateTime
+        : challanEntryData.grossWeightDateTime) || ''
+      }</p>
+            <p>${challanEntryData.emptyWeightDateTime || ''}</p>
+            <div>
+              <p class="div-2-section-2-p">${numberToWords.toWords(
+        challanEntryData.netWeight || 0
+      )}</p>
+              <p class="div-2-section-2-p">${challanEntryData.unit || ''}</p>
+            </div>
             </div>
           </div>
           <hr />
 
           <div class="section">
             <p>SITE INCHARGE SIGNATURE: </p>
-            <p>${challanEntryData.siteInchargeName}</p>
+            <p>${challanEntryData.siteInchargeName || ''}</p>
           </div>
           <hr />
           <div class="footer">
@@ -963,7 +1027,6 @@ export default function ChallanEntry(props) {
     }
   };
 
-
   const actions = [
     {
       icon: () => <Refresh />,
@@ -1003,25 +1066,12 @@ export default function ChallanEntry(props) {
     doc.save('SalesCommission.pdf');
   };
 
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-
-  // Update the current date and time every second
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     setCurrentDate(new Date().toLocaleString('en-GB'));
-  //   }, 1000);
-
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, []);
 
   const handleUnitClick = () => {
     setOpenUnitMaster(true);
     // setOpenSourceMine(true)
   };
+
   const handleMineSourceClick = () => {
     setOpenSourceMine(true);
     // setOpenSourceMine(true)
@@ -1031,10 +1081,7 @@ export default function ChallanEntry(props) {
   //   setOpenMasterCustomer(true);
   //   // setOpenSourceMine(true)
   // };
-  const handleMasterCompClick = () => {
-    setOpenMaterialpage(true);
-    // setOpenSourceMine(true)
-  };
+
   const handleSiteInchargeClick = () => {
     setOpenSiteIncharge(true);
     // setOpenSourceMine(true)
@@ -1312,7 +1359,8 @@ export default function ChallanEntry(props) {
                       <DatePicker
                         name='currentDate'
                         label='Date picker'
-                        value={challanEntryData.currentDate}
+                        value={currentDate}
+                        // value={challanEntryData.currentDate}
                         onChange={handleDateChange}
                         renderInput={(params) => <TextField {...params} />}
                       />
@@ -1408,11 +1456,7 @@ export default function ChallanEntry(props) {
                     style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
-                    value={
-                      getCustomerPhoneNo(challanEntryData.customerName)
-                        ?.phoneNumber
-                    }
-                    // value={challanEntryData.customerPhoneNumber}
+                    value={challanEntryData.customerPhoneNumber}
                     autoComplete='customerPhoneNumber'
                     name='customerPhoneNumber'
                     variant='outlined'
@@ -1703,6 +1747,8 @@ export default function ChallanEntry(props) {
                     </Grid>
                   </Grid>
                 </Grid>
+
+
                 <Grid item xs={12} sm={4}>
                   <TextField
                     disabled={
@@ -2250,20 +2296,41 @@ export default function ChallanEntry(props) {
         fullWidth={true}
         onClose={() => {
           setShowWeightBox(false);
-          setWeightsData({
-            grossweight: null,
-            mGrossWeight: null,
-            emptyWeight: null,
-            // netWeight: null,
-          });
+          resetWeightData();
         }}
         aria-labelledby='alert-dialog-title '
         aria-describedby='alert-dialog-description '
       >
-        <DialogTitle id='alert-dialog-title'>{'Enter Weights'}</DialogTitle>
+        <DialogTitle id='alert-dialog-title'>
+          <Grid
+            style={{ justifyContent: 'space-between' }}
+            container
+            spacing={2}
+          >
+            <Grid xs={12} sm={3}>
+              <Typography fontWeight={700} variant='h5' padding={'0.5rem'}>
+                Enter Weights
+              </Typography>
+            </Grid>
+            <Grid
+              style={{ paddingLeft: '4rem', paddingTop: '0.5rem' }}
+              xs={12}
+              sm={2}
+            >
+              <Button
+                color='secondary'
+                // onClick={handleClose}
+                onClick={handleWeightsClose}
+                variant='contained'
+              >
+                &#10539;
+              </Button>
+            </Grid>
+          </Grid>
+        </DialogTitle>
         <DialogContent style={{ padding: '1rem' }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
@@ -2279,7 +2346,25 @@ export default function ChallanEntry(props) {
                 autoFocus
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={weightsData.grossWeightDateTime}
+                autoComplete='grossWeightDateTime'
+                name='grossWeightDateTime'
+                variant='outlined'
+                fullWidth
+                id='grossWeightDateTime'
+                label='Gross Weight Date Time'
+                onChange={handleWeightChange}
+                autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
@@ -2297,7 +2382,25 @@ export default function ChallanEntry(props) {
                 autoFocus
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
+                value={weightsData.mGrossWeightDateTime}
+                autoComplete='grossWeightDateTime'
+                name='grossWeightDateTime'
+                variant='outlined'
+                fullWidth
+                id='grossWeightDateTime'
+                label='Manual Gross Weight Date Time'
+                onChange={handleWeightChange}
+                autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
@@ -2316,22 +2419,24 @@ export default function ChallanEntry(props) {
               // }}
               />
             </Grid>
-            {/* <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
-                disabled={true}
-                value={weightsData.netWeight}
-                autoComplete='netWeight'
-                name='netWeight'
+                // disabled={true}
+                value={weightsData.emptyWeightDateTime}
+                autoComplete='grossWeightDateTime'
+                name='grossWeightDateTime'
                 variant='outlined'
                 fullWidth
-                id='netWeight'
-                label='Net Weight'
-                // onChange={handleWeightChange}
+                id='grossWeightDateTime'
+                label='Empty Weight Date Time'
+                onChange={handleWeightChange}
                 autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
-            </Grid> */}
+            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions style={{ padding: '1rem' }}>
@@ -2342,26 +2447,7 @@ export default function ChallanEntry(props) {
                 variant='contained'
                 color='primary'
                 fullWidth
-                onClick={() => {
-                  setChallanEntryData({
-                    ...challanEntryData,
-                    ...weightsData,
-                    netWeight: weightsData.mGrossWeight
-                      ? parseInt(weightsData.mGrossWeight) -
-                      parseInt(weightsData.emptyWeight)
-                      : parseInt(weightsData.grossweight) -
-                      parseInt(weightsData.emptyWeight),
-                  });
-                  setShowWeightBox(false);
-                  setTimeout(() => {
-                    setWeightsData({
-                      grossweight: null,
-                      mGrossWeight: null,
-                      emptyWeight: null,
-                      // netWeight: null,
-                    });
-                  }, 100);
-                }}
+                onClick={handleAddWeightsOnClick}
                 autoFocus
               >
                 Add Weights
