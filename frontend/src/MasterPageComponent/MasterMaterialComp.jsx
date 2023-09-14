@@ -17,22 +17,6 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import {
-  AddBox,
-  ArrowDownward,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Clear,
-  DeleteOutline,
-  Edit,
-  FilterList,
-  Refresh,
-  SaveAlt,
-  Search,
-  ViewColumn,
-} from "@material-ui/icons";
-import MaterialTable from "material-table";
 import React, { forwardRef, useEffect, useState } from "react";
 import {
   Edit as EditIcon,
@@ -78,12 +62,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 // =====================================================================
 
-export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpage }) {
-  const columns = [
-    { title: "Material Id", field: "materialId" },
-    { title: "Material Name", field: "materialName" },
-    { title: "Description", field: "description" },
-  ];
+export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId, setOpenMaterialpage }) {
+
   const [materialId, setMaterialId] = useState("");
   const [materialName, setMaterialName] = useState("");
   const [description, setDescription] = useState();
@@ -104,50 +84,25 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
   useEffect(() => {
     GetMaterial();
     setMaterialId(getMaxMaterialId());
-  }, [open]);
+  }, [openMaterialpage]);
 
   const GetMaterial = async () => {
     try {
       const response = await axios.get("materialmaster/get-materialmaster");
-      debugger;
-      console.log(response.data.materialmasters);
       setMaterial(response.data.materialmasters);
     } catch (error) {
       console.log(error);
     }
   };
-  // =================================================
-  // for Count add in material id
-  const getMaxMaterialId = () => {
-    if (!material || material.length === 0) {
-      // Handle the case where data.customer is null or empty
-      // setCustomerData({
-      //   ...customerData,
-      //   customerId: 1,
-      // });
-      return 1;
-    }
-    const maxID = material.reduce((max, material) => {
-      // Convert customerId to a number
-      const materialId = parseInt(material.materialId);
-      // Check if customerId is greater than the current max
-      if (materialId > max) {
-        return materialId; // Update max if customerId is greater
-      } else {
-        return max; // Keep the current max if customerId is not greater
-      }
-    }, 0); // Initialize max with 0
-    return maxID + 1;
-  };
-  // =========================================================
 
-  console.log(isActive);
+  // console.log(isActive);
   const checkChanged = (e) => {
     setIsActive(!isActive);
     // const [name, checked] = e.target;
   };
   //const handleSubmit = (event) => {
-  const handleSubmit = async (event) => {
+  const handlematerialSubmit = async (event) => {
+    debugger
     event.preventDefault();
     var material = {
       materialId: materialId,
@@ -160,7 +115,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
       updatedAt: updatedAt,
     };
 
-    debugger;
+
     console.log(material);
     try {
       const response = await axios.post(
@@ -170,24 +125,23 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
 
       if (response.status === 201) {
         toast.success("Record has been added successfully!");
+        handleClose()
         console.log(response);
       } else {
-        toast("Invalid Information!");
+        toast.error("Invalid Information!");
+        setOpenMaterialpage(true)
       }
     } catch (error) {
       console.log(error);
-      toast("Invalid Material Information!");
+      toast.error("Invalid Material Information!");
+      setOpenMaterialpage(true)
     }
-    setOpen(!open);
-    //  alert("added success");
-    setMaterialName("");
-    setDescription("");
-    GetMaterial();
+
   };
 
 
   const clear = () => {
-    // debugger;
+    // 
     // setMaterialId("");
     setMaterialName("");
     setDescription("");
@@ -195,11 +149,8 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
   // ========================================================
   const handleClose = () => {
     setOpenMaterialpage(false)
-    setOpen(false);
-    setUpdate(false);
-    // setMaterialId("");
-    setMaterialName("");
-    setDescription("");
+    clear()
+    GetMaterial()
   };
   return (
     <>
@@ -210,6 +161,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
           maxWidth="md"
           open={openMaterialpage}
           onClose={handleClose}
+          onBackdropClick={false}
           aria-labelledby="max-width-dialog-title"
         >
           <DialogTitle id="max-width-dialog-title">
@@ -246,7 +198,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
           </DialogTitle>
           <DialogContent>
             <div>
-              <form className={classes.form} onSubmit={handleSubmit}>
+              <form className={classes.form} onSubmit={handlematerialSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={2}>
                     <TextField
@@ -277,27 +229,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       autoFocus
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={5}>
-                  <Box sx={{ minWidth: 20 }}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Material Type
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        // value={materialType}
-                        label="Select Prior Year"
-                        variant="outlined"
-                        // onChange={handleMaterialTypeChange}
-                      >
-                        <MenuItem value={1}>Type1</MenuItem>
-                        <MenuItem value={1}>Type2</MenuItem>
-                        <MenuItem value={1}>Type3</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </Grid> */}
+
                   <Grid item xs={12} sm={4}>
                     <TextField
                       type="description"
@@ -311,88 +243,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </Grid>
-                  {/* <Grid item xs={12} sm={3}>
-                  <TextField
-                    type="Rate"
-                    // disabled={isDisable}
-                    value={rate}
-                    autoComplete="Rate"
-                    name="Rate"
-                    variant="outlined"
-                    fullWidth
-                    id="Rate"
-                    label="Rate "
-                    onChange={(e) => setRate(e.target.value)}
-                    autoFocus
-                  />
-                </Grid> */}
-                  {/* <Grid item xs={12} sm={2}>
-                  <TextField
-                    type="amount"
-                    // disabled={isDisable}
-                    value={amount}
-                    autoComplete="amount"
-                    name="amount"
-                    variant="outlined"
-                    fullWidth
-                    id="amount"
-                    label="Amount "
-                    onChange={(e) => setAmount(e.target.value)}
-                    autoFocus
-                  />
-                </Grid> */}
 
-                  {/* <Grid item xs={12} sm={3}>
-              <TextField
-                disabled={isDisable}
-                value={location}
-                autoComplete='location'
-                name='location'
-                variant='outlined'
-                fullWidth
-                id='location'
-                label='Location'
-                onChange={(e) => setLocation(e.target.value)}
-                autoFocus
-              />
-            </Grid> */}
-                  {/* <Grid item xs={12} sm={4}>
-                  <Box sx={{ minWidth: 20 }}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Supplier
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        // value={Supplier}
-                        label="Select Prior Year"
-                        // onChange={handlesupplierChange}
-                      >
-                        <MenuItem value={1}>Supplier1</MenuItem>
-                        <MenuItem value={1}>Supplier2</MenuItem>
-                        <MenuItem value={1}>Supplier3</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Box>
-                </Grid> */}
-
-                  {/* <Grid item xs={12} sm={6}>
-                  <TextField
-                    disabled={isDisable}
-                    value={supplierAddress}
-                    autoComplete="supplierAddress"
-                    name="supplierAddress"
-                    variant="outlined"
-                    fullWidth
-                    id="supplierAddress"
-                    label="Supplier Address"
-                    onChange={(e) => setSupplierAddress(e.target.value)}
-                    autoFocus
-                    multiline
-                    minRows={2}
-                  />
-                </Grid> */}
                   <Grid item xs={12} sm={1}>
                     <label>IsActive</label>
 
@@ -405,7 +256,7 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       size="medium"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"
                       fullWidth
@@ -416,14 +267,24 @@ export default function MasterMaterialComp({ openMaterialpage, setOpenMaterialpa
                       Save Material Details
                     </Button>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={4}>
                     <Button
                       variant="contained"
                       color="primary"
                       fullWidth
                       onClick={() => clear()}
                     >
-                      Clear
+                      Reset
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={() => handleClose()}
+                    >
+                      Cancel
                     </Button>
                   </Grid>
                   <Grid item xs={12} sm={1}></Grid>

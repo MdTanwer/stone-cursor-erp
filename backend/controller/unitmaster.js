@@ -22,7 +22,7 @@ router.post(
 
     try {
 
-      debugger
+      // debugger
       // const unitshortname = await unitmasterSchema.findOne({ unitShortName });
 
       // if (unitshortname) {

@@ -121,28 +121,34 @@ export default function UnitMaster(props) {
   const classes = useStyles();
 
   const handleSubmit = async (event) => {
-    debugger;
     event.preventDefault();
-    const newForm = new FormData();
 
-    newForm.append('unitmasterId', unitmasterId);
-    newForm.append('unitName', unitName);
-    newForm.append('unitShortName', unitShortName);
-    newForm.append('description', description);
+    try {
+      const newForm = new FormData();
+      newForm.append('unitmasterId', unitmasterId);
+      newForm.append('unitName', unitName);
+      newForm.append('unitShortName', unitShortName);
+      newForm.append('description', description);
 
-    dispatch(
-      createunitmaster({
-        unitmasterId,
-        unitName,
-        unitShortName,
-        description,
-      })
-    );
-    toast.success('Unit Create successfully!');
-    dispatch(getAllUnitMaster());
-    handleReset();
-    setUpdateOpen(false);
-    setOpen(false);
+      // Assuming createunitmaster is an asynchronous action
+      await dispatch(
+        createunitmaster({
+          unitmasterId,
+          unitName,
+          unitShortName,
+          description,
+        })
+      );
+
+      // If the dispatch succeeds, show a success message
+      toast.success('Unit Created successfully!');
+      handleCloseCancle();
+    } catch (error) {
+      // If an error occurs during form submission or dispatching,
+      // show an error message to the user
+      console.error('Error occurred:', error);
+      toast.error('Error creating Unit. Please try again later.');
+    }
   };
 
   const handleUpdateSubmit = async (event) => {
@@ -161,19 +167,11 @@ export default function UnitMaster(props) {
       });
 
       toast.success('Unit Updated successfully!');
+      handleCloseCancle();
     } catch (error) {
       console.error('An error occurred while updating the unit:', error);
       // Handle the error in your UI, maybe show a notification or error message
     }
-    handleReset();
-    setUpdateOpen(false);
-    setOpen(false);
-    dispatch(getAllUnitMaster());
-
-    // const unitData = {
-    //   unitName: unitName,
-    //   // unitShortName: unitShortName,
-    //   description: description
   };
 
   const handleDelete = (id) => {
@@ -187,6 +185,7 @@ export default function UnitMaster(props) {
     handleReset();
     setOpen(false);
     setUpdateOpen(false);
+    dispatch(getAllUnitMaster());
   };
   const handleReset = () => {
     setUnitName('');

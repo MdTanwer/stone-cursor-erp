@@ -24,6 +24,9 @@ router.post(
       vehicleWeight,
       vehicleTypes,
       vehicleFuelTypes,
+      isPermitted,
+      isLicensed,
+      isActive
     } = req.body;
 
     try {
@@ -35,6 +38,9 @@ router.post(
         vehicleWeight,
         vehicleTypes,
         vehicleFuelTypes,
+        isPermitted,
+        isLicensed,
+        isActive
       });
 
       res.status(201).json({
@@ -87,6 +93,9 @@ router.put(
       vehicleWeight,
       vehicleTypes,
       vehicleFuelTypes,
+      isPermitted,
+      isLicensed,
+      isActive
     } = req.body;
 
     try {
@@ -99,6 +108,9 @@ router.put(
           vehicleWeight,
           vehicleTypes,
           vehicleFuelTypes,
+          isPermitted,
+          isLicensed,
+          isActive
         },
         { new: true }
       );

@@ -271,7 +271,7 @@ const routesadmin = [
 const routesadminmaster = [
   {
     path: '/',
-    name: 'DashBoard',
+    name: 'Dashboard',
     icon: <HomeOutlined size={20} />,
   },
   {

@@ -107,6 +107,7 @@ export default function Customer(props) {
   const [customerDeleteName, setCustomerDeleteName] = useState('');
 
   const [isActive, setIsActive] = useState(true);
+
   const [createdBy, setCreatedBy] = useState('');
   const columns = [
     { title: 'Customer ID', field: '_id', hidden: true },

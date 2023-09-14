@@ -6,19 +6,16 @@ const employeeSchema = new mongoose.Schema({
   },
   empName: {
     type: String,
-    required: [true, "Please enter your licensePlateNumber!"],
+    required: [true, "Please enter your Employee Name"],
   },
   fName: {
     type: String,
-    // required: [true, "Please enter your licensePlateNumber!"],
   },
   pinCode: {
     type: Number,
-    // required: [true, "Please enter your licensePlateNumber!"],
   },
   employeeDatevalue: {
     type: Date,
-    // required: [true, "Please enter your licensePlateNumber!"],
   },
   empRole: {
     type: String,
