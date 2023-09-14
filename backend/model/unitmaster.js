@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const unitmasterSchema = new mongoose.Schema({
   unitmasterId: {
@@ -7,11 +7,12 @@ const unitmasterSchema = new mongoose.Schema({
   },
   unitName: {
     type: String,
-    required: [true, "Please enter your Unit name!"],
+    required: [true, 'Please enter your Unit name!'],
+    unique: true,
   },
   unitShortName: {
     type: String,
-    required: [true, "Please enter your Unit Short Name!"],
+    required: [true, 'Please enter your Unit Short Name!'],
   },
   description: {
     type: String,
@@ -31,4 +32,4 @@ const unitmasterSchema = new mongoose.Schema({
     type: String,
   },
 });
-module.exports = mongoose.model("unitmaster", unitmasterSchema);
+module.exports = mongoose.model('unitmaster', unitmasterSchema);
