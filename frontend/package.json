@@ -42,6 +42,7 @@
     "material-table": "^1.69.3",
     "material-ui-confirm": "^3.0.4",
     "moment": "^2.29.4",
+    "number-to-words": "^1.2.4",
     "react": "^18.2.0",
     "react-confirm-box": "^1.2.0",
     "react-dom": "^18.2.0",
