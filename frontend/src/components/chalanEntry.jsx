@@ -936,11 +936,11 @@ export default function ChallanEntry(props) {
               <p>CHALLAN NO. :</p>
               <p>${challanEntryData.challanNumber}</p>
               <p>CUSTOMER NAME :</p>
-              <p>${challanEntryData.customerName}</p>
+              <p>${challanEntryData.customerName || ''}</p>
               <p>MOBILE NO. :</p>
-              <p>${challanEntryData.customerPhoneNumber}</p>
+              <p>${challanEntryData.customerPhoneNumber || ''}</p>
               <p>DESTINATION :</p>
-              <p>${challanEntryData.customerDestination}</p>
+              <p>${challanEntryData.customerDestination || ''}</p>
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
@@ -949,9 +949,9 @@ export default function ChallanEntry(props) {
                   ?.licensePlateNumber || ''
               }</p>
               <p>MATERIAL NAME :</p>
-              <p>${challanEntryData.materialName}</p>
+              <p>${challanEntryData.materialName || ''}</p>
               <p>SOURCE / MINE :</p>
-              <p>${challanEntryData.mineSourceName}</p>
+              <p>${challanEntryData.mineSourceName || ''}</p>
             </div>
           </div>
           <hr />
@@ -959,27 +959,27 @@ export default function ChallanEntry(props) {
             <div class="div-1-section-2">
               <p>GROSS WEIGHT :</p>
               <p>${
-                challanEntryData.mGrossWeight
+                (challanEntryData.mGrossWeight
                   ? challanEntryData.mGrossWeight
-                  : challanEntryData.grossweight
+                  : challanEntryData.grossweight) || 0
               }</p>
               <p>TARE WEIGHT :</p>
-              <p>${challanEntryData.emptyWeight}</p>
+              <p>${challanEntryData.emptyWeight || 0}</p>
               <p>NET WEIGHT :</p>
-              <p>${challanEntryData.netWeight}</p>
+              <p>${challanEntryData.netWeight || 0}</p>
             </div>
             <div class="div-2-section-2">
             <p>${
-              challanEntryData.mGrossWeightDateTime
+              (challanEntryData.mGrossWeightDateTime
                 ? challanEntryData.mGrossWeightDateTime
-                : challanEntryData.grossWeightDateTime
+                : challanEntryData.grossWeightDateTime) || ''
             }</p>
-            <p>${challanEntryData.emptyWeightDateTime}</p>
+            <p>${challanEntryData.emptyWeightDateTime || ''}</p>
             <div>
               <p class="div-2-section-2-p">${numberToWords.toWords(
-                challanEntryData.netWeight
+                challanEntryData.netWeight || 0
               )}</p>
-              <p class="div-2-section-2-p">${challanEntryData.unit}</p>
+              <p class="div-2-section-2-p">${challanEntryData.unit || ''}</p>
             </div>
             </div>
           </div>
@@ -987,7 +987,7 @@ export default function ChallanEntry(props) {
 
           <div class="section">
             <p>SITE INCHARGE SIGNATURE: </p>
-            <p>${challanEntryData.siteInchargeName}</p>
+            <p>${challanEntryData.siteInchargeName || ''}</p>
           </div>
           <hr />
           <div class="footer">
