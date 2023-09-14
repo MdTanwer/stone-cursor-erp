@@ -236,7 +236,7 @@ export default function MasterCustomerComp({
 
         <DialogContent>
           <div>
-            <form className={classes.form} onSubmit={handleSubmit}>
+            <form className={classes.form} >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={2}>
                   <TextField
@@ -401,7 +401,8 @@ export default function MasterCustomerComp({
                 <Grid item xs={12} sm={4}>
                   <Button
                     name='submit'
-                    type='submit'
+                    // type='submit'
+                    onClick={handleSubmit}
                     fullWidth
                     variant='contained'
                     color='primary'

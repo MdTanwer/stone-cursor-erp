@@ -198,7 +198,7 @@ export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId,
           </DialogTitle>
           <DialogContent>
             <div>
-              <form className={classes.form} onSubmit={handlematerialSubmit}>
+              <form className={classes.form} >
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={2}>
                     <TextField
@@ -258,7 +258,8 @@ export default function MasterMaterialComp({ openMaterialpage, getMaxMaterialId,
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <Button
-                      type="submit"
+                      // type="submit"
+                      onClick={handlematerialSubmit}
                       fullWidth
                       variant="contained"
                       color="primary"

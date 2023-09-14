@@ -177,7 +177,8 @@ const MasterSourceMineComp = ({ openSourceMine, setOpenSourceMine, getMaxSourceI
                 </DialogTitle>
                 <DialogContent>
                     <div>
-                        <form className={classes.form} onSubmit={handleSubmit}>
+                        {/* onSubmit={handleSubmit} */}
+                        <form className={classes.form} >
                             <Grid container spacing={2}>
                                 <Grid item xs={12} sm={2}>
                                     <TextField
@@ -238,7 +239,8 @@ const MasterSourceMineComp = ({ openSourceMine, setOpenSourceMine, getMaxSourceI
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
                                     <Button
-                                        type="submit"
+                                        // type="submit"
+                                        onClick={handleSubmit}
                                         fullWidth
                                         variant="contained"
                                         color="primary"

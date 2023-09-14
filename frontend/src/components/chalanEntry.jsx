@@ -792,13 +792,13 @@ export default function ChallanEntry(props) {
     console.log('SUBMIT🔥🔥🔥', newForm);
 
     try {
-      // const { data } = await axios.post(`/challan/create-challan`, newForm);
-      // if (data?.success === true) {
-      //   toast.success('Challan Added Successfully');
-      //   getAllChallans();
-      //   // handleCloseCancel();
-      //   getMaxChallanNumber();
-      // }
+      const { data } = await axios.post(`/challan/create-challan`, newForm);
+      if (data?.success === true) {
+        toast.success('Challan Added Successfully');
+        getAllChallans();
+        // handleCloseCancel();
+        getMaxChallanNumber();
+      }
     } catch (err) {
       console.log(err);
     }
