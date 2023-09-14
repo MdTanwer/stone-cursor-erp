@@ -35,7 +35,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import {
   Card,
-  // Dialog,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -44,11 +44,10 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Dialog } from '@material-ui/core';
 import BankDetails from './bankDetails';
 import MasterUnitComp from '../MasterPageComponent/MasterUnitComp';
 import MasterSourceMineComp from '../MasterPageComponent/MasterSourceMineComp';
-import MasterCustomerComp from '../MasterPageComponent/MasterCustomerComp';
+// import MasterCustomerComp from '../MasterPageComponent/MasterCustomerComp';
 import MasterMaterialComp from '../MasterPageComponent/MasterMaterialComp';
 
 import { useSelector } from 'react-redux';
@@ -179,8 +178,8 @@ export default function ChallanEntry(props) {
   const [open, setOpen] = useState(false);
   const [openUnitMaster, setOpenUnitMaster] = useState(false);
   const [openSourceMine, setOpenSourceMine] = useState(false);
-  const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
-  const [openMaterialpage, setOpenMaterialpage] = useState(false);
+  // const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
+  // const [openMaterialpage, setOpenMaterialpage] = useState(false);
   const [openSiteIncharge, setOpenSiteIncharge] = useState(false);
   const [openMasterTransporter, setOpenMasterTransporter] = useState(false);
   const [openMasterVehicle, setOpenMasterVehicle] = useState(false);
@@ -295,17 +294,6 @@ export default function ChallanEntry(props) {
     return vehicle;
   };
 
-  const getCustomerPhoneNo = (custName) => {
-    // let materialRateInfo = materialRate.filter((item) => {
-    //   return item.customerName.trim() === custName.trim();
-    // });
-    let customer = customers.find((item) => {
-      return item.customerName.trim() === custName.trim();
-    });
-    // console.log(materialRateInfo);
-    return customer;
-  };
-
   const getAllUnits = async () => {
     try {
       const { data } = await axios.get(`/unitmaster/get-unitmasters`);
@@ -379,25 +367,25 @@ export default function ChallanEntry(props) {
     return vehicle;
   };
 
-  const getMaxCustomerId = () => {
-    if (!customers || customers.length === 0) {
-      return 1;
-    }
+  // const getMaxCustomerId = () => {
+  //   if (!customers || customers.length === 0) {
+  //     return 1;
+  //   }
 
-    const maxID = customers.reduce((max, customer) => {
-      // Convert customerId to a number
-      const customerId = parseInt(customer.customerId);
+  //   const maxID = customers.reduce((max, customer) => {
+  //     // Convert customerId to a number
+  //     const customerId = parseInt(customer.customerId);
 
-      // Check if customerId is greater than the current max
-      if (customerId > max) {
-        return customerId; // Update max if customerId is greater
-      } else {
-        return max; // Keep the current max if customerId is not greater
-      }
-    }, 0); // Initialize max with 0
+  //     // Check if customerId is greater than the current max
+  //     if (customerId > max) {
+  //       return customerId; // Update max if customerId is greater
+  //     } else {
+  //       return max; // Keep the current max if customerId is not greater
+  //     }
+  //   }, 0); // Initialize max with 0
 
-    return maxID + 1;
-  };
+  //   return maxID + 1;
+  // };
 
   const getMaxRoyaltyId = () => {
     if (!miningRoyalty || miningRoyalty.length === 0) {
@@ -452,8 +440,6 @@ export default function ChallanEntry(props) {
     open,
     openUnitMaster,
     openSourceMine,
-    openMasterCustomer,
-    openMaterialpage,
     openSiteIncharge,
     openMasterTransporter,
     openMasterVehicle,
@@ -746,6 +732,8 @@ export default function ChallanEntry(props) {
     setOpen(false);
     handleReset();
   };
+
+
   const handleReset = () => {
     setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
@@ -1070,25 +1058,12 @@ export default function ChallanEntry(props) {
     doc.save('SalesCommission.pdf');
   };
 
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-
-  // Update the current date and time every second
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     setCurrentDate(new Date().toLocaleString('en-GB'));
-  //   }, 1000);
-
-  //   return () => {
-  //     clearInterval(intervalId);
-  //   };
-  // }, []);
 
   const handleUnitClick = () => {
     setOpenUnitMaster(true);
     // setOpenSourceMine(true)
   };
+
   const handleMineSourceClick = () => {
     setOpenSourceMine(true);
     // setOpenSourceMine(true)
@@ -1098,10 +1073,7 @@ export default function ChallanEntry(props) {
   //   setOpenMasterCustomer(true);
   //   // setOpenSourceMine(true)
   // };
-  const handleMasterCompClick = () => {
-    setOpenMaterialpage(true);
-    // setOpenSourceMine(true)
-  };
+
   const handleSiteInchargeClick = () => {
     setOpenSiteIncharge(true);
     // setOpenSourceMine(true)
@@ -1476,10 +1448,6 @@ export default function ChallanEntry(props) {
                     style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
-                    // value={
-                    //   getCustomerPhoneNo(challanEntryData.customerName)
-                    //     ?.phoneNumber
-                    // }
                     value={challanEntryData.customerPhoneNumber}
                     autoComplete='customerPhoneNumber'
                     name='customerPhoneNumber'
@@ -1771,6 +1739,8 @@ export default function ChallanEntry(props) {
                     </Grid>
                   </Grid>
                 </Grid>
+
+
                 <Grid item xs={12} sm={4}>
                   <TextField
                     disabled={
