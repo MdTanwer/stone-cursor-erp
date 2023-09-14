@@ -15,7 +15,7 @@ axios.defaults.baseURL = "https://stone-crusher-erp-base-api.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework.vercel.app/api/v2";
 // axios.defaults.baseURL = "https://role-based-eshop-framework-git-dev-zaf-stack.vercel.app/api/v2";
-
+//edits
 ReactDOM.render(
   <Provider store={Store}>
     <ContextProvider>
