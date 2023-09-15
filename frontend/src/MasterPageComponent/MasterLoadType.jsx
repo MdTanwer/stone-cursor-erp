@@ -215,20 +215,9 @@ export default function MasterLoadType({ openMasterLoadtype, setOpenMasterLoadty
                     </DialogTitle>
                     <DialogContent>
                         <div>
-                            <ToastContainer
-                                position="top-center"
-                                autoClose={5000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                            />
                             <form
                                 className={classes.form}
-                                onSubmit={handleSubmit}
+                                // onSubmit={handleSubmit}
                                 onReset={handleReset}
                             >
                                 <Grid container spacing={2}>
@@ -304,7 +293,8 @@ export default function MasterLoadType({ openMasterLoadtype, setOpenMasterLoadty
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
                                         <Button
-                                            type="submit"
+                                            // type="submit"
+                                            onClick={handleSubmit}
                                             fullWidth
                                             variant="contained"
                                             color="primary"

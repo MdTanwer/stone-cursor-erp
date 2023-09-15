@@ -281,7 +281,7 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                 <DialogContent>
                     <div>
                         {/* <h3>Create New Supplier</h3> */}
-                        <form className={classes.form} onSubmit={handleSubmit}>
+                        <form className={classes.form}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} sm={4}>
                                     <TextField
@@ -566,8 +566,9 @@ export default function MasterTransporterComp({ openMasterTransporter, setOpenMa
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
                                     <Button
-                                        name="submit"
-                                        type="submit"
+                                        // name="submit"
+                                        // type="submit"
+                                        onClick={handleSubmit}
                                         fullWidth
                                         variant="contained"
                                         color="primary"

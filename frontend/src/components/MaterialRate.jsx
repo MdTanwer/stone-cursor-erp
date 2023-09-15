@@ -229,9 +229,9 @@ const MaterialRate = () => {
   // ====================================================================
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isMasterMaterialCompOpen) {
-      return;
-    }
+    // if (isMasterMaterialCompOpen) {
+    //   return;
+    // }
     var materialRate = {
       materialRateId: materialRateId,
       materialName: materialName,
@@ -264,9 +264,9 @@ const MaterialRate = () => {
 
 
   const handleUpdateSubmit = async (event) => {
-    if (isMasterMaterialCompOpen) {
-      return;
-    }
+    // if (isMasterMaterialCompOpen) {
+    //   return;
+    // }
 
     event.preventDefault();
     const endpoint = `/materialrate/updatematerialrate/${mongodbId}`;
@@ -381,17 +381,17 @@ const MaterialRate = () => {
 
   const handleCustomerClick = () => {
     setOpenMasterCustomer(true);
-    setIsMasterMaterialCompOpen(true);
+    // setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   const handleMasterCompClick = () => {
     setOpenMaterialpage(true);
-    setIsMasterMaterialCompOpen(true);
+    // setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   const handleMasterDestinationClick = () => {
     setOpenMasterDestination(true);
-    setIsMasterMaterialCompOpen(true);
+    // setIsMasterMaterialCompOpen(true);
     // setOpenSourceMine(true)
   };
   return (
