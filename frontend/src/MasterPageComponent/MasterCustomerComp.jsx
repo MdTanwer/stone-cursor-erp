@@ -400,7 +400,7 @@ export default function MasterCustomerComp({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Button
-                    name='submit'
+                    // name='submit'
                     // type='submit'
                     onClick={handleSubmit}
                     fullWidth
