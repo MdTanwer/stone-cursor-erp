@@ -216,7 +216,7 @@ export default function MasterLoaderComp({ openMasterLoader, setOpenMasterLoader
 
                             <form
                                 className={classes.form}
-                                onSubmit={handleSubmit}
+                                // onSubmit={handleSubmit}
                                 onReset={handleReset}
                             >
                                 <Grid container spacing={2}>
@@ -279,7 +279,8 @@ export default function MasterLoaderComp({ openMasterLoader, setOpenMasterLoader
                                     </Grid>
                                     <Grid item xs={12} sm={4}>
                                         <Button
-                                            type="submit"
+                                            // type="submit"
+                                            onClick={handleSubmit}
                                             fullWidth
                                             variant="contained"
                                             color="primary"
