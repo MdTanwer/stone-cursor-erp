@@ -202,7 +202,7 @@ export default function Destination() {
         debugger;
         console.log(res);
         toast.success("Destination Deleted Successfully");
-        handleClose()
+        GetDestination()
       })
       .catch((err) => {
         toast.err("Invalid  Information!");

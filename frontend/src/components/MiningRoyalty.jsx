@@ -123,9 +123,9 @@ const MiningRoyalty = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (isMasterMaterialCompOpen) {
-      return;
-    }
+    // if (isMasterMaterialCompOpen) {
+    //   return;
+    // }
 
     var miningRoyalty = {
       royltyId: royltyId,
@@ -156,9 +156,9 @@ const MiningRoyalty = () => {
   };
   // ====================================
   const handleUpdateSubmit = async (event) => {
-    if (isMasterMaterialCompOpen) {
-      return;
-    }
+    // if (isMasterMaterialCompOpen) {
+    //   return;
+    // }
     event.preventDefault();
     const endpoint = `/miningRoyalty/updateminingroyalty/${mongodbId}`;
 
@@ -259,7 +259,7 @@ const MiningRoyalty = () => {
 
   const handleMineSourceClick = () => {
     setOpenSourceMine(true);
-    setIsMasterMaterialCompOpen(true);
+    // setIsMasterMaterialCompOpen(true);
 
     // setOpenSourceMine(true)
   };
