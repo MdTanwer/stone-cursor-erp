@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-
 //edits
 
 // const corsOptions = {
@@ -41,8 +40,11 @@ const cors = require('cors');
 // );
 app.use(
   cors({
-    origin: ["https://stone-crusher-erp-base.vercel.app", "http://localhost:3000"],
-    methods: ["POST", "GET", "PUT", "PATCH", "DELETE", "HEAD"],
+    origin: [
+      'https://stone-crusher-erp-base.vercel.app',
+      'http://localhost:3000',
+    ],
+    methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE', 'HEAD'],
     credentials: true,
   })
 );
@@ -82,9 +84,9 @@ app.use(
 );
 
 // config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({
-    path: "config/.env",
+if (process.env.NODE_ENV !== 'PRODUCTION') {
+  require('dotenv').config({
+    path: 'config/.env',
   });
 }
 
@@ -113,10 +115,12 @@ const Payment = require('./controller/paymentAmount');
 const expenses = require('./controller/expenses');
 const maintanance = require('./controller/maintanance');
 const challan = require('./controller/challanEntry');
-const miningRoyalty = require("./controller/miningRoyalty");
+const miningRoyalty = require('./controller/miningRoyalty');
+const invoice = require('./controller/invoice');
 
 app.use('/api/v2/user', user);
 app.use('/api/v2/challan', challan);
+app.use('/api/v2/invoice', invoice);
 app.use('/api/v2/unitmaster', unitmaster);
 app.use('/api/v2/customer', customer);
 app.use('/api/v2/vendormaster', vendormaster);
@@ -132,7 +136,7 @@ app.use('/api/v2/supplier', supplier);
 app.use('/api/v2/petrolPump', petrolPump);
 app.use('/api/v2/employee', employee);
 app.use('/api/v2/transport', transport);
-app.use("/api/v2/miningRoyalty", miningRoyalty);
+app.use('/api/v2/miningRoyalty', miningRoyalty);
 
 app.use('/api/v2/expenses', expenses);
 app.use('/api/v2/maintanance', maintanance);
