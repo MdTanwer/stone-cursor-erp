@@ -41,7 +41,6 @@ const cors = require('cors');
 app.use(
   cors({
     origin: [
-      '*',
       'https://stone-crusher-erp-base.vercel.app',
       'http://localhost:3000',
     ],
