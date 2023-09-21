@@ -119,8 +119,8 @@ const routes = [
         icon: <BiAnalyse />,
       },
       {
-        path: '/reports/sales-register',
-        name: 'Sales register',
+        path: '/reports/sales-reports',
+        name: 'Sales Reports',
         icon: <BiAnalyse />,
       },
       {
