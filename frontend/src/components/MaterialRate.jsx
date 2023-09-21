@@ -71,6 +71,7 @@ const MaterialRate = () => {
   const [locationName, setLocationName] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [rate, setRate] = useState("");
+  const [purchaseRate, setPurchaseRate] = useState("");
   const [transportRate, setTransportRate] = useState("");
   const [materialRateDelete, setMaterialRateDelete] = useState("");
   const [openMaterial, setOpenMaterial] = useState(false);
@@ -85,8 +86,10 @@ const MaterialRate = () => {
     { title: "Material Name", field: "materialName" },
     { title: "Customer Name", field: "customerName" },
     { title: "Location Name", field: "locationName" },
+    { title: "Material Sales Rate", field: "rate" },
+    { title: "Material Purchase Rate", field: "purchaseRate" },
     { title: "Transport Rate", field: "transportRate" },
-    { title: "Rate", field: "rate" },
+    { title: "isActive", field: "isActive" },
   ];
   useEffect(() => {
     GetMaterial();
@@ -238,6 +241,7 @@ const MaterialRate = () => {
       locationName: locationName,
       customerName: customerName,
       rate: rate,
+      purchaseRate: purchaseRate,
       transportRate: transportRate,
       isActive: isActive,
     };
@@ -278,6 +282,7 @@ const MaterialRate = () => {
         locationName,
         customerName,
         rate,
+        purchaseRate,
         transportRate,
         isActive,
       });
@@ -317,6 +322,7 @@ const MaterialRate = () => {
   const clear = () => {
     setRate("");
     setMaterialName("");
+    setPurchaseRate("");
     setCustomerName("");
     setLocationName("");
     setTransportRate("");
@@ -361,6 +367,7 @@ const MaterialRate = () => {
         setMongodbId(rowData._id);
         setUpdateMaterialRateId(rowData.materialRateId);
         setRate(rowData.rate);
+        setPurchaseRate(rowData.purchaseRate)
         setTransportRate(rowData.transportRate);
         setMaterialName(rowData.materialName);
         setCustomerName(rowData.customerName);
@@ -499,6 +506,7 @@ const MaterialRate = () => {
             <div>
               <form className={classes.form} onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
+
                   <Grid item xs={12} sm={2}>
                     <TextField
                       disabled={true}
@@ -514,6 +522,7 @@ const MaterialRate = () => {
 
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={5}>
                     <Grid
                       container
@@ -566,6 +575,7 @@ const MaterialRate = () => {
                       )}
                     </Grid>
                   </Grid>
+
                   {/* <Grid item xs={12} sm={5}>
                     <Box sx={{ minWidth: 20 }}>
                       <FormControl fullWidth>
@@ -644,7 +654,7 @@ const MaterialRate = () => {
                     </Grid>
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <Grid
                       container
                       spacing={1}
@@ -696,20 +706,37 @@ const MaterialRate = () => {
                       )}
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
-                      type="rate"
+                      type="number"
+                      value={purchaseRate}
+                      autoComplete="rate"
+                      name="rate"
+                      variant="outlined"
+                      fullWidth
+                      id="rate"
+                      label="Material Purchase Rate"
+                      onChange={(e) => setPurchaseRate(e.target.value)}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      type="number"
                       value={rate}
                       autoComplete="rate"
                       name="rate"
                       variant="outlined"
                       fullWidth
                       id="rate"
-                      label="Rate"
+                      label="Material Sales Rate"
                       onChange={(e) => setRate(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+
+
+
+                  <Grid item xs={12} sm={2}>
                     <TextField
                       type="transportRate"
                       value={transportRate}
@@ -722,6 +749,7 @@ const MaterialRate = () => {
                       onChange={(e) => setTransportRate(e.target.value)}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={1}>
                     <label>IsActive</label>
 
@@ -734,6 +762,7 @@ const MaterialRate = () => {
                       size="medium"
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"
@@ -745,6 +774,7 @@ const MaterialRate = () => {
                       Save Material Rate Details
                     </Button>
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <Button
                       variant="contained"
@@ -798,7 +828,7 @@ const MaterialRate = () => {
                     variant="h5"
                     fontWeight={700}
                   >
-                    Create Material Rate
+                    Update Material Rate
                   </Typography>
                 </Grid>
               </Grid>
@@ -962,7 +992,7 @@ const MaterialRate = () => {
                     </Grid>
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <Grid
                       container
                       spacing={1}
@@ -1014,20 +1044,38 @@ const MaterialRate = () => {
                       )}
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+
+                  <Grid item xs={12} sm={3}>
                     <TextField
-                      type="rate"
+                      type="number"
+                      value={purchaseRate}
+                      autoComplete="rate"
+                      name="rate"
+                      variant="outlined"
+                      fullWidth
+                      id="rate"
+                      label="Material Purchase Rate"
+                      onChange={(e) => setPurchaseRate(e.target.value)}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      type="number"
                       value={rate}
                       autoComplete="rate"
                       name="rate"
                       variant="outlined"
                       fullWidth
                       id="rate"
-                      label="Rate"
+                      label="Material Sales Rate"
                       onChange={(e) => setRate(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+
+
+
+                  <Grid item xs={12} sm={2}>
                     <TextField
                       type="transportRate"
                       value={transportRate}
@@ -1040,6 +1088,7 @@ const MaterialRate = () => {
                       onChange={(e) => setTransportRate(e.target.value)}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={1}>
                     <label>IsActive</label>
 
@@ -1052,6 +1101,7 @@ const MaterialRate = () => {
                       size="medium"
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={4}>
                     <Button
                       type="submit"

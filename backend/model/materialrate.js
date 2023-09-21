@@ -19,6 +19,10 @@ const materialRateSchema = new mongoose.Schema({
     type: Number,
     required: [true, "please enter your Rate!"],
   },
+  purchaseRate: {
+    type: Number,
+
+  },
   transportRate: {
     type: Number,
   },
