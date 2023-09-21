@@ -112,7 +112,17 @@ export default function ChallanEntry(props) {
     return maxID + 1;
   };
 
-  const initialState = {
+  const initialWeightState = {
+    grossweight: '',
+    grossWeightDateTime: '',
+    miningWeight: '',
+    nonMiningWeight: '',
+    emptyWeight: '',
+    // miningWeightDateTime: '',
+    emptyWeightDateTime: '',
+  };
+
+  const initialChallanState = {
     challanNumber: getMaxChallanNumber(),
     mChallanNo: '',
     mineSourceName: '',
@@ -135,8 +145,8 @@ export default function ChallanEntry(props) {
     loadType: '',
     grossweight: '',
     grossWeightDateTime: '',
-    mGrossWeight: '',
-    mGrossWeightDateTime: '',
+    miningWeight: '',
+    nonMiningWeight: '',
     emptyWeight: '',
     emptyWeightDateTime: '',
     netWeight: '',
@@ -150,7 +160,7 @@ export default function ChallanEntry(props) {
     { title: 'Customer Phone No.', field: 'customerPhoneNumber' },
     { title: 'Material', field: 'materialName' },
     { title: 'Gross Weight', field: 'grossweight' },
-    { title: 'Manual Gross Weight', field: 'mGrossWeight' },
+    // { title: 'Manual Gross Weight', field: 'mGrossWeight' },
     { title: 'Empty Weight', field: 'emptyWeight' },
     { title: 'Net Weight', field: 'netWeight' },
     { title: 'Mine / Source Name', field: 'mineSourceName' },
@@ -187,20 +197,12 @@ export default function ChallanEntry(props) {
   const [openMasterLoader, setOpenMasterLoader] = useState(false);
   const [openMasterLoadtype, setOpenMasterLoadtype] = useState(false);
 
-  // const [currentDate, setCurrentDate] = useState();
-  // const [customerNameChange, setCustomerNameChange] = useState('');
   const [challanEntryData, setChallanEntryData] = useState({
-    ...initialState,
+    ...initialChallanState,
   });
 
-  console.log(challanEntryData.currentDate);
   const [weightsData, setWeightsData] = useState({
-    grossweight: null,
-    mGrossWeight: null,
-    emptyWeight: null,
-    grossWeightDateTime: '',
-    mGrossWeightDateTime: '',
-    emptyWeightDateTime: '',
+    ...initialWeightState,
   });
 
   console.log(challanEntryData);
@@ -429,6 +431,7 @@ export default function ChallanEntry(props) {
     setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
       ...challanEntryData,
+      unit: 'Tonne',
       currentDate: dayjs(new Date()).$d.toLocaleDateString(),
       challanNumber: getMaxChallanNumber(),
       royaltyType: 'None',
@@ -624,7 +627,6 @@ export default function ChallanEntry(props) {
     setChallanEntryData({
       ...challanEntryData,
       currentDate: newValue.$d.toLocaleDateString('en-GB'),
-      // currentDate: newValue.$d.toLocaleDateString('en-GB'),
     });
   };
 
@@ -667,10 +669,11 @@ export default function ChallanEntry(props) {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        mGrossWeight: '',
-        netWeight:
-          parseInt(challanEntryData.grossweight) -
-          parseInt(challanEntryData.emptyWeight),
+        miningWeight: '',
+        nonMiningWeight: '',
+        // netWeight:
+        //   parseInt(challanEntryData.grossweight) -
+        //   parseInt(challanEntryData.emptyWeight),
       });
       return;
     }
@@ -691,14 +694,6 @@ export default function ChallanEntry(props) {
       });
       return;
     }
-    if (name === 'mGrossWeight') {
-      setWeightsData({
-        ...weightsData,
-        [name]: value,
-        mGrossWeightDateTime: new Date().toLocaleString('en-GB'),
-      });
-      return;
-    }
     if (name === 'emptyWeight') {
       setWeightsData({
         ...weightsData,
@@ -707,15 +702,18 @@ export default function ChallanEntry(props) {
       });
       return;
     }
+    setWeightsData({
+      ...weightsData,
+      [name]: value,
+    });
   };
 
   const handleAddWeightsOnClick = () => {
     setChallanEntryData({
       ...challanEntryData,
       ...weightsData,
-      netWeight: weightsData.mGrossWeight
-        ? parseInt(weightsData.mGrossWeight) - parseInt(weightsData.emptyWeight)
-        : parseInt(weightsData.grossweight) - parseInt(weightsData.emptyWeight),
+      netWeight:
+        parseInt(weightsData.grossweight) - parseInt(weightsData.emptyWeight),
     });
     setShowWeightBox(false);
     setTimeout(() => {
@@ -725,12 +723,13 @@ export default function ChallanEntry(props) {
 
   const resetWeightData = () => {
     setWeightsData({
-      grossweight: null,
-      mGrossWeight: null,
-      emptyWeight: null,
-      grossWeightDateTime: '',
-      mGrossWeightDateTime: '',
-      emptyWeightDateTime: '',
+      ...initialWeightState,
+      // grossweight: null,
+      // mGrossWeight: null,
+      // emptyWeight: null,
+      // grossWeightDateTime: '',
+      // mGrossWeightDateTime: '',
+      // emptyWeightDateTime: '',
       // netWeight: null,
     });
   };
@@ -748,7 +747,7 @@ export default function ChallanEntry(props) {
     setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
       // ...challanEntryData,
-      ...initialState,
+      ...initialChallanState,
       currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
     });
   };
@@ -757,7 +756,6 @@ export default function ChallanEntry(props) {
     e.preventDefault();
     const newFormData = new FormData(e.currentTarget);
     newFormData.append('challanNumber', challanEntryData.challanNumber);
-    newFormData.append('customerName', challanEntryData.customerName);
     newFormData.append(
       'customerPhoneNumber',
       challanEntryData.customerPhoneNumber
@@ -768,11 +766,8 @@ export default function ChallanEntry(props) {
       'grossWeightDateTime',
       challanEntryData.grossWeightDateTime
     );
-    newFormData.append('mGrossWeight', challanEntryData.mGrossWeight);
-    newFormData.append(
-      'mGrossWeightDateTime',
-      challanEntryData.mGrossWeightDateTime
-    );
+    newFormData.append('miningWeight', challanEntryData.miningWeight);
+    newFormData.append('nonMiningWeight', challanEntryData.nonMiningWeight);
     newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
     newFormData.append(
       'manualTransportName',
@@ -784,23 +779,23 @@ export default function ChallanEntry(props) {
       challanEntryData.emptyWeightDateTime
     );
     newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
-    newFormData.append('netWeight', parseInt(challanEntryData.netWeight));
-    newFormData.append('quantity', challanEntryData.quantity);
+    newFormData.append('netWeight', challanEntryData.netWeight);
+    // newFormData.append('quantity', challanEntryData.quantity);
 
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
 
-    try {
-      const { data } = await axios.post(`/challan/create-challan`, newForm);
-      if (data?.success === true) {
-        toast.success('Challan Added Successfully');
-        getAllChallans();
-        // handleCloseCancel();
-        getMaxChallanNumber();
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   const { data } = await axios.post(`/challan/create-challan`, newForm);
+    //   if (data?.success === true) {
+    //     toast.success('Challan Added Successfully');
+    //     getAllChallans();
+    //     // handleCloseCancel();
+    //     getMaxChallanNumber();
+    //   }
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   const handlePrint = (e) => {
@@ -1044,7 +1039,7 @@ export default function ChallanEntry(props) {
       },
     },
     {
-      icon: () => <EditIcon />,
+      icon: () => <EditIcon color='primary' />,
       tooltip: 'Edit Factory',
       onClick: (event, rowData) => {
         // refresh();
@@ -1052,7 +1047,7 @@ export default function ChallanEntry(props) {
       },
     },
     {
-      icon: () => <DeleIcon />,
+      icon: () => <DeleIcon color='error' />,
       tooltip: 'Delete Factory',
       onClick: (event, rowData) => {
         setSelectedRowId(rowData._id);
@@ -1364,7 +1359,7 @@ export default function ChallanEntry(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         name='currentDate'
-                        label='Date picker'
+                        label='Challan Date'
                         value={currentDate}
                         // value={challanEntryData.currentDate}
                         onChange={handleDateChange}
@@ -1372,19 +1367,6 @@ export default function ChallanEntry(props) {
                       />
                     </LocalizationProvider>
                   </Box>
-
-                  {/* <TextField
-                    style={{ width: '12rem', backgroundColor: '#fff9db' }}
-                    disabled={true}
-                    value={currentDate.toLocaleString('en-GB')}
-                    autoComplete='currentDate'
-                    name='currentDate'
-                    variant='outlined'
-                    fullWidth
-                    id='currentDate'
-                    label='Challan Date & Time'
-                    autoFocus
-                  /> */}
                 </Grid>
 
                 <Grid item xs={12} sm={3}>
@@ -1970,7 +1952,7 @@ export default function ChallanEntry(props) {
                       <Box sx={{ minWidth: 20 }}>
                         <FormControl fullWidth>
                           <InputLabel id='demo-simple-select-label'>
-                            Select Royalty Type
+                            Select Royalty
                           </InputLabel>
                           <Select
                             name='royaltyType'
@@ -1978,7 +1960,7 @@ export default function ChallanEntry(props) {
                             id='demo-simple-select'
                             // defaultValue='None'
                             value={challanEntryData.royaltyType}
-                            label='Select Royalty Type'
+                            label='Select Royalty'
                             onChange={handleChange}
                           >
                             {miningRoyalty.map((el) => (
@@ -2140,7 +2122,8 @@ export default function ChallanEntry(props) {
                       setShowWeightBox(true);
                       setWeightsData({
                         grossweight: challanEntryData.grossweight,
-                        mGrossWeight: challanEntryData.mGrossWeight,
+                        miningWeight: challanEntryData.miningWeight,
+                        nonMiningWeight: challanEntryData.nonMiningWeight,
                         emptyWeight: challanEntryData.emptyWeight,
                       });
                     }}
@@ -2149,7 +2132,7 @@ export default function ChallanEntry(props) {
                     Add Weights
                   </Button>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     required
                     type='number'
@@ -2169,19 +2152,39 @@ export default function ChallanEntry(props) {
                     // }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     // required
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.mGrossWeight}
-                    autoComplete='mGrossWeight'
-                    name='mGrossWeight'
+                    value={challanEntryData.miningWeight}
+                    autoComplete='miningWeight'
+                    name='miningWeight'
                     variant='outlined'
                     fullWidth
-                    id='mGrossWeight'
-                    label='Manual Gross Weight'
+                    id='miningWeight'
+                    label='Mining Weight'
+                    onChange={handleChange}
+                    autoFocus
+                    // InputLabelProps={{
+                    //   shrink: true,
+                    // }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    // required
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={true}
+                    value={challanEntryData.nonMiningWeight}
+                    autoComplete='nonMiningWeight'
+                    name='nonMiningWeight'
+                    variant='outlined'
+                    fullWidth
+                    id='nonMiningWeight'
+                    label='Non Mining Weight'
                     onChange={handleChange}
                     autoFocus
                     // InputLabelProps={{
@@ -2340,6 +2343,43 @@ export default function ChallanEntry(props) {
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
                 // disabled={true}
+                value={weightsData.emptyWeight}
+                autoComplete='emptyWeight'
+                name='emptyWeight'
+                variant='outlined'
+                fullWidth
+                id='emptyWeight'
+                label='Empty Weight'
+                onChange={handleWeightChange}
+                autoFocus
+                // InputLabelProps={{
+                //   shrink: true,
+                // }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                style={{ backgroundColor: '#d3f9d8' }}
+                disabled={true}
+                value={weightsData.emptyWeightDateTime}
+                autoComplete='emptyWeightDateTime'
+                name='emptyWeightDateTime'
+                variant='outlined'
+                fullWidth
+                id='emptyWeightDateTime'
+                label='Empty Weight Date Time'
+                onChange={handleWeightChange}
+                autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                // disabled={true}
                 value={weightsData.grossweight}
                 autoComplete='grossweight'
                 name='grossweight'
@@ -2369,73 +2409,65 @@ export default function ChallanEntry(props) {
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                type='number'
-                style={{ backgroundColor: '#d3f9d8' }}
-                disabled={
-                  challanEntryData.royaltyType !== 'None' ? false : true
-                }
-                value={weightsData.mGrossWeight}
-                autoComplete='mGrossWeight'
-                name='mGrossWeight'
-                variant='outlined'
-                fullWidth
-                id='mGrossWeight'
-                label='Manual Gross Weight'
-                onChange={handleWeightChange}
-                autoFocus
-              />
+            <Grid item xs={12} sm={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    type='number'
+                    style={{ backgroundColor: '#d3f9d8' }}
+                    disabled={
+                      challanEntryData.royaltyType !== 'None' ? false : true
+                    }
+                    value={weightsData.miningWeight}
+                    autoComplete='miningWeight'
+                    name='miningWeight'
+                    variant='outlined'
+                    fullWidth
+                    id='miningWeight'
+                    label='Mining Weight'
+                    onChange={handleWeightChange}
+                    autoFocus
+                  />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
+
+            {/* <Grid item xs={12} sm={6}>
               <TextField
                 style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
-                value={weightsData.mGrossWeightDateTime}
-                autoComplete='grossWeightDateTime'
-                name='grossWeightDateTime'
+                value={weightsData.miningWeightDateTime}
+                autoComplete='miningWeightDateTime'
+                name='miningWeightDateTime'
                 variant='outlined'
                 fullWidth
-                id='grossWeightDateTime'
-                label='Manual Gross Weight Date Time'
+                id='miningWeightDateTime'
+                label='Mining Weight Date Time'
                 onChange={handleWeightChange}
                 autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12} sm={6}>
               <TextField
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
-                // disabled={true}
-                value={weightsData.emptyWeight}
-                autoComplete='emptyWeight'
-                name='emptyWeight'
-                variant='outlined'
-                fullWidth
-                id='emptyWeight'
-                label='Empty Weight'
-                onChange={handleWeightChange}
-                autoFocus
-                // InputLabelProps={{
-                //   shrink: true,
-                // }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
-                value={weightsData.emptyWeightDateTime}
-                autoComplete='grossWeightDateTime'
-                name='grossWeightDateTime'
+                value={
+                  (weightsData.nonMiningWeight =
+                    parseInt(weightsData.grossweight) -
+                    parseInt(weightsData.miningWeight))
+                }
+                // value={weightsData.nonMiningWeight}
+                autoComplete='nonMiningWeight'
+                name='nonMiningWeight'
                 variant='outlined'
                 fullWidth
-                id='grossWeightDateTime'
-                label='Empty Weight Date Time'
-                onChange={handleWeightChange}
+                id='nonMiningWeight'
+                label='Non Mining Weight'
+                // onChange={handleWeightChange}
                 autoFocus
                 InputLabelProps={{
                   shrink: true,

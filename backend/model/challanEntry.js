@@ -87,13 +87,25 @@ const addNewChallanSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please enter Gross weight'],
   },
-  mGrossWeight: {
+  grossWeightDateTime: {
+    type: Date,
+    // required: [true, 'Please enter Gross weight'],
+  },
+  miningWeight: {
+    type: Number,
+    // required: [true, 'Please enter Gross weight'],
+  },
+  nonMiningWeight: {
     type: Number,
     // required: [true, 'Please enter Gross weight'],
   },
   emptyWeight: {
     type: Number,
     required: [true, 'Please enter Empty weight'],
+  },
+  emptyWeightDateTime: {
+    type: Date,
+    // required: [true, 'Please enter Empty weight'],
   },
   netWeight: {
     type: Number,

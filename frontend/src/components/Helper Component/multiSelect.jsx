@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import Checkbox from '@material-ui/core/Checkbox';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+
+// mui
+import Checkbox from '@mui/material/Checkbox';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
+// mui-core
+// import Checkbox from '@material-ui/core/Checkbox';
+// import InputLabel from '@material-ui/core/InputLabel';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import MenuItem from '@material-ui/core/MenuItem';
+// import FormControl from '@material-ui/core/FormControl';
+// import Select from '@material-ui/core/Select';
 
 //////////////////////////////////////////////////
 
@@ -81,9 +92,10 @@ function MultiSelectDropDown({ options, selected, setSelected }) {
   };
 
   return (
-    <FormControl className={classes.formControl}>
-      <InputLabel id='mutiple-select-label'>Multiple Select</InputLabel>
+    <FormControl fullWidth>
+      <InputLabel id='mutiple-select-label'>Select Challan</InputLabel>
       <Select
+        label={`Select Challan`}
         labelId='mutiple-select-label'
         multiple
         name='challan'

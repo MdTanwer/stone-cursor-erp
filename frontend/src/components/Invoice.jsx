@@ -24,7 +24,7 @@ import {
 } from '@material-ui/icons';
 import axios from 'axios';
 import MaterialTable from 'material-table';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 // import MultiSelect from 'react-select';
@@ -84,6 +84,7 @@ const PaymentRecived = () => {
   };
   const [invoiceData, setInvoiceData] = useState({ ...initialState });
   const [challans, setChallans] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [selected, setSelected] = useState([]);
   //   console.log(selected);
   //   const options = [
@@ -134,6 +135,17 @@ const PaymentRecived = () => {
     { title: 'Due / AdvAmount', field: 'dueAdvAmount' },
   ];
 
+  const getAllCustomers = () => {
+    axios
+      .get(`/customer/all-customers`)
+      .then((res) => {
+        setCustomers(res.data.customers);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const getAllChallans = () => {
     axios
       .get('challan/all-challans')
@@ -159,6 +171,17 @@ const PaymentRecived = () => {
     );
   };
 
+  const getCustomerPhoneNo = (custName) => {
+    // let materialRateInfo = materialRate.filter((item) => {
+    //   return item.customerName.trim() === custName.trim();
+    // });
+    let customer = customers.find((item) => {
+      return item.customerName.trim() === custName.trim();
+    });
+    // console.log(materialRateInfo);
+    return customer;
+  };
+
   useEffect(() => {
     handleReset();
     // setInvoiceData({
@@ -166,6 +189,7 @@ const PaymentRecived = () => {
     //   invoiceId: getMaxInvoiceId(),
     //   currentDateTime: dayjs(new Date()).$d.toLocaleString('en-GB'),
     // });
+    getAllCustomers();
     getInvoices();
     getMaxInvoiceId();
     getAllChallans();
@@ -406,6 +430,208 @@ const PaymentRecived = () => {
       currentDateTime: newValue.$d.toLocaleString('en-GB'),
     });
   };
+  const invoiceRef = useRef(null);
+  const handlePrint = (e) => {
+    const printWindowWidth = 1100;
+    const printWindowHeight = 700;
+    const left = (window.innerWidth - printWindowWidth) / 2; // Adjust the width (600) as needed
+    const top = (window.innerHeight - printWindowHeight) / 2; // Adjust the height (800) as needed
+
+    // Create a new window or modal dialog at the center position
+    const printWindow = window.open(
+      '',
+      '',
+      `width=${printWindowWidth},height=${printWindowHeight},left=${left},top=${top}`
+    );
+
+    // Create the HTML content for the challan
+    const invoiceContent = `
+    <html>
+      <head>
+        <title>Challan</title>
+        <style>
+          @page {
+            size: landscape; /* Specify paper size as landscape */
+            margin: 0; /* Set margins to zero (or adjust as needed) */
+            mso-header-space: 0;
+            mso-footer-space: 0;
+            page-count: 1; /* Set the maximum number of pages to 1 */
+            page-break-inside: avoid; /* Avoid page breaks inside this element */
+            page-break-before: avoid; /* Allow page breaks before this element if needed */
+            overflow: hidden; /* Hide overflow content */
+          }
+          * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+          }
+          html {
+            page-break-inside: avoid; /* Avoid page breaks inside this element */
+            page-break-before: avoid; /* Allow page breaks before this element if needed */
+            overflow: hidden; /* Hide overflow content */
+          }
+          body {
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 16px;
+            page-break-inside: avoid; /* Avoid page breaks inside this element */
+            page-break-before: avoid; /* Allow page breaks before this element if needed */
+            overflow: hidden; /* Hide overflow content */
+            padding: 3rem;
+          }
+          hr {
+            margin-block-start: 0;
+            margin-block-end: 0;
+          }
+          .container {
+            display: flex;
+            flex-direction: column;
+            row-gap: 1.3rem;
+            /* padding: 3rem; */
+          }
+          .section-1 {
+            display: flex;
+            justify-content: space-between;
+          }
+          .section-2 {
+            display: flex;
+            justify-content: flex-start;
+            justify-content: space-between;
+          }
+          .div-1-section-1 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 2rem;
+            row-gap: 0.5rem;
+
+          }
+          .div-2-section-1 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 2rem;
+            row-gap: 0.5rem;
+          }
+          .div-1-section-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 3.2rem;
+            row-gap: 0.5rem;
+          }
+          .div-2-section-2 {
+            display: flex;
+            flex-direction: column;
+            column-gap: 2rem;
+            row-gap: 0.5rem;
+          }
+          .div-2-section-2-p {
+            display: inline-block;
+            margin-right: 1rem;
+          }
+          .unit{
+            font-weight: 700
+          }
+          .title {
+            display: flex;
+            flex-direction: column;
+            row-gap: 0.3rem;
+            align-items: center;
+          }
+          .title-text {
+            font-weight: 700;
+          }
+          .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          /* Add more styles as needed */
+        </style>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>
+        <div class="container">
+          <div class="title">
+            <h3 class="title-text">SSM</h3>
+            <h3 class="title-text">SARBIL STONE MINE</h3>
+            <h3 class="title-text">NMD</h3>
+          </div>
+          <hr />
+          <div class="section section-1">
+            <div class="div-1-section-1">
+              <p>INVOICE NO. :</p>
+              <p>${invoiceData.invoiceId}</p>
+              <p>CUSTOMER NAME :</p>
+              <p>${invoiceData.customerName || ''}</p>
+              <p>MOBILE NO. :</p>
+              <p>${
+                getCustomerPhoneNo(invoiceData.customerName)?.phoneNumber || ''
+              }</p>
+              <p>DESTINATION :</p>
+              <p>${invoiceData.customerDestination || ''}</p>
+            </div>
+            <div class="div-2-section-1">
+              <p>VEHICLE NO. :</p>
+              <p>{}</p>
+              <p>MATERIAL NAME :</p>
+              <p>${invoiceData.materialName || ''}</p>
+              <p>SOURCE / MINE :</p>
+              <p>${invoiceData.mineSourceName || ''}</p>
+            </div>
+          </div>
+          <hr />
+          <div class="section section-2">
+            <div class="div-1-section-2">
+              <p>GROSS WEIGHT :</p>
+              <p>${
+                (invoiceData.mGrossWeight
+                  ? invoiceData.mGrossWeight
+                  : invoiceData.grossweight) || 0
+              }</p>
+              <p>TARE WEIGHT :</p>
+              <p>${invoiceData.emptyWeight || 0}</p>
+              <p>NET WEIGHT :</p>
+              <p>${invoiceData.netWeight || 0}</p>
+            </div>
+            <div class="div-2-section-2">
+            <p>${
+              (invoiceData.mGrossWeightDateTime
+                ? invoiceData.mGrossWeightDateTime
+                : invoiceData.grossWeightDateTime) || ''
+            }</p>
+            <p>${invoiceData.emptyWeightDateTime || ''}</p>
+            <div>
+              <p class="div-2-section-2-p"></p>
+              <p class="div-2-section-2-p unit">${invoiceData.unit || ''}</p>
+            </div>
+            </div>
+          </div>
+          <hr />
+
+          <div class="section">
+            <p>SITE INCHARGE SIGNATURE: </p>
+            <p>${invoiceData.siteInchargeName || ''}</p>
+          </div>
+          <hr />
+          <div class="footer">
+            <h4>THANK YOU</h4>
+            <h4>VISIT AGAIN</h4>
+          </div>
+        </div>
+      </body>
+</html>
+
+  `;
+
+    // Write the HTML content to the new window
+    printWindow.document.open();
+    printWindow.document.write(invoiceContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
 
   return (
     <>
@@ -555,13 +781,14 @@ const PaymentRecived = () => {
                   <Grid item xs={12} sm={7}>
                     <Box>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
+                        <DatePicker
                           name='currentDate'
-                          label='Date picker'
+                          label='Invoice Date'
                           value={currentDateTime}
                           onChange={handleDateTimeChange}
                           renderInput={(params) => (
                             <TextField
+                              variant='outlined'
                               style={{
                                 width: '100%',
                               }}
@@ -623,8 +850,8 @@ const PaymentRecived = () => {
                       </FormControl>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Box sx={{ minWidth: 20 }}>
+                  <Grid item xs={12} sm={8}>
+                    <Box>
                       <MultiSelectDropDown
                         options={getChallansOfCustomer(
                           invoiceData.customerName
@@ -648,7 +875,7 @@ const PaymentRecived = () => {
                       //   onChange={(e) => setDueAmount(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={5}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       value={invoiceData.discount}
                       autoComplete='discount'
@@ -661,7 +888,7 @@ const PaymentRecived = () => {
                       //   onChange={(e) => setDiscount(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={7}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       //   disabled
                       value={invoiceData.paybleAmount}
@@ -721,7 +948,7 @@ const PaymentRecived = () => {
                       fullWidth
                       variant='contained'
                       color='primary'
-                      onClick={() => window.print()}
+                      onClick={handlePrint}
                       // className={classes.submit}
                     >
                       Print
