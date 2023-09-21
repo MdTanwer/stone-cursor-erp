@@ -224,7 +224,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -244,7 +243,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -265,7 +263,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -285,7 +282,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -305,7 +301,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -324,7 +319,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -343,7 +337,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
@@ -362,7 +355,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -381,7 +373,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                   />
                 </Grid>
                 <Grid item xs={12} sm={10}>
@@ -400,7 +391,6 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                       shrink: true,
                     }}
                     autoFocus
-
                     multiline
                     minRows={1}
                   />
@@ -545,7 +535,7 @@ const CustomerUpdateForm = ({ updateOpen, setUpdateOpen, rowId, setData }) => {
                     fullWidth
                     variant='contained'
                     color='primary'
-                  // className={classes.submit}
+                    // className={classes.submit}
                   >
                     Update Customer Details
                   </Button>

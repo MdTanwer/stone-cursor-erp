@@ -36,6 +36,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useSelector } from 'react-redux';
 ////////////////////////////////////////////////////////////
 
 const useStyles = makeStyles((theme) => ({
@@ -65,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const PaymentRecived = () => {
   const classes = useStyles();
+  const { name, email } = useSelector((state) => state.user.user);
   const [invoices, setInvoices] = useState([]);
   //   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [open, setOpen] = useState(false);
@@ -225,36 +227,24 @@ const PaymentRecived = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newFormData = new FormData(e.currentTarget);
+    newFormData.append('createdBy', `Name: ${name}, Email: ${email}`);
+    newFormData.append('createdAt', Date.now());
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
-    // var invoices = {
-    //   paymentId: paymentId,
-    //   manualId: manualId,
-    //   currentDate: currentDateTime,
-    //   customerName: customerName,
-    //   challan: challan,
-    //   dueAmount: dueAmount,
-    //   discount: discount,
-    //   paybleAmount: paybleAmount,
-    //   recivedAmount: recivedAmount,
-    //   dueAdvAmount: dueAdvAmount,
-    // };
-    // try {
-    //   const response = await axios.post(
-    //     'paymentrecived/create/paymentrecieved',
-    //     invoices
-    //   );
 
-    //   if (response.status === 201) {
-    //     toast.success('Record has been added successfully!');
-    //     console.log(response);
-    //   } else {
-    //     toast('Invalid Information!');
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   toast('Invalid Material Information!');
-    // }
+    try {
+      const response = await axios.post('invoice/create-invoice', newForm);
+
+      if (response.status === 201) {
+        toast.success('Invoice has been added successfully!');
+        console.log(response);
+      } else {
+        toast('Invalid Information!');
+      }
+    } catch (error) {
+      console.log(error);
+      toast('Invalid Invoice Information!');
+    }
     setOpen(!open);
     handleReset();
     // setPaymentId('');
