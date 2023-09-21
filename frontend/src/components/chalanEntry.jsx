@@ -118,7 +118,6 @@ export default function ChallanEntry(props) {
     miningWeight: '',
     nonMiningWeight: '',
     emptyWeight: '',
-    // miningWeightDateTime: '',
     emptyWeightDateTime: '',
   };
 
@@ -133,7 +132,7 @@ export default function ChallanEntry(props) {
     materialName: '',
     customerDestination: '',
     quantity: '',
-    unit: '',
+    unit: 'Tonne',
     transporter: '',
     manualTransportName: '',
     vehicle: '',
@@ -724,13 +723,6 @@ export default function ChallanEntry(props) {
   const resetWeightData = () => {
     setWeightsData({
       ...initialWeightState,
-      // grossweight: null,
-      // mGrossWeight: null,
-      // emptyWeight: null,
-      // grossWeightDateTime: '',
-      // mGrossWeightDateTime: '',
-      // emptyWeightDateTime: '',
-      // netWeight: null,
     });
   };
 
@@ -785,17 +777,17 @@ export default function ChallanEntry(props) {
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
 
-    // try {
-    //   const { data } = await axios.post(`/challan/create-challan`, newForm);
-    //   if (data?.success === true) {
-    //     toast.success('Challan Added Successfully');
-    //     getAllChallans();
-    //     // handleCloseCancel();
-    //     getMaxChallanNumber();
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      const { data } = await axios.post(`/challan/create-challan`, newForm);
+      if (data?.success === true) {
+        toast.success('Challan Added Successfully');
+        getAllChallans();
+        // handleCloseCancel();
+        getMaxChallanNumber();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handlePrint = (e) => {
