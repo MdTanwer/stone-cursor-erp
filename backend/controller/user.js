@@ -1,26 +1,26 @@
-const express = require("express");
-const User = require("../model/user");
+const express = require('express');
+const User = require('../model/user');
 const router = express.Router();
-const cloudinary = require("cloudinary");
-const ErrorHandler = require("../utils/ErrorHandler");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const jwt = require("jsonwebtoken");
-const sendMail = require("../utils/sendMail");
-const sendToken = require("../utils/jwtToken");
-const { isAuthenticated, isAdmin } = require("../middleware/auth");
+const cloudinary = require('cloudinary');
+const ErrorHandler = require('../utils/ErrorHandler');
+const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const jwt = require('jsonwebtoken');
+const sendMail = require('../utils/sendMail');
+const sendToken = require('../utils/jwtToken');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
 // create user
-router.post("/create-user", async (req, res, next) => {
+router.post('/create-user', async (req, res, next) => {
   try {
     const { name, email, phoneNumber, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
-      return next(new ErrorHandler("User already exists", 400));
+      return next(new ErrorHandler('User already exists', 400));
     }
 
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      folder: "avatars",
+      folder: 'avatars',
     });
 
     const user = {
@@ -38,13 +38,15 @@ router.post("/create-user", async (req, res, next) => {
     // const activationToken = encodeURIComponent(createActivationToken(user));
 
     const activationUrl = `https://stone-crusher-erp-base.vercel.app/activation/${activationToken}`;
+
     // const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+
     // const activationUrl = `https://stone-crusher-erp-base.vercel.app/activation/${activationToken}`;
 
     try {
       await sendMail({
         email: user.email,
-        subject: "Activate your account",
+        subject: 'Activate your account',
         message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
       });
       res.status(201).json({
@@ -62,13 +64,13 @@ router.post("/create-user", async (req, res, next) => {
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: '5m',
   });
 };
 
 // activate user
 router.post(
-  "/activation",
+  '/activation',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { activation_token } = req.body;
@@ -80,14 +82,14 @@ router.post(
       console.log(newUser);
 
       if (!newUser) {
-        return next(new ErrorHandler("Invalid token", 400));
+        return next(new ErrorHandler('Invalid token', 400));
       }
       const { name, email, password, phoneNumber, avatar } = newUser;
 
       let user = await User.findOne({ email });
 
       if (user) {
-        return next(new ErrorHandler("User already exists", 400));
+        return next(new ErrorHandler('User already exists', 400));
       }
       user = await User.create({
         name,
@@ -106,16 +108,16 @@ router.post(
 
 // login user
 router.post(
-  "/login-user",
+  '/login-user',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return next(new ErrorHandler("Please provide the all fields!", 400));
+        return next(new ErrorHandler('Please provide the all fields!', 400));
       }
 
-      const user = await User.findOne({ email }).select("+password");
+      const user = await User.findOne({ email }).select('+password');
 
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
@@ -125,7 +127,7 @@ router.post(
 
       if (!isPasswordValid) {
         return next(
-          new ErrorHandler("Please provide the correct information", 400)
+          new ErrorHandler('Please provide the correct information', 400)
         );
       }
 
@@ -138,7 +140,7 @@ router.post(
 
 // load user
 router.get(
-  "/getuser",
+  '/getuser',
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
