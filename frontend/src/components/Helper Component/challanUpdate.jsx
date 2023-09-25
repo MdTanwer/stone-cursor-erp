@@ -94,6 +94,8 @@ export default function ChallanUpdateForm({
   rowId,
   setChallans,
 }) {
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [isPrint, setIsPrint] = useState(true);
   const { name, email } = useSelector((state) => state.user.user);
   // const [challans, setChallans] = useState([]);
   const classes = useStyles();
@@ -717,23 +719,15 @@ export default function ChallanUpdateForm({
     resetWeightData();
   };
   const handleCloseCancel = () => {
-    setChallanData({
-      // ...initialChallanState,
-      ...challanData,
-    });
+    handleReset();
     setUpdateOpen(false);
-    // getChallan();
-    // handleReset();
   };
 
   const handleReset = () => {
     getChallan();
     setCurrentDate(dayjs(`${challanData.currentDate}`));
-    // setChallanEntryData({
-    //   // ...challanEntryData,
-    //   ...initialChallanState,
-    //   currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
-    // });
+    setIsUpdated((prev) => (prev = false));
+    setIsPrint((prev) => (prev = true));
   };
 
   const handleSubmit = async (e) => {
@@ -770,6 +764,8 @@ export default function ChallanUpdateForm({
         getAllChallans();
         // handleCloseCancel();
         // getMaxChallanNumber();
+        setIsUpdated((prev) => (prev = true));
+        setIsPrint((prev) => (prev = false));
       }
     } catch (err) {
       console.log(err);
@@ -908,24 +904,23 @@ export default function ChallanUpdateForm({
           <div class="section section-1">
             <div class="div-1-section-1">
               <p>CHALLAN NO. :</p>
-              <p>${challanEntryData.challanNumber}</p>
+              <p>${challanData.challanNumber}</p>
               <p>CUSTOMER NAME :</p>
-              <p>${challanEntryData.customerName || ''}</p>
+              <p>${challanData.customerName || ''}</p>
               <p>MOBILE NO. :</p>
-              <p>${challanEntryData.customerPhoneNumber || ''}</p>
+              <p>${challanData.customerPhoneNumber || ''}</p>
               <p>DESTINATION :</p>
-              <p>${challanEntryData.customerDestination || ''}</p>
+              <p>${challanData.customerDestination || ''}</p>
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
               <p>${
-                getVehicleNumber(challanEntryData.vehicle)
-                  ?.licensePlateNumber || ''
+                getVehicleNumber(challanData.vehicle)?.licensePlateNumber || ''
               }</p>
               <p>MATERIAL NAME :</p>
-              <p>${challanEntryData.materialName || ''}</p>
+              <p>${challanData.materialName || ''}</p>
               <p>SOURCE / MINE :</p>
-              <p>${challanEntryData.mineSourceName || ''}</p>
+              <p>${challanData.mineSourceName || ''}</p>
             </div>
           </div>
           <hr />
@@ -933,29 +928,27 @@ export default function ChallanUpdateForm({
             <div class="div-1-section-2">
               <p>GROSS WEIGHT :</p>
               <p>${
-                (challanEntryData.mGrossWeight
-                  ? challanEntryData.mGrossWeight
-                  : challanEntryData.grossweight) || 0
+                (challanData.mGrossWeight
+                  ? challanData.mGrossWeight
+                  : challanData.grossweight) || 0
               }</p>
               <p>TARE WEIGHT :</p>
-              <p>${challanEntryData.emptyWeight || 0}</p>
+              <p>${challanData.emptyWeight || 0}</p>
               <p>NET WEIGHT :</p>
-              <p>${challanEntryData.netWeight || 0}</p>
+              <p>${challanData.netWeight || 0}</p>
             </div>
             <div class="div-2-section-2">
             <p>${
-              (challanEntryData.mGrossWeightDateTime
-                ? challanEntryData.mGrossWeightDateTime
-                : challanEntryData.grossWeightDateTime) || ''
+              (challanData.mGrossWeightDateTime
+                ? challanData.mGrossWeightDateTime
+                : challanData.grossWeightDateTime) || ''
             }</p>
-            <p>${challanEntryData.emptyWeightDateTime || ''}</p>
+            <p>${challanData.emptyWeightDateTime || ''}</p>
             <div>
               <p class="div-2-section-2-p">${numberToWords.toWords(
-                challanEntryData.netWeight || 0
+                challanData.netWeight || 0
               )}</p>
-              <p class="div-2-section-2-p unit">${
-                challanEntryData.unit || ''
-              }</p>
+              <p class="div-2-section-2-p unit">${challanData.unit || ''}</p>
             </div>
             </div>
           </div>
@@ -963,7 +956,7 @@ export default function ChallanUpdateForm({
 
           <div class="section">
             <p>SITE INCHARGE SIGNATURE: </p>
-            <p>${challanEntryData.siteInchargeName || ''}</p>
+            <p>${challanData.siteInchargeName || ''}</p>
           </div>
           <hr />
           <div class="footer">
@@ -1670,6 +1663,9 @@ export default function ChallanUpdateForm({
                     disabled={
                       challanData.transporter === 'Others' ? false : true
                     }
+                    required={
+                      challanData.transporter === 'Others' ? true : false
+                    }
                     value={challanData.manualTransportName}
                     autoComplete='manualTransportName'
                     name='manualTransportName'
@@ -1764,6 +1760,7 @@ export default function ChallanUpdateForm({
                           : undefined,
                     }}
                     disabled={challanData.vehicle === 'Others' ? false : true}
+                    required={challanData.vehicle === 'Others' ? true : false}
                     value={challanData.manualVehicleName?.toUpperCase()}
                     autoComplete='manualVehicleName'
                     name='manualVehicleName'
@@ -1852,6 +1849,7 @@ export default function ChallanUpdateForm({
                         challanData.driver !== 'Others' ? '#fff9db' : undefined,
                     }}
                     disabled={challanData.driver === 'Others' ? false : true}
+                    required={challanData.driver === 'Others' ? true : false}
                     value={challanData.manualDrivereName}
                     autoComplete='manualDrivereName'
                     name='manualDrivereName'
@@ -2169,6 +2167,7 @@ export default function ChallanUpdateForm({
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
+                        disabled={isUpdated}
                         type='submit'
                         fullWidth
                         variant='contained'
@@ -2180,6 +2179,7 @@ export default function ChallanUpdateForm({
                     </Grid>
                     <Grid item xs={12} sm={3}>
                       <Button
+                        disabled={isPrint}
                         // type='submit'
                         fullWidth
                         variant='contained'

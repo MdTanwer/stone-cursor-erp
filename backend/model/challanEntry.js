@@ -8,7 +8,7 @@ const addNewChallanSchema = new mongoose.Schema({
   mChallanNo: {
     type: Number,
     // required: [true, 'Please enter customer name!'],
-    default: null,
+    default: 0,
   },
   mineSourceName: {
     type: String,

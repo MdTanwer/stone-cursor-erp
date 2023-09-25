@@ -90,6 +90,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ChallanEntry(props) {
+  const [isSaved, setIsSaved] = useState(false);
+  const [isPrint, setIsPrint] = useState(true);
   const { name, email } = useSelector((state) => state.user.user);
   const [challans, setChallans] = useState([]);
   const classes = useStyles();
@@ -125,7 +127,7 @@ export default function ChallanEntry(props) {
 
   const initialChallanState = {
     challanNumber: getMaxChallanNumber(),
-    mChallanNo: '',
+    mChallanNo: 0,
     mineSourceName: '',
     siteInchargeName: '',
     customerName: '',
@@ -434,6 +436,7 @@ export default function ChallanEntry(props) {
     setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
       ...challanEntryData,
+      mChallanNo: 0,
       unit: 'Tonne',
       currentDate: dayjs(new Date()).$d.toLocaleDateString(),
       challanNumber: getMaxChallanNumber(),
@@ -746,6 +749,8 @@ export default function ChallanEntry(props) {
       ...initialChallanState,
       currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
     });
+    setIsSaved((prev) => (prev = false));
+    setIsPrint((prev) => (prev = true));
   };
 
   const handleSubmit = async (e) => {
@@ -790,6 +795,8 @@ export default function ChallanEntry(props) {
         getAllChallans();
         // handleCloseCancel();
         getMaxChallanNumber();
+        setIsSaved((prev) => (prev = true));
+        setIsPrint((prev) => (prev = false));
       }
     } catch (err) {
       console.log(err);
@@ -1740,6 +1747,9 @@ export default function ChallanEntry(props) {
                     disabled={
                       challanEntryData.transporter === 'Others' ? false : true
                     }
+                    required={
+                      challanEntryData.transporter === 'Others' ? true : false
+                    }
                     value={challanEntryData.manualTransportName}
                     autoComplete='manualTransportName'
                     name='manualTransportName'
@@ -1836,6 +1846,9 @@ export default function ChallanEntry(props) {
                     disabled={
                       challanEntryData.vehicle === 'Others' ? false : true
                     }
+                    required={
+                      challanEntryData.vehicle === 'Others' ? true : false
+                    }
                     value={challanEntryData.manualVehicleName.toUpperCase()}
                     autoComplete='manualVehicleName'
                     name='manualVehicleName'
@@ -1924,6 +1937,9 @@ export default function ChallanEntry(props) {
                     }}
                     disabled={
                       challanEntryData.driver === 'Others' ? false : true
+                    }
+                    required={
+                      challanEntryData.driver === 'Others' ? true : false
                     }
                     value={challanEntryData.manualDrivereName}
                     autoComplete='manualDrivereName'
@@ -2239,6 +2255,7 @@ export default function ChallanEntry(props) {
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
+                        disabled={isSaved}
                         type='submit'
                         fullWidth
                         variant='contained'
@@ -2250,6 +2267,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                       <Button
+                        disabled={isPrint}
                         // type='submit'
                         fullWidth
                         variant='contained'
