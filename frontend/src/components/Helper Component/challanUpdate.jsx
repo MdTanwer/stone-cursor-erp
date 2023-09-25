@@ -985,55 +985,55 @@ export default function ChallanUpdateForm({
 
   const handlePreview = () => {};
 
-  const handleDelete = async (id) => {
-    try {
-      // dispatch(deleteCustomerRequest());
-      const { data } = await axios.delete(
-        `/challan/delete-challan/${id}`
-        // {
-        //   withCredentials: true,
-        // }
-      );
+  // const handleDelete = async (id) => {
+  //   try {
+  //     // dispatch(deleteCustomerRequest());
+  //     const { data } = await axios.delete(
+  //       `/challan/delete-challan/${id}`
+  //       // {
+  //       //   withCredentials: true,
+  //       // }
+  //     );
 
-      // console.log(data);
-      if (data?.success === true) {
-        // dispatch(deleteCustomer(`${data.message}`));
-        toast.success(`${data.message}`);
-        getAllChallans();
-      }
-    } catch (err) {
-      // dispatch(deleteCustomerFailed({ err }));
-      console.log(err);
-    }
-  };
+  //     // console.log(data);
+  //     if (data?.success === true) {
+  //       // dispatch(deleteCustomer(`${data.message}`));
+  //       toast.success(`${data.message}`);
+  //       getAllChallans();
+  //     }
+  //   } catch (err) {
+  //     // dispatch(deleteCustomerFailed({ err }));
+  //     console.log(err);
+  //   }
+  // };
 
-  const actions = [
-    {
-      icon: () => <Refresh />,
-      tooltip: 'Refresh Data',
-      isFreeAction: true,
-      onClick: () => {
-        getAllChallans();
-      },
-    },
-    {
-      icon: () => <EditIcon color='primary' />,
-      tooltip: 'Edit Factory',
-      onClick: (event, rowData) => {
-        // refresh();
-        // UpdateFactory(rowData.CommissionRulesId);
-      },
-    },
-    {
-      icon: () => <DeleIcon color='error' />,
-      tooltip: 'Delete Factory',
-      onClick: (event, rowData) => {
-        setSelectedRowId(rowData._id);
-        setShowDeleteConfirm(true);
-        setCustomerDeleteName(rowData.customerName);
-      },
-    },
-  ];
+  // const actions = [
+  //   {
+  //     icon: () => <Refresh />,
+  //     tooltip: 'Refresh Data',
+  //     isFreeAction: true,
+  //     onClick: () => {
+  //       getAllChallans();
+  //     },
+  //   },
+  //   {
+  //     icon: () => <EditIcon color='primary' />,
+  //     tooltip: 'Edit Factory',
+  //     onClick: (event, rowData) => {
+  //       // refresh();
+  //       // UpdateFactory(rowData.CommissionRulesId);
+  //     },
+  //   },
+  //   {
+  //     icon: () => <DeleIcon color='error' />,
+  //     tooltip: 'Delete Factory',
+  //     onClick: (event, rowData) => {
+  //       setSelectedRowId(rowData._id);
+  //       setShowDeleteConfirm(true);
+  //       setCustomerDeleteName(rowData.customerName);
+  //     },
+  //   },
+  // ];
 
   // const downloadPdf = () => {
   //   const doc = new jsPDF();
