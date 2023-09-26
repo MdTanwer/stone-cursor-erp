@@ -113,6 +113,7 @@ html,
 .auth-wrapper h3 {
   text-align: center;
   margin: 0;
+  font-size: 30px;
   line-height: 1;
   padding-bottom: 20px;
 }
@@ -139,4 +140,10 @@ html,
 }
 #gridContainer {
   height: 440px;
+}
+
+.dx-datagrid-headers {
+  background-color: rgb(244, 54, 54) !important;
+  color: rgb(253, 253, 253);
+  font-weight: 600;
 }

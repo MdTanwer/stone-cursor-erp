@@ -950,10 +950,9 @@ export default function ChallanEntry(props) {
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${
-                getVehicleNumber(challanEntryData.vehicle)
-                  ?.licensePlateNumber || ''
-              }</p>
+              <p>${getVehicleNumber(challanEntryData.vehicle)
+        ?.licensePlateNumber || ''
+      }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName || ''}</p>
               <p>SOURCE / MINE :</p>
@@ -964,30 +963,27 @@ export default function ChallanEntry(props) {
           <div class="section section-2">
             <div class="div-1-section-2">
               <p>GROSS WEIGHT :</p>
-              <p>${
-                (challanEntryData.mGrossWeight
-                  ? challanEntryData.mGrossWeight
-                  : challanEntryData.grossweight) || 0
-              }</p>
+              <p>${(challanEntryData.mGrossWeight
+        ? challanEntryData.mGrossWeight
+        : challanEntryData.grossweight) || 0
+      }</p>
               <p>TARE WEIGHT :</p>
               <p>${challanEntryData.emptyWeight || 0}</p>
               <p>NET WEIGHT :</p>
               <p>${challanEntryData.netWeight || 0}</p>
             </div>
             <div class="div-2-section-2">
-            <p>${
-              (challanEntryData.mGrossWeightDateTime
-                ? challanEntryData.mGrossWeightDateTime
-                : challanEntryData.grossWeightDateTime) || ''
-            }</p>
+            <p>${(challanEntryData.mGrossWeightDateTime
+        ? challanEntryData.mGrossWeightDateTime
+        : challanEntryData.grossWeightDateTime) || ''
+      }</p>
             <p>${challanEntryData.emptyWeightDateTime || ''}</p>
             <div>
               <p class="div-2-section-2-p">${numberToWords.toWords(
-                challanEntryData.netWeight || 0
-              )}</p>
-              <p class="div-2-section-2-p unit">${
-                challanEntryData.unit || ''
-              }</p>
+        challanEntryData.netWeight || 0
+      )}</p>
+              <p class="div-2-section-2-p unit">${challanEntryData.unit || ''
+      }</p>
             </div>
             </div>
           </div>
@@ -1015,7 +1011,7 @@ export default function ChallanEntry(props) {
     printWindow.print();
   };
 
-  const handlePreview = () => {};
+  const handlePreview = () => { };
 
   const handleDelete = async (id) => {
     try {
@@ -1412,9 +1408,8 @@ export default function ChallanEntry(props) {
                               ),
                             ].map((name, i) => (
                               <MenuItem key={i} value={name}>
-                                {`ID: ${name.split(';')[0]} - ${
-                                  name.split(';')[1]
-                                }`}
+                                {`ID: ${name.split(';')[0]} - ${name.split(';')[1]
+                                  }`}
                               </MenuItem>
                             ))}
                             {/* {uniqueCustomerName.map((name) => (
@@ -2178,9 +2173,9 @@ export default function ChallanEntry(props) {
                     label='Gross Weight'
                     onChange={handleChange}
                     autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
+                  // InputLabelProps={{
+                  //   shrink: true,
+                  // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2198,9 +2193,9 @@ export default function ChallanEntry(props) {
                     label='Mining Weight'
                     onChange={handleChange}
                     autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
+                  // InputLabelProps={{
+                  //   shrink: true,
+                  // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2218,9 +2213,9 @@ export default function ChallanEntry(props) {
                     label='Non Mining Weight'
                     onChange={handleChange}
                     autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
+                  // InputLabelProps={{
+                  //   shrink: true,
+                  // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2238,9 +2233,9 @@ export default function ChallanEntry(props) {
                     label='Empty Weight'
                     onChange={handleChange}
                     autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
+                  // InputLabelProps={{
+                  //   shrink: true,
+                  // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2258,16 +2253,16 @@ export default function ChallanEntry(props) {
                     label='Net Weight'
                     // onChange={handleChange}
                     autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
+                  // InputLabelProps={{
+                  //   shrink: true,
+                  // }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} style={{ marginTop: '1rem' }}>
                   <Grid
                     container
                     spacing={2}
-                    // style={{ justifyContent: 'flex-end' }}
+                  // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
@@ -2276,7 +2271,7 @@ export default function ChallanEntry(props) {
                         fullWidth
                         variant='contained'
                         color='primary'
-                        // className={classes.submit}
+                      // className={classes.submit}
                       >
                         Save Chalan Entry
                       </Button>
@@ -2385,9 +2380,9 @@ export default function ChallanEntry(props) {
                 label='Empty Weight'
                 onChange={handleWeightChange}
                 autoFocus
-                // InputLabelProps={{
-                //   shrink: true,
-                // }}
+              // InputLabelProps={{
+              //   shrink: true,
+              // }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>

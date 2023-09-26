@@ -9,6 +9,9 @@ const miningRoyaltySchema = new mongoose.Schema({
   locationName: {
     type: String,
   },
+  units: {
+    type: String
+  },
   royltyRate: {
     type: String,
   },

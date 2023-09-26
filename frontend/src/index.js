@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
 import './App.css';
+import './devexpress.css';
 
 import { ContextProvider } from './contexts/ContextProvider';
 import { Provider } from 'react-redux';

@@ -15,6 +15,9 @@ import {
   ScDashboard,
   NotFoundPage,
 } from './routes/Routes.js';
+import {
+  SalesReportPage,
+} from './routes/Reports.js';
 
 import {
   TransactionSidebar,
@@ -90,6 +93,17 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
+
+
+                <Route
+                  path='/reports/sales-reports'
+                  element={
+                    <ProtectedRoute>
+                      <SalesReportPage />
+                    </ProtectedRoute>
+                  }
+                />
+
 
                 {/* // start   route for   TransactionSidebar   */}
 

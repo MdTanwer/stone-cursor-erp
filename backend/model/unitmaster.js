@@ -7,12 +7,12 @@ const unitmasterSchema = new mongoose.Schema({
   },
   unitName: {
     type: String,
-    required: [true, 'Please enter your Unit name!'],
     unique: true,
+    required: [true, 'Please enter your Unit name!'],
   },
   unitShortName: {
     type: String,
-    required: [true, 'Please enter your Unit Short Name!'],
+    // required: [true, 'Please enter your Unit Short Name!'],
   },
   description: {
     type: String,
