@@ -132,7 +132,7 @@ export default function ChallanEntry(props) {
     siteInchargeName: '',
     customerName: '',
     currentDate: '',
-    customerPhoneNumber: null,
+    customerPhoneNumber: '',
     materialName: '',
     customerDestination: '',
     quantity: '',
@@ -206,6 +206,7 @@ export default function ChallanEntry(props) {
     ...initialChallanState,
   });
 
+  console.log(challanEntryData);
   const [weightsData, setWeightsData] = useState({
     ...initialWeightState,
   });
@@ -279,9 +280,11 @@ export default function ChallanEntry(props) {
     }
   };
 
-  const getMaterialRateInfo = (custName) => {
+  const getMaterialRateInfo = (custIdName) => {
+    const custId = custIdName.split(';')[0];
+
     let materialRateInfo = materialRate.filter((item) => {
-      return item.customerName.trim() === custName.trim();
+      return item.customerId === parseFloat(custId);
     });
     // let materialRateInfo = materialRate.find((item) => {
     //   return item.customerName.trim() === custName.trim();
@@ -301,14 +304,14 @@ export default function ChallanEntry(props) {
     return vehicle;
   };
 
-  const getCustomerPhoneNo = (custName) => {
+  const getCustomerPhoneNo = (custIdName) => {
+    const custId = custIdName.split(';')[0];
     // let materialRateInfo = materialRate.filter((item) => {
     //   return item.customerName.trim() === custName.trim();
     // });
     let customer = customers.find((item) => {
-      return item.customerName.trim() === custName.trim();
+      return item.customerId === parseFloat(custId);
     });
-    // console.log(materialRateInfo);
     return customer;
   };
 
@@ -642,7 +645,8 @@ export default function ChallanEntry(props) {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        customerPhoneNumber: getCustomerPhoneNo(value).phoneNumber,
+        customerPhoneNumber: getCustomerPhoneNo(value)?.phoneNumber,
+        customerId: value?.split(';')[0],
       });
       return;
     }
@@ -756,6 +760,7 @@ export default function ChallanEntry(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newFormData = new FormData(e.currentTarget);
+    newFormData.append('customerId', challanEntryData.customerId);
     newFormData.append('challanNumber', challanEntryData.challanNumber);
     newFormData.append(
       'customerPhoneNumber',
@@ -937,7 +942,7 @@ export default function ChallanEntry(props) {
               <p>CHALLAN NO. :</p>
               <p>${challanEntryData.challanNumber}</p>
               <p>CUSTOMER NAME :</p>
-              <p>${challanEntryData.customerName || ''}</p>
+              <p>${challanEntryData?.customerName?.split(';')[1] || ''}</p>
               <p>MOBILE NO. :</p>
               <p>${challanEntryData.customerPhoneNumber || ''}</p>
               <p>DESTINATION :</p>
@@ -1401,14 +1406,25 @@ export default function ChallanEntry(props) {
                             // onChange={handleCustomerNameChange}
                             onChange={handleChange}
                           >
-                            {uniqueCustomerName.map((name) => (
+                            {[
+                              ...new Set(
+                                materialRate.map((el) => el.customerName)
+                              ),
+                            ].map((name, i) => (
+                              <MenuItem key={i} value={name}>
+                                {`ID: ${name.split(';')[0]} - ${
+                                  name.split(';')[1]
+                                }`}
+                              </MenuItem>
+                            ))}
+                            {/* {uniqueCustomerName.map((name) => (
                               <MenuItem
                                 key={`${name}-${Math.random()}`}
                                 value={name}
                               >
                                 {name}
                               </MenuItem>
-                            ))}
+                            ))} */}
                             {/* {customers.map((el) => (
                               <MenuItem
                                 key={el.customerId}
