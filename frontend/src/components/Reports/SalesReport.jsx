@@ -36,6 +36,9 @@ import DataGrid, {
     SortByGroupSummaryInfo,
     TotalItem,
     Export,
+    Scrolling,
+    Paging,
+    Pager,
 } from "devextreme-react/data-grid";
 // import { jsPDF } from "jspdf";
 
@@ -83,6 +86,18 @@ const SalesReport = () => {
     const [isDateRangeEnableDisable, setIsDateRangeEnableDisable] =
         useState(true);
 
+
+    const [displayMode, setDisplayMode] = useState('full');
+    const [showPageSizeSelector, setShowPageSizeSelector] = useState(true);
+    const [showInfo, setShowInfo] = useState(true);
+    const [showNavButtons, setShowNavButtons] = useState(true);
+
+    const customizeColumns = (columns) => {
+        columns[0].width = 70;
+    };
+
+    const data = []; // Define your data source
+    const allowedPageSizes = [5, 10, "ALL"];
     // ************************This is for  Excel Export ***************************
     const onExporting = React.useCallback((e) => {
         if (e.format === "xlsx") {
@@ -267,6 +282,15 @@ const SalesReport = () => {
                             showBorders={true}
                             onExporting={onExporting}
                         >
+                            <Paging defaultPageSize={10} />
+                            <Pager
+                                visible={true}
+                                allowedPageSizes={allowedPageSizes}
+                                displayMode={displayMode}
+                                showPageSizeSelector={showPageSizeSelector}
+                                showInfo={showInfo}
+                                showNavigationButtons={showNavButtons}
+                            />
                             {/* <rowType dataField="SoldToName" alignment="center" caption="Customer2"/> */}
 
                             {/* <Export enabled={true} formats={exportFormats} /> */}
@@ -434,6 +458,7 @@ const SalesReport = () => {
 
                             <SortByGroupSummaryInfo summaryItem="count" />
                             <Export enabled={true} formats={exportFormats}></Export>
+
                         </DataGrid>
                     </React.Fragment>
                 </div>
