@@ -18,11 +18,14 @@ const addNewChallanSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter site incharge name'],
   },
+  customerId: {
+    type: Number,
+    // required: [true, 'Please enter customer name'],
+  },
   customerName: {
     type: String,
     required: [true, 'Please enter customer name'],
   },
-
   currentDate: {
     type: Date,
     // required: [true, 'Please enter customer PAN number'],
