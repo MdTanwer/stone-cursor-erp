@@ -44,22 +44,21 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import BankDetails from './bankDetails';
-import MasterUnitComp from '../MasterPageComponent/MasterUnitComp';
-import MasterSourceMineComp from '../MasterPageComponent/MasterSourceMineComp';
+// import BankDetails from './bankDetails';
+import MasterUnitComp from '../../MasterPageComponent/MasterUnitComp';
+import MasterSourceMineComp from '../../MasterPageComponent/MasterSourceMineComp';
 // import MasterCustomerComp from '../MasterPageComponent/MasterCustomerComp';
-import MasterMaterialComp from '../MasterPageComponent/MasterMaterialComp';
+import MasterMaterialComp from '../../MasterPageComponent/MasterMaterialComp';
 
 import { useSelector } from 'react-redux';
 
-import MasterEmployeeComp from '../MasterPageComponent/MasterEmployeeComp';
-import MasterTransporterComp from '../MasterPageComponent/MasterTransporterComp';
-import MasterVehicleComp from '../MasterPageComponent/MasterVehicleComp';
-import MasterDriverComp from '../MasterPageComponent/MasterDriverComp';
-import MasterLoaderComp from '../MasterPageComponent/MasterLoaderComp';
-import MasterLoadType from '../MasterPageComponent/MasterLoadType';
+import MasterEmployeeComp from '../../MasterPageComponent/MasterEmployeeComp';
+import MasterTransporterComp from '../../MasterPageComponent/MasterTransporterComp';
+import MasterVehicleComp from '../../MasterPageComponent/MasterVehicleComp';
+import MasterDriverComp from '../../MasterPageComponent/MasterDriverComp';
+import MasterLoaderComp from '../../MasterPageComponent/MasterLoaderComp';
+import MasterLoadType from '../../MasterPageComponent/MasterLoadType';
 import { Dayjs } from 'dayjs';
-import ChallanUpdateForm from './Helper Component/challanUpdate';
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -89,32 +88,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ChallanEntry(props) {
-  const [isSaved, setIsSaved] = useState(false);
+export default function ChallanUpdateForm({
+  updateOpen,
+  setUpdateOpen,
+  rowId,
+  setChallans,
+}) {
+  const [isUpdated, setIsUpdated] = useState(false);
   const [isPrint, setIsPrint] = useState(true);
   const { name, email } = useSelector((state) => state.user.user);
-  const [challans, setChallans] = useState([]);
+  // const [challans, setChallans] = useState([]);
   const classes = useStyles();
 
-  const getMaxChallanNumber = () => {
-    if (!challans || challans.length === 0) {
-      return 1;
-    }
+  // const getMaxChallanNumber = () => {
+  //   if (!challans || challans.length === 0) {
+  //     return 1;
+  //   }
 
-    const maxID = challans.reduce((max, challan) => {
-      // Convert supplierId to a number
-      const challanNumber = parseInt(challan.challanNumber);
+  //   const maxID = challans.reduce((max, challan) => {
+  //     // Convert supplierId to a number
+  //     const challanNumber = parseInt(challan.challanNumber);
 
-      // Check if challanNumber is greater than the current max
-      if (challanNumber > max) {
-        return challanNumber; // Update max if supplierId is greater
-      } else {
-        return max; // Keep the current max if supplierId is not greater
-      }
-    }, 0); // Initialize max with 0
+  //     // Check if challanNumber is greater than the current max
+  //     if (challanNumber > max) {
+  //       return challanNumber; // Update max if supplierId is greater
+  //     } else {
+  //       return max; // Keep the current max if supplierId is not greater
+  //     }
+  //   }, 0); // Initialize max with 0
 
-    return maxID + 1;
-  };
+  //   return maxID + 1;
+  // };
 
   const initialWeightState = {
     grossweight: '',
@@ -126,24 +130,24 @@ export default function ChallanEntry(props) {
   };
 
   const initialChallanState = {
-    challanNumber: getMaxChallanNumber(),
-    mChallanNo: 0,
+    challanNumber: '',
+    mChallanNo: '',
     mineSourceName: '',
     siteInchargeName: '',
     customerName: '',
     currentDate: '',
-    customerPhoneNumber: '',
+    customerPhoneNumber: null,
     materialName: '',
     customerDestination: '',
     quantity: '',
-    unit: 'Tonne',
+    unit: '',
     transporter: '',
     manualTransportName: '',
     vehicle: '',
     manualVehicleName: '',
     driver: '',
     manualDrivereName: '',
-    royaltyType: 'None',
+    royaltyType: '',
     loadedBy: '',
     loadType: '',
     grossweight: '',
@@ -155,42 +159,7 @@ export default function ChallanEntry(props) {
     netWeight: '',
   };
 
-  const columns = [
-    { title: 'MongoDB Challan ID', field: '_id', hidden: true },
-    { title: 'Challan No.', field: 'challanNumber' },
-    { title: 'Manual Challan No.', field: 'mChallanNo' },
-    { title: 'Customer Name', field: 'customerName' },
-    { title: 'Customer Phone No.', field: 'customerPhoneNumber' },
-    { title: 'Material', field: 'materialName' },
-    { title: 'Gross Weight', field: 'grossweight' },
-    // { title: 'Manual Gross Weight', field: 'mGrossWeight' },
-    { title: 'Empty Weight', field: 'emptyWeight' },
-    { title: 'Net Weight', field: 'netWeight' },
-    { title: 'Mine / Source Name', field: 'mineSourceName' },
-    { title: 'Site Incharge', field: 'siteInchargeName' },
-    {
-      title: 'Date',
-      field: 'currentDate',
-      render: (rowData) =>
-        new Date(rowData.currentDate).toLocaleDateString('en-GB'),
-    },
-    { title: 'Destination', field: 'customerDestination' },
-    { title: 'Quantity', field: 'quantity' },
-    { title: 'Unit', field: 'unit' },
-    { title: 'Transporter', field: 'transporter' },
-    { title: 'Manual Transporter', field: 'manualTransportName' },
-    { title: 'vehicle', field: 'vehicle' },
-    { title: 'Manual Vehicle', field: 'manualVehicleName' },
-    { title: 'Driver', field: 'driver' },
-    { title: 'Manual Driver', field: 'manualDrivereName' },
-    { title: 'Royalty Type', field: 'royaltyType' },
-    { title: 'Loaded By', field: 'loadedBy' },
-    { title: 'Load Type', field: 'loadType' },
-  ];
-
   const [open, setOpen] = useState(false);
-  const [rowId, setRowId] = useState('');
-  const [updateOpen, setUpdateOpen] = useState(false);
   const [openUnitMaster, setOpenUnitMaster] = useState(false);
   const [openSourceMine, setOpenSourceMine] = useState(false);
   // const [openMasterCustomer, setOpenMasterCustomer] = useState(false);
@@ -206,17 +175,16 @@ export default function ChallanEntry(props) {
     ...initialChallanState,
   });
 
-  console.log(challanEntryData);
   const [weightsData, setWeightsData] = useState({
     ...initialWeightState,
   });
-
-  // console.log(challanEntryData);
 
   const [selectedRowId, setSelectedRowId] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showWeightBox, setShowWeightBox] = useState(false);
   const [customerDeleteName, setCustomerDeleteName] = useState('');
+  const [challanData, setChallanData] = useState({ ...initialChallanState });
+  console.log(challanData);
   ///////////////////// All masters data /////////////////
 
   const [mineSource, setMineSource] = useState([]);
@@ -280,11 +248,9 @@ export default function ChallanEntry(props) {
     }
   };
 
-  const getMaterialRateInfo = (custIdName) => {
-    const custId = custIdName.split(';')[0];
-
+  const getMaterialRateInfo = (custName) => {
     let materialRateInfo = materialRate.filter((item) => {
-      return item.customerId === parseFloat(custId);
+      return item.customerName?.trim() === custName?.trim();
     });
     // let materialRateInfo = materialRate.find((item) => {
     //   return item.customerName.trim() === custName.trim();
@@ -304,14 +270,14 @@ export default function ChallanEntry(props) {
     return vehicle;
   };
 
-  const getCustomerPhoneNo = (custIdName) => {
-    const custId = custIdName.split(';')[0];
+  const getCustomerPhoneNo = (custName) => {
     // let materialRateInfo = materialRate.filter((item) => {
     //   return item.customerName.trim() === custName.trim();
     // });
     let customer = customers.find((item) => {
-      return item.customerId === parseFloat(custId);
+      return item.customerName.trim() === custName.trim();
     });
+    // console.log(materialRateInfo);
     return customer;
   };
 
@@ -434,17 +400,27 @@ export default function ChallanEntry(props) {
     }
   };
 
+  const getChallan = () => {
+    const id = rowId;
+    axios
+      .get(`/challan/challan-info/${id}`)
+      .then((res) => {
+        setChallanData(res.data.challan);
+        setCurrentDate(dayjs(`${res.data.challan.currentDate}`));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   //////////////////////////////////////////////////////////
+  // useEffect(() => {
+  //   setCurrentDate(dayjs(`${challanData.currentDate}`));
+  // }, []);
+
   useEffect(() => {
-    setCurrentDate(dayjs(new Date()));
-    setChallanEntryData({
-      ...challanEntryData,
-      mChallanNo: 0,
-      unit: 'Tonne',
-      currentDate: dayjs(new Date()).$d.toLocaleDateString(),
-      challanNumber: getMaxChallanNumber(),
-      royaltyType: 'None',
-    });
+    getChallan();
+
     // getMaxChallanNumber();
     getAllChallans();
     getMineSource();
@@ -460,7 +436,9 @@ export default function ChallanEntry(props) {
     getLoadType();
     GetMiningRoyalty();
   }, [
-    open,
+    rowId,
+    // open,
+    // updateOpen,
     openUnitMaster,
     openSourceMine,
     openSiteIncharge,
@@ -633,8 +611,8 @@ export default function ChallanEntry(props) {
 
   const handleDateChange = (newValue) => {
     setCurrentDate(newValue);
-    setChallanEntryData({
-      ...challanEntryData,
+    setChallanData({
+      ...challanData,
       currentDate: newValue.$d.toLocaleDateString('en-GB'),
     });
   };
@@ -642,17 +620,16 @@ export default function ChallanEntry(props) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'customerName') {
-      setChallanEntryData({
-        ...challanEntryData,
+      setChallanData({
+        ...challanData,
         [name]: value,
-        customerPhoneNumber: getCustomerPhoneNo(value)?.phoneNumber,
-        customerId: value?.split(';')[0],
+        customerPhoneNumber: getCustomerPhoneNo(value).phoneNumber,
       });
       return;
     }
     if (name === 'vehicle') {
-      setChallanEntryData({
-        ...challanEntryData,
+      setChallanData({
+        ...challanData,
         [name]: value,
         // emptyWeight: getEmptyWeight(value)?.vehicleWeight,
         manualVehicleName: '',
@@ -660,36 +637,36 @@ export default function ChallanEntry(props) {
       return;
     }
     if (name === 'driver') {
-      setChallanEntryData({
-        ...challanEntryData,
+      setChallanData({
+        ...challanData,
         [name]: value,
         manualDrivereName: '',
       });
       return;
     }
     if (name === 'transporter') {
-      setChallanEntryData({
-        ...challanEntryData,
+      setChallanData({
+        ...challanData,
         [name]: value,
         manualTransportName: '',
       });
       return;
     }
     if (value === 'None') {
-      setChallanEntryData({
-        ...challanEntryData,
+      setChallanData({
+        ...challanData,
         [name]: value,
         miningWeight: '',
         nonMiningWeight: '',
         // netWeight:
-        //   parseInt(challanEntryData.grossweight) -
-        //   parseInt(challanEntryData.emptyWeight),
+        //   parseInt(challanData.grossweight) -
+        //   parseInt(challanData.emptyWeight),
       });
       return;
     }
 
-    setChallanEntryData({
-      ...challanEntryData,
+    setChallanData({
+      ...challanData,
       [name]: value,
     });
   };
@@ -719,8 +696,8 @@ export default function ChallanEntry(props) {
   };
 
   const handleAddWeightsOnClick = () => {
-    setChallanEntryData({
-      ...challanEntryData,
+    setChallanData({
+      ...challanData,
       ...weightsData,
       netWeight:
         parseInt(weightsData.grossweight) - parseInt(weightsData.emptyWeight),
@@ -742,65 +719,52 @@ export default function ChallanEntry(props) {
     resetWeightData();
   };
   const handleCloseCancel = () => {
-    setOpen(false);
     handleReset();
+    setUpdateOpen(false);
   };
 
   const handleReset = () => {
-    setCurrentDate(dayjs(new Date()));
-    setChallanEntryData({
-      // ...challanEntryData,
-      ...initialChallanState,
-      currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
-    });
-    setIsSaved((prev) => (prev = false));
+    getChallan();
+    setCurrentDate(dayjs(`${challanData.currentDate}`));
+    setIsUpdated((prev) => (prev = false));
     setIsPrint((prev) => (prev = true));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newFormData = new FormData(e.currentTarget);
-    newFormData.append('customerId', challanEntryData.customerId);
-    newFormData.append('challanNumber', challanEntryData.challanNumber);
-    newFormData.append(
-      'customerPhoneNumber',
-      challanEntryData.customerPhoneNumber
-    );
-    newFormData.append('currentDate', challanEntryData.currentDate);
-    newFormData.append('grossweight', challanEntryData.grossweight);
-    newFormData.append(
-      'grossWeightDateTime',
-      challanEntryData.grossWeightDateTime
-    );
-    newFormData.append('miningWeight', challanEntryData.miningWeight);
-    newFormData.append('nonMiningWeight', challanEntryData.nonMiningWeight);
-    newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
-    newFormData.append(
-      'manualTransportName',
-      challanEntryData.manualTransportName
-    );
-    newFormData.append('emptyWeight', challanEntryData.emptyWeight);
-    newFormData.append(
-      'emptyWeightDateTime',
-      challanEntryData.emptyWeightDateTime
-    );
-    newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
-    newFormData.append('netWeight', challanEntryData.netWeight);
-    newFormData.append('createdBy', `Name: ${name}, Email: ${email}`);
-    newFormData.append('createdAt', challanEntryData.currentDate);
+    newFormData.append('challanNumber', challanData.challanNumber);
+    newFormData.append('customerPhoneNumber', challanData.customerPhoneNumber);
+    newFormData.append('currentDate', challanData.currentDate);
+    newFormData.append('grossweight', challanData.grossweight);
+    newFormData.append('grossWeightDateTime', challanData.grossWeightDateTime);
+    newFormData.append('miningWeight', challanData.miningWeight);
+    newFormData.append('nonMiningWeight', challanData.nonMiningWeight);
+    newFormData.append('manualDrivereName', challanData.manualDrivereName);
+    newFormData.append('manualTransportName', challanData.manualTransportName);
+    newFormData.append('emptyWeight', challanData.emptyWeight);
+    newFormData.append('emptyWeightDateTime', challanData.emptyWeightDateTime);
+    newFormData.append('manualVehicleName', challanData.manualVehicleName);
+    newFormData.append('netWeight', challanData.netWeight);
+    newFormData.append('updatedBy', `Name: ${name}, Email: ${email}`);
+    newFormData.append('updatedAt', Date.now());
     // newFormData.append('quantity', challanEntryData.quantity);
 
     const newForm = Object.fromEntries(newFormData);
     console.log('SUBMIT🔥🔥🔥', newForm);
 
     try {
-      const { data } = await axios.post(`/challan/create-challan`, newForm);
+      const id = rowId;
+      const { data } = await axios.put(
+        `/challan/update-challan-info/${id}`,
+        newForm
+      );
       if (data?.success === true) {
-        toast.success('Challan Added Successfully');
+        toast.success('Challan Updated Successfully');
         getAllChallans();
         // handleCloseCancel();
-        getMaxChallanNumber();
-        setIsSaved((prev) => (prev = true));
+        // getMaxChallanNumber();
+        setIsUpdated((prev) => (prev = true));
         setIsPrint((prev) => (prev = false));
       }
     } catch (err) {
@@ -940,50 +904,51 @@ export default function ChallanEntry(props) {
           <div class="section section-1">
             <div class="div-1-section-1">
               <p>CHALLAN NO. :</p>
-              <p>${challanEntryData.challanNumber}</p>
+              <p>${challanData.challanNumber}</p>
               <p>CUSTOMER NAME :</p>
-              <p>${challanEntryData?.customerName?.split(';')[1] || ''}</p>
+              <p>${challanData.customerName || ''}</p>
               <p>MOBILE NO. :</p>
-              <p>${challanEntryData.customerPhoneNumber || ''}</p>
+              <p>${challanData.customerPhoneNumber || ''}</p>
               <p>DESTINATION :</p>
-              <p>${challanEntryData.customerDestination || ''}</p>
+              <p>${challanData.customerDestination || ''}</p>
             </div>
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
-              <p>${getVehicleNumber(challanEntryData.vehicle)
-        ?.licensePlateNumber || ''
-      }</p>
+              <p>${
+                getVehicleNumber(challanData.vehicle)?.licensePlateNumber || ''
+              }</p>
               <p>MATERIAL NAME :</p>
-              <p>${challanEntryData.materialName || ''}</p>
+              <p>${challanData.materialName || ''}</p>
               <p>SOURCE / MINE :</p>
-              <p>${challanEntryData.mineSourceName || ''}</p>
+              <p>${challanData.mineSourceName || ''}</p>
             </div>
           </div>
           <hr />
           <div class="section section-2">
             <div class="div-1-section-2">
               <p>GROSS WEIGHT :</p>
-              <p>${(challanEntryData.mGrossWeight
-        ? challanEntryData.mGrossWeight
-        : challanEntryData.grossweight) || 0
-      }</p>
+              <p>${
+                (challanData.mGrossWeight
+                  ? challanData.mGrossWeight
+                  : challanData.grossweight) || 0
+              }</p>
               <p>TARE WEIGHT :</p>
-              <p>${challanEntryData.emptyWeight || 0}</p>
+              <p>${challanData.emptyWeight || 0}</p>
               <p>NET WEIGHT :</p>
-              <p>${challanEntryData.netWeight || 0}</p>
+              <p>${challanData.netWeight || 0}</p>
             </div>
             <div class="div-2-section-2">
-            <p>${(challanEntryData.mGrossWeightDateTime
-        ? challanEntryData.mGrossWeightDateTime
-        : challanEntryData.grossWeightDateTime) || ''
-      }</p>
-            <p>${challanEntryData.emptyWeightDateTime || ''}</p>
+            <p>${
+              (challanData.mGrossWeightDateTime
+                ? challanData.mGrossWeightDateTime
+                : challanData.grossWeightDateTime) || ''
+            }</p>
+            <p>${challanData.emptyWeightDateTime || ''}</p>
             <div>
               <p class="div-2-section-2-p">${numberToWords.toWords(
-        challanEntryData.netWeight || 0
-      )}</p>
-              <p class="div-2-section-2-p unit">${challanEntryData.unit || ''
-      }</p>
+                challanData.netWeight || 0
+              )}</p>
+              <p class="div-2-section-2-p unit">${challanData.unit || ''}</p>
             </div>
             </div>
           </div>
@@ -991,7 +956,7 @@ export default function ChallanEntry(props) {
 
           <div class="section">
             <p>SITE INCHARGE SIGNATURE: </p>
-            <p>${challanEntryData.siteInchargeName || ''}</p>
+            <p>${challanData.siteInchargeName || ''}</p>
           </div>
           <hr />
           <div class="footer">
@@ -1011,69 +976,68 @@ export default function ChallanEntry(props) {
     printWindow.print();
   };
 
-  const handlePreview = () => { };
+  const handlePreview = () => {};
 
-  const handleDelete = async (id) => {
-    try {
-      // dispatch(deleteCustomerRequest());
-      const { data } = await axios.delete(
-        `/challan/delete-challan/${id}`
-        // {
-        //   withCredentials: true,
-        // }
-      );
+  // const handleDelete = async (id) => {
+  //   try {
+  //     // dispatch(deleteCustomerRequest());
+  //     const { data } = await axios.delete(
+  //       `/challan/delete-challan/${id}`
+  //       // {
+  //       //   withCredentials: true,
+  //       // }
+  //     );
 
-      // console.log(data);
-      if (data?.success === true) {
-        // dispatch(deleteCustomer(`${data.message}`));
-        toast.success(`${data.message}`);
-        getAllChallans();
-      }
-    } catch (err) {
-      // dispatch(deleteCustomerFailed({ err }));
-      console.log(err);
-    }
-  };
+  //     // console.log(data);
+  //     if (data?.success === true) {
+  //       // dispatch(deleteCustomer(`${data.message}`));
+  //       toast.success(`${data.message}`);
+  //       getAllChallans();
+  //     }
+  //   } catch (err) {
+  //     // dispatch(deleteCustomerFailed({ err }));
+  //     console.log(err);
+  //   }
+  // };
 
-  const actions = [
-    {
-      icon: () => <Refresh />,
-      tooltip: 'Refresh Data',
-      isFreeAction: true,
-      onClick: () => {
-        getAllChallans();
-      },
-    },
-    {
-      icon: () => <EditIcon color='primary' />,
-      tooltip: 'Edit Factory',
-      onClick: (event, rowData) => {
-        // refresh();
-        setUpdateOpen(true);
-        setRowId(rowData._id);
-      },
-    },
-    {
-      icon: () => <DeleIcon color='error' />,
-      tooltip: 'Delete Factory',
-      onClick: (event, rowData) => {
-        setSelectedRowId(rowData._id);
-        setShowDeleteConfirm(true);
-        setCustomerDeleteName(rowData.customerName);
-      },
-    },
-  ];
+  // const actions = [
+  //   {
+  //     icon: () => <Refresh />,
+  //     tooltip: 'Refresh Data',
+  //     isFreeAction: true,
+  //     onClick: () => {
+  //       getAllChallans();
+  //     },
+  //   },
+  //   {
+  //     icon: () => <EditIcon color='primary' />,
+  //     tooltip: 'Edit Factory',
+  //     onClick: (event, rowData) => {
+  //       // refresh();
+  //       // UpdateFactory(rowData.CommissionRulesId);
+  //     },
+  //   },
+  //   {
+  //     icon: () => <DeleIcon color='error' />,
+  //     tooltip: 'Delete Factory',
+  //     onClick: (event, rowData) => {
+  //       setSelectedRowId(rowData._id);
+  //       setShowDeleteConfirm(true);
+  //       setCustomerDeleteName(rowData.customerName);
+  //     },
+  //   },
+  // ];
 
-  const downloadPdf = () => {
-    const doc = new jsPDF();
-    doc.text('Sales Commission Details', 20, 10);
-    doc.autoTable({
-      theme: 'grid',
-      columns: columns.map((col) => ({ ...col, dataKey: col.field })),
-      body: challans,
-    });
-    doc.save('SalesCommission.pdf');
-  };
+  // const downloadPdf = () => {
+  //   const doc = new jsPDF();
+  //   doc.text('Sales Commission Details', 20, 10);
+  //   doc.autoTable({
+  //     theme: 'grid',
+  //     columns: columns.map((col) => ({ ...col, dataKey: col.field })),
+  //     body: challans,
+  //   });
+  //   doc.save('SalesCommission.pdf');
+  // };
 
   const handleUnitClick = () => {
     setOpenUnitMaster(true);
@@ -1116,69 +1080,11 @@ export default function ChallanEntry(props) {
   };
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={12}>
-          <Fab
-            color='primary'
-            style={{
-              borderRadius: '0.5rem',
-              height: '3rem',
-              width: '100%',
-            }}
-            variant='extended'
-            aria-label='add'
-            fullWidth
-            onClick={() => setOpen(true)}
-          >
-            New Chalan Entry
-          </Fab>
-        </Grid>
-        <Grid item xs={12} sm={12}>
-          <MaterialTable
-            title=''
-            columns={columns}
-            data={challans}
-            // icons={tableIcons}
-            actions={actions}
-            options={{
-              sorting: true,
-              search: true,
-              searchFieldAlignment: 'right',
-              searchAutoFocus: true,
-              searchFieldVariant: 'standard',
-              filtering: true,
-              paging: true,
-              pageSizeOptions: [2, 5, 10, 20, 25, 50, 100],
-              pageSize: 5,
-              paginationType: 'stepped',
-              showFirstLastPageButtons: false,
-              paginationPosition: 'both',
-              exportButton: true,
-              exportAllData: true,
-              exportFileName: 'All Chalan Entries',
-              addRowPosition: 'first',
-              // actionsColumnIndex: -1,
-              // selection: true,
-              // showSelectAllCheckbox: false,
-              showTextRowsSelected: false,
-              // selectionProps: (rowData) => ({
-              //   disabled: rowData.age == null,
-              //   // color:"primary"
-              // }),
-              grouping: true,
-              columnsButton: true,
-              rowStyle: (data, index) =>
-                index % 2 === 0 ? { background: '#f5f5f5' } : null,
-              headerStyle: { background: '#f44336', color: '#fff' },
-            }}
-          />
-        </Grid>
-      </Grid>
       <Dialog
         fullWidth
         // maxWidth='md'
         maxWidth='lg'
-        open={open}
+        open={updateOpen}
         disableBackdropClick={true}
         // onClose={handleClose}
         onClose={handleCloseCancel}
@@ -1201,7 +1107,7 @@ export default function ChallanEntry(props) {
                   variant='h5'
                   fontWeight={700}
                 >
-                  New Chalan Entry
+                  Update Challan
                 </Typography>
               </Grid>
             </Grid>
@@ -1227,7 +1133,7 @@ export default function ChallanEntry(props) {
                   <TextField
                     style={{ width: '9.5rem', backgroundColor: '#fff9db' }}
                     disabled={true}
-                    value={challanEntryData.challanNumber}
+                    value={challanData.challanNumber}
                     // value={getMaxChallanNumber()}
                     autoComplete='challanNumber'
                     name='challanNumber'
@@ -1238,6 +1144,9 @@ export default function ChallanEntry(props) {
                     // onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
 
@@ -1245,7 +1154,7 @@ export default function ChallanEntry(props) {
                   <TextField
                     type='number'
                     // disabled={true}
-                    value={challanEntryData.mChallanNo}
+                    value={challanData.mChallanNo}
                     autoComplete='mChallanNo'
                     name='mChallanNo'
                     variant='outlined'
@@ -1255,6 +1164,9 @@ export default function ChallanEntry(props) {
                     onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
 
@@ -1277,7 +1189,7 @@ export default function ChallanEntry(props) {
                             name='mineSourceName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.mineSourceName}
+                            value={challanData.mineSourceName}
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
@@ -1329,7 +1241,7 @@ export default function ChallanEntry(props) {
                             name='siteInchargeName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.siteInchargeName}
+                            value={challanData.siteInchargeName}
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
@@ -1368,7 +1280,7 @@ export default function ChallanEntry(props) {
                         name='currentDate'
                         label='Challan Date'
                         value={currentDate}
-                        // value={challanEntryData.currentDate}
+                        // value={challanData.currentDate}
                         onChange={handleDateChange}
                         renderInput={(params) => <TextField {...params} />}
                       />
@@ -1397,29 +1309,19 @@ export default function ChallanEntry(props) {
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
                             // value={customerNameChange}
-                            value={challanEntryData.customerName}
+                            value={challanData.customerName}
                             label='Select Prior Year'
                             // onChange={handleCustomerNameChange}
                             onChange={handleChange}
                           >
-                            {[
-                              ...new Set(
-                                materialRate.map((el) => el.customerName)
-                              ),
-                            ].map((name, i) => (
-                              <MenuItem key={i} value={name}>
-                                {`ID: ${name.split(';')[0]} - ${name.split(';')[1]
-                                  }`}
-                              </MenuItem>
-                            ))}
-                            {/* {uniqueCustomerName.map((name) => (
+                            {uniqueCustomerName.map((name) => (
                               <MenuItem
                                 key={`${name}-${Math.random()}`}
                                 value={name}
                               >
                                 {name}
                               </MenuItem>
-                            ))} */}
+                            ))}
                             {/* {customers.map((el) => (
                               <MenuItem
                                 key={el.customerId}
@@ -1461,7 +1363,7 @@ export default function ChallanEntry(props) {
                     style={{ backgroundColor: '#fff9db' }}
                     // type='number'
                     disabled={true}
-                    value={challanEntryData.customerPhoneNumber}
+                    value={challanData.customerPhoneNumber}
                     autoComplete='customerPhoneNumber'
                     name='customerPhoneNumber'
                     variant='outlined'
@@ -1497,23 +1399,23 @@ export default function ChallanEntry(props) {
                             name='materialName'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.materialName}
+                            value={challanData.materialName}
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
-                            {/* <MenuItem value={challanEntryData.materialName}>
-                              {challanEntryData.materialName}
+                            {/* <MenuItem value={challanData.materialName}>
+                              {challanData.materialName}
                             </MenuItem> */}
-                            {getMaterialRateInfo(
-                              challanEntryData.customerName
-                            ).map((el) => (
-                              <MenuItem
-                                key={el.materialId}
-                                value={el.materialName}
-                              >
-                                {el.materialName}
-                              </MenuItem>
-                            ))}
+                            {getMaterialRateInfo(challanData.customerName).map(
+                              (el) => (
+                                <MenuItem
+                                  key={el.materialId}
+                                  value={el.materialName}
+                                >
+                                  {el.materialName}
+                                </MenuItem>
+                              )
+                            )}
                           </Select>
                         </FormControl>
                       </Box>
@@ -1556,24 +1458,24 @@ export default function ChallanEntry(props) {
                             name='customerDestination'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.customerDestination}
+                            value={challanData.customerDestination}
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
-                            {getMaterialRateInfo(
-                              challanEntryData.customerName
-                            ).map((el) => (
-                              <MenuItem
-                                key={el.materialId}
-                                value={el.locationName}
-                              >
-                                {el.locationName}
-                              </MenuItem>
-                            ))}
+                            {getMaterialRateInfo(challanData.customerName).map(
+                              (el) => (
+                                <MenuItem
+                                  key={el.materialId}
+                                  value={el.locationName}
+                                >
+                                  {el.locationName}
+                                </MenuItem>
+                              )
+                            )}
                             {/* <MenuItem
-                              value={challanEntryData.customerDestination}
+                              value={challanData.customerDestination}
                             >
-                              {challanEntryData.customerDestination}
+                              {challanData.customerDestination}
                             </MenuItem> */}
                             {/* <MenuItem value='Value 1'>Value 1</MenuItem>
                             <MenuItem value='Value 2'>Value 2</MenuItem>
@@ -1597,7 +1499,7 @@ export default function ChallanEntry(props) {
                     required
                     type='number'
                     // disabled={true}
-                    value={challanEntryData.quantity}
+                    value={challanData.quantity}
                     autoComplete='quantity'
                     name='quantity'
                     variant='outlined'
@@ -1607,6 +1509,9 @@ export default function ChallanEntry(props) {
                     onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
 
@@ -1630,7 +1535,7 @@ export default function ChallanEntry(props) {
                             name='unit'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.unit}
+                            value={challanData.unit}
                             label='Select Prior Year'
                             onChange={handleChange}
                           >
@@ -1692,7 +1597,7 @@ export default function ChallanEntry(props) {
                             name='transporter'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.transporter}
+                            value={challanData.transporter}
                             label='Select Transporter'
                             onChange={handleChange}
                           >
@@ -1756,12 +1661,12 @@ export default function ChallanEntry(props) {
                 <Grid item xs={12} sm={4}>
                   <TextField
                     disabled={
-                      challanEntryData.transporter === 'Others' ? false : true
+                      challanData.transporter === 'Others' ? false : true
                     }
                     required={
-                      challanEntryData.transporter === 'Others' ? true : false
+                      challanData.transporter === 'Others' ? true : false
                     }
-                    value={challanEntryData.manualTransportName}
+                    value={challanData.manualTransportName}
                     autoComplete='manualTransportName'
                     name='manualTransportName'
                     variant='outlined'
@@ -1772,7 +1677,7 @@ export default function ChallanEntry(props) {
                     autoFocus
                     style={{
                       backgroundColor:
-                        challanEntryData.transporter !== 'Others'
+                        challanData.transporter !== 'Others'
                           ? '#fff9db'
                           : undefined,
                     }}
@@ -1799,7 +1704,7 @@ export default function ChallanEntry(props) {
                             name='vehicle'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.vehicle}
+                            value={challanData.vehicle}
                             label='Select Vehicle'
                             onChange={handleChange}
                           >
@@ -1850,17 +1755,13 @@ export default function ChallanEntry(props) {
                   <TextField
                     style={{
                       backgroundColor:
-                        challanEntryData.vehicle !== 'Others'
+                        challanData.vehicle !== 'Others'
                           ? '#fff9db'
                           : undefined,
                     }}
-                    disabled={
-                      challanEntryData.vehicle === 'Others' ? false : true
-                    }
-                    required={
-                      challanEntryData.vehicle === 'Others' ? true : false
-                    }
-                    value={challanEntryData.manualVehicleName.toUpperCase()}
+                    disabled={challanData.vehicle === 'Others' ? false : true}
+                    required={challanData.vehicle === 'Others' ? true : false}
+                    value={challanData.manualVehicleName?.toUpperCase()}
                     autoComplete='manualVehicleName'
                     name='manualVehicleName'
                     variant='outlined'
@@ -1870,6 +1771,9 @@ export default function ChallanEntry(props) {
                     onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
 
@@ -1893,7 +1797,7 @@ export default function ChallanEntry(props) {
                             name='driver'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.driver}
+                            value={challanData.driver}
                             label='Select Driver'
                             onChange={handleChange}
                           >
@@ -1942,17 +1846,11 @@ export default function ChallanEntry(props) {
                   <TextField
                     style={{
                       backgroundColor:
-                        challanEntryData.driver !== 'Others'
-                          ? '#fff9db'
-                          : undefined,
+                        challanData.driver !== 'Others' ? '#fff9db' : undefined,
                     }}
-                    disabled={
-                      challanEntryData.driver === 'Others' ? false : true
-                    }
-                    required={
-                      challanEntryData.driver === 'Others' ? true : false
-                    }
-                    value={challanEntryData.manualDrivereName}
+                    disabled={challanData.driver === 'Others' ? false : true}
+                    required={challanData.driver === 'Others' ? true : false}
+                    value={challanData.manualDrivereName}
                     autoComplete='manualDrivereName'
                     name='manualDrivereName'
                     variant='outlined'
@@ -1962,6 +1860,9 @@ export default function ChallanEntry(props) {
                     onChange={handleChange}
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
 
@@ -1985,7 +1886,7 @@ export default function ChallanEntry(props) {
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
                             // defaultValue='None'
-                            value={challanEntryData.royaltyType}
+                            value={challanData.royaltyType}
                             label='Select Royalty'
                             onChange={handleChange}
                           >
@@ -2045,7 +1946,7 @@ export default function ChallanEntry(props) {
                             name='loadedBy'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.loadedBy}
+                            value={challanData.loadedBy}
                             label='Select Loaded By'
                             onChange={handleChange}
                           >
@@ -2098,7 +1999,7 @@ export default function ChallanEntry(props) {
                             name='loadType'
                             labelId='demo-simple-select-label'
                             id='demo-simple-select'
-                            value={challanEntryData.loadType}
+                            value={challanData.loadType}
                             label='Select Load Type'
                             onChange={handleChange}
                           >
@@ -2147,10 +2048,10 @@ export default function ChallanEntry(props) {
                     onClick={() => {
                       setShowWeightBox(true);
                       setWeightsData({
-                        grossweight: challanEntryData.grossweight,
-                        miningWeight: challanEntryData.miningWeight,
-                        nonMiningWeight: challanEntryData.nonMiningWeight,
-                        emptyWeight: challanEntryData.emptyWeight,
+                        grossweight: challanData.grossweight,
+                        miningWeight: challanData.miningWeight,
+                        nonMiningWeight: challanData.nonMiningWeight,
+                        emptyWeight: challanData.emptyWeight,
                       });
                     }}
                     autoFocus
@@ -2164,18 +2065,18 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.grossweight}
+                    value={challanData.grossweight}
                     autoComplete='grossweight'
                     name='grossweight'
                     variant='outlined'
                     fullWidth
                     id='grossweight'
                     label='Gross Weight'
-                    onChange={handleChange}
+                    // onChange={handleChange}
                     autoFocus
-                  // InputLabelProps={{
-                  //   shrink: true,
-                  // }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2184,18 +2085,18 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.miningWeight}
+                    value={challanData.miningWeight}
                     autoComplete='miningWeight'
                     name='miningWeight'
                     variant='outlined'
                     fullWidth
                     id='miningWeight'
                     label='Mining Weight'
-                    onChange={handleChange}
+                    // onChange={handleChange}
                     autoFocus
-                  // InputLabelProps={{
-                  //   shrink: true,
-                  // }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2204,18 +2105,18 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.nonMiningWeight}
+                    value={challanData.nonMiningWeight}
                     autoComplete='nonMiningWeight'
                     name='nonMiningWeight'
                     variant='outlined'
                     fullWidth
                     id='nonMiningWeight'
                     label='Non Mining Weight'
-                    onChange={handleChange}
+                    // onChange={handleChange}
                     autoFocus
-                  // InputLabelProps={{
-                  //   shrink: true,
-                  // }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2224,18 +2125,18 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.emptyWeight}
+                    value={challanData.emptyWeight}
                     autoComplete='emptyWeight'
                     name='emptyWeight'
                     variant='outlined'
                     fullWidth
                     id='emptyWeight'
                     label='Empty Weight'
-                    onChange={handleChange}
+                    // onChange={handleChange}
                     autoFocus
-                  // InputLabelProps={{
-                  //   shrink: true,
-                  // }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -2244,7 +2145,7 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.netWeight}
+                    value={challanData.netWeight}
                     autoComplete='netWeight'
                     name='netWeight'
                     variant='outlined'
@@ -2253,27 +2154,27 @@ export default function ChallanEntry(props) {
                     label='Net Weight'
                     // onChange={handleChange}
                     autoFocus
-                  // InputLabelProps={{
-                  //   shrink: true,
-                  // }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} style={{ marginTop: '1rem' }}>
                   <Grid
                     container
                     spacing={2}
-                  // style={{ justifyContent: 'flex-end' }}
+                    // style={{ justifyContent: 'flex-end' }}
                   >
                     <Grid item xs={12} sm={3}>
                       <Button
-                        disabled={isSaved}
+                        disabled={isUpdated}
                         type='submit'
                         fullWidth
                         variant='contained'
                         color='primary'
-                      // className={classes.submit}
+                        // className={classes.submit}
                       >
-                        Save Chalan Entry
+                        Update Chalan
                       </Button>
                     </Grid>
                     <Grid item xs={12} sm={3}>
@@ -2355,7 +2256,6 @@ export default function ChallanEntry(props) {
             >
               <Button
                 color='secondary'
-                // onClick={handleClose}
                 onClick={handleWeightsClose}
                 variant='contained'
               >
@@ -2380,9 +2280,9 @@ export default function ChallanEntry(props) {
                 label='Empty Weight'
                 onChange={handleWeightChange}
                 autoFocus
-              // InputLabelProps={{
-              //   shrink: true,
-              // }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -2417,6 +2317,9 @@ export default function ChallanEntry(props) {
                 label='Gross Weight'
                 onChange={handleWeightChange}
                 autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -2443,9 +2346,7 @@ export default function ChallanEntry(props) {
                   <TextField
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={
-                      challanEntryData.royaltyType !== 'None' ? false : true
-                    }
+                    disabled={challanData.royaltyType !== 'None' ? false : true}
                     value={weightsData.miningWeight}
                     autoComplete='miningWeight'
                     name='miningWeight'
@@ -2455,6 +2356,9 @@ export default function ChallanEntry(props) {
                     label='Mining Weight'
                     onChange={handleWeightChange}
                     autoFocus
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                 </Grid>
               </Grid>
@@ -2516,66 +2420,6 @@ export default function ChallanEntry(props) {
                 autoFocus
               >
                 Add Weights
-              </Button>
-            </Grid>
-          </Grid>
-        </DialogActions>
-      </Dialog>
-      <ChallanUpdateForm
-        setChallans={setChallans}
-        rowId={rowId}
-        updateOpen={updateOpen}
-        setUpdateOpen={setUpdateOpen}
-      />
-      <Dialog
-        // classes={{ paper: classes.customDialog }}
-        // className={classes.customDialog}
-        open={showDeleteConfirm}
-        disableBackdropClick={true}
-        maxWidth='sm' // You can set it to 'xs', 'sm', 'md', 'lg', or 'false'
-        fullWidth={true}
-        onClose={() => setShowDeleteConfirm(false)}
-        aria-labelledby='alert-dialog-title '
-        aria-describedby='alert-dialog-description '
-      >
-        <DialogTitle id='alert-dialog-title'>{'Confirm Delete'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
-            Are you sure you want to delete this{' '}
-            <span
-              className={classes.deleteName}
-            >{`' ${customerDeleteName} '`}</span>{' '}
-            record?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}></Grid>
-            <Grid item xs={12} sm={4}>
-              <Button
-                fullWidth
-                name='submit'
-                variant='contained'
-                onClick={() => setShowDeleteConfirm(false)}
-                color='primary'
-              >
-                No
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Button
-                name='cancle'
-                variant='contained'
-                color='secondary'
-                fullWidth
-                onClick={() => {
-                  handleDelete(selectedRowId);
-                  getAllChallans();
-                  setShowDeleteConfirm(false);
-                }}
-                autoFocus
-              >
-                Yes
               </Button>
             </Grid>
           </Grid>

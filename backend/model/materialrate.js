@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const materialRateSchema = new mongoose.Schema({
   materialRateId: {
@@ -6,18 +6,22 @@ const materialRateSchema = new mongoose.Schema({
   },
   materialName: {
     type: String,
-    required: [true, "please enter your Material Name!"],
+    required: [true, 'please enter your Material Name!'],
+  },
+  customerId: {
+    type: Number,
+    // required: [true, "please enter your Customer Name!"],
   },
   customerName: {
     type: String,
-    required: [true, "please enter your Customer Name!"],
+    required: [true, 'please enter your Customer Name!'],
   },
   locationName: {
     type: String,
   },
   rate: {
     type: Number,
-    required: [true, "please enter your Rate!"],
+    required: [true, 'please enter your Rate!'],
   },
   purchaseRate: {
     type: Number,
@@ -46,4 +50,4 @@ const materialRateSchema = new mongoose.Schema({
     type: String,
   },
 });
-module.exports = mongoose.model("Material Rate Master", materialRateSchema);
+module.exports = mongoose.model('Material Rate Master', materialRateSchema);

@@ -1,22 +1,23 @@
-const express = require("express");
+const express = require('express');
 const {
   isAuthenticated,
   isAdmin,
   isSuperAdmin,
-} = require("../middleware/auth");
+} = require('../middleware/auth');
 const router = express.Router();
-const materialRateSchema = require("../model/materialrate");
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const ErrorHandler = require("../utils/ErrorHandler");
+const materialRateSchema = require('../model/materialrate');
+const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const ErrorHandler = require('../utils/ErrorHandler');
 
 router.post(
-  "/create/materialrate",
+  '/create/materialrate',
   catchAsyncErrors(async (req, res, next) => {
     const {
       materialRateId,
       materialName,
       locationName,
       customerName,
+      customerId,
       rate,
       purchaseRate,
       transportRate,
@@ -32,6 +33,7 @@ router.post(
         materialName,
         locationName,
         customerName,
+        customerId,
         rate,
         purchaseRate,
         transportRate,
@@ -51,7 +53,7 @@ router.post(
   })
 );
 router.get(
-  "/get/materialrate",
+  '/get/materialrate',
   catchAsyncErrors(async (req, res, next) => {
     try {
       const materialrates = await materialRateSchema.find();
@@ -65,7 +67,7 @@ router.get(
   })
 );
 router.put(
-  "/updatematerialrate/:id",
+  '/updatematerialrate/:id',
   catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
     const {
@@ -107,18 +109,18 @@ router.put(
   })
 );
 router.delete(
-  "/deletematerialrate/:id",
+  '/deletematerialrate/:id',
   catchAsyncErrors(async (req, res, next) => {
     const { id } = req.params;
     try {
       const materialrate = await materialRateSchema.findById(req.params.id);
       if (!materialrate) {
-        return next(new ErrorHandler("Site is not found with this id", 400));
+        return next(new ErrorHandler('Site is not found with this id', 400));
       }
       await materialRateSchema.findByIdAndDelete(req.params.id);
       res.status(200).json({
         success: true,
-        message: "Site is Delete Successfully",
+        message: 'Site is Delete Successfully',
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
