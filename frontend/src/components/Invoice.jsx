@@ -68,6 +68,7 @@ const PaymentRecived = () => {
   const classes = useStyles();
   const { name, email } = useSelector((state) => state.user.user);
   const [invoices, setInvoices] = useState([]);
+  const [customerChallans, setCustomerChallans] = useState([]);
   //   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [update, setUpdate] = useState(false);
@@ -77,18 +78,20 @@ const PaymentRecived = () => {
     mInvoiceId: '',
     currentDateTime: '',
     customerName: '',
-    challan: '',
-    dueAmount: '',
+    challanNos: [],
+    challans: [],
+    // dueAmount: '',
     discount: '',
     paybleAmount: '',
-    recivedAmount: '',
+    receivingAmount: '',
     dueAdvAmount: '',
   };
   const [invoiceData, setInvoiceData] = useState({ ...initialState });
+  // console.log(invoiceData);
   const [challans, setChallans] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [selected, setSelected] = useState([]);
-  //   console.log(selected);
+  // console.log(selected);
   //   const options = [
   //     { value: 'chocolate', label: 'Chocolate' },
   //     { value: 'strawberry', label: 'Strawberry' },
@@ -104,13 +107,15 @@ const PaymentRecived = () => {
   const [dueAmount, setDueAmount] = useState('0');
   const [discount, setDiscount] = useState('');
   const [paybleAmount, setPaybleAmount] = useState('0');
-  const [recivedAmount, setRecivedAmount] = useState('');
+  const [receivingAmount, setRecivedAmount] = useState('');
   const [dueAdvAmount, setDueAdvAmount] = useState('0');
 
   /////////////////////////////////////
   const [mongodbId, setMongodbId] = useState();
   const [paymentRecivedDelete, setPaymentRecivedDelete] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  let [recAmount, setRecAmount] = useState('');
   // const [updatepaymentId, setUpdatepaymentId] = useState();
   // const [invoices, setInvoices] = useState({
   //   paymentId: "",
@@ -121,7 +126,7 @@ const PaymentRecived = () => {
   //   dueAmount: "",
   //   discount: "",
   //   paybleAmount: "",
-  //   recivedAmount: "",
+  //   receivingAmount: "",
   //   dueAdvAmount: "",
   // });
   const columns = [
@@ -133,7 +138,7 @@ const PaymentRecived = () => {
     { title: 'DueAmount', field: 'dueAmount' },
     { title: 'Discount', field: 'discount' },
     { title: 'PaybleAmount', field: 'paybleAmount' },
-    { title: 'RecivedAmount', field: 'recivedAmount' },
+    { title: 'RecivedAmount', field: 'receivingAmount' },
     { title: 'Due / AdvAmount', field: 'dueAdvAmount' },
   ];
 
@@ -152,27 +157,52 @@ const PaymentRecived = () => {
     axios
       .get('challan/all-challans')
       .then((res) => {
-        console.log(res.data);
         setChallans(res.data.challans);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
-  const getChallansOfCustomer = (custName) => {
+  //////////////////////////////////////////////////////
+  const getChallanNos = (custIdName) => {
+    const custId = custIdName?.trim()?.split(';')[0];
     let customerChallans = challans.filter((item) => {
-      return item.customerName.trim() === custName.trim();
+      return item.customerName?.trim()?.split(';')[0] === custId;
     });
     // let materialRateInfo = materialRate.find((item) => {
     //   return item.customerName.trim() === custName.trim();
     // });
     // console.log(materialRateInfo);
+    // setCustomerChallans(customerChallans);
     return customerChallans.map(
       (el) => `Challan No. - ${el.challanNumber}, Amount:  `
     );
   };
 
+  const getChallansOfCustomer = (challanNosArr) => {
+    const customerChallans = challans.filter((el, i, arr) => {
+      return challanNosArr.includes(el.challanNumber);
+    });
+    return customerChallans.map((el) => {
+      return { ...el, invoiceId: invoiceData.invoiceId };
+    });
+  };
+
+  const getDueAdvAmount = (customerIdName) => {
+    const custId = customerIdName?.trim()?.split(';')[0];
+
+    const custInvoice = invoices?.filter(
+      (el) => el.customerName?.trim()?.split(';')[0] === custId
+    );
+
+    const dueAdvAmount = custInvoice.reduce(
+      (acc, invoice) => (acc += parseFloat(invoice?.dueAdvAmount)),
+      0
+    );
+
+    return dueAdvAmount;
+  };
+  ////////////////////////////////////////////////////////
   const getCustomerPhoneNo = (custName) => {
     // let materialRateInfo = materialRate.filter((item) => {
     //   return item.customerName.trim() === custName.trim();
@@ -185,12 +215,24 @@ const PaymentRecived = () => {
   };
 
   useEffect(() => {
+    setInvoiceData({
+      ...invoiceData,
+      challanNos: selected?.map((el) =>
+        parseFloat(el.split(',')[0]?.slice(14))
+      ),
+    });
+  }, [selected]);
+
+  // useEffect(() => {
+  //   setRecAmount(invoiceData?.paybleAmount);
+  //   setInvoiceData({
+  //     ...invoiceData,
+  //     receivingAmount: recAmount,
+  //   });
+  // }, [invoiceData.paybleAmount]);
+
+  useEffect(() => {
     handleReset();
-    // setInvoiceData({
-    //   ...initialState,
-    //   invoiceId: getMaxInvoiceId(),
-    //   currentDateTime: dayjs(new Date()).$d.toLocaleString('en-GB'),
-    // });
     getAllCustomers();
     getInvoices();
     getMaxInvoiceId();
@@ -198,14 +240,13 @@ const PaymentRecived = () => {
     // setPaymentId(getMaxInvoiceId());
   }, [open]);
 
-  //   useEffect(() => {
-  //     const intervalId = setInterval(() => {
-  //       setCurrentDateTime(dayjs(new Date()));
-  //     }, 1000);
-  //     return () => {
-  //       clearInterval(intervalId);
-  //     };
-  //   }, []);
+  //     useEffect(() => {
+  //     if(selected.length){
+  // // customer challan array = []
+  //       // forEach loop on selected array
+
+  //    }
+  //     }, [selected]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -213,6 +254,7 @@ const PaymentRecived = () => {
       setInvoiceData({
         ...invoiceData,
         [name]: value,
+        customerId: value?.split(';')[0],
         challan: '',
       });
       setSelected([]);
@@ -224,38 +266,41 @@ const PaymentRecived = () => {
     });
   };
 
+  const handleRecAmtChange = (e) => {
+    const { name, value } = e.target;
+    setRecAmount(value);
+    setInvoiceData({
+      ...invoiceData,
+      [name]: value,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newFormData = new FormData(e.currentTarget);
-    newFormData.append('createdBy', `Name: ${name}, Email: ${email}`);
-    newFormData.append('createdAt', Date.now());
-    const newForm = Object.fromEntries(newFormData);
-    console.log('SUBMIT🔥🔥🔥', newForm);
 
-    try {
-      const response = await axios.post('invoice/create-invoice', newForm);
+    const invoice = {
+      ...invoiceData,
+      challans: getChallansOfCustomer(invoiceData?.challanNos),
+      createdBy: `Name: ${name}, Email: ${email}`,
+      createdAt: Date.now(),
+    };
+    console.log('SUBMIT🔥🔥🔥', invoice);
 
-      if (response.status === 201) {
-        toast.success('Invoice has been added successfully!');
-        console.log(response);
-      } else {
-        toast('Invalid Information!');
-      }
-    } catch (error) {
-      console.log(error);
-      toast('Invalid Invoice Information!');
-    }
-    setOpen(!open);
-    handleReset();
-    // setPaymentId('');
-    // setManualId('');
-    // setCustomerName('');
-    // setChallan('');
-    // setDueAmount('');
-    // setDiscount('');
-    // setPaybleAmount('');
-    // setRecivedAmount('');
-    // setDueAdvAmount('');
+    // try {
+    //   const response = await axios.post('invoice/create-invoice', invoice);
+
+    //   if (response.status === 201) {
+    //     toast.success('Invoice has been added successfully!');
+    //   } else {
+    //     toast('Invalid Information!');
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   toast('Invalid Invoice Information!');
+    // }
+
+    // setOpen(!open);
+    // handleReset();
   };
 
   // Update the current date and time every second
@@ -283,7 +328,7 @@ const PaymentRecived = () => {
         dueAmount: dueAmount,
         discount: discount,
         paybleAmount: paybleAmount,
-        recivedAmount: recivedAmount,
+        receivingAmount: receivingAmount,
         dueAdvAmount: dueAdvAmount,
       });
 
@@ -303,7 +348,6 @@ const PaymentRecived = () => {
       .delete(`/paymentrecived/delete/paymentrecieved/${rowData._id}`)
       .then((res) => {
         debugger;
-        console.log(res);
         toast.success('Record has been deleted successfully!');
       })
       .catch((err) => {
@@ -362,6 +406,9 @@ const PaymentRecived = () => {
     setInvoiceData({
       ...initialState,
       invoiceId: getMaxInvoiceId(),
+      mInvoiceId: 0,
+      discount: 0,
+      dueAdvAmount: 0,
       currentDateTime: dayjs(new Date()).$d.toLocaleString('en-GB'),
     });
     setSelected([]);
@@ -398,7 +445,7 @@ const PaymentRecived = () => {
         setDueAmount(rowData.dueAmount);
         setDiscount(rowData.discount);
         setPaybleAmount(rowData.paybleAmount);
-        setRecivedAmount(rowData.recivedAmount);
+        setRecivedAmount(rowData.receivingAmount);
         setDueAdvAmount(rowData.dueAdvAmount);
         getInvoices();
       },
@@ -765,7 +812,7 @@ const PaymentRecived = () => {
                       label='Manual Invoice Id'
                       onChange={handleChange}
                       //   onChange={(e) => setManualId(e.target.value)}
-                      autoFocus
+                      // autoFocus
                     />
                   </Grid>
                   <Grid item xs={12} sm={7}>
@@ -828,7 +875,7 @@ const PaymentRecived = () => {
                             ),
                           ].map((el, i) => (
                             <MenuItem key={i} value={el}>
-                              {el}
+                              {`ID: ${el.split(';')[0]} - ${el.split(';')[1]}`}
                             </MenuItem>
                           ))}
                           {/* <MenuItem value='Mohammad Musharaf'>
@@ -843,9 +890,7 @@ const PaymentRecived = () => {
                   <Grid item xs={12} sm={8}>
                     <Box>
                       <MultiSelectDropDown
-                        options={getChallansOfCustomer(
-                          invoiceData.customerName
-                        )}
+                        options={getChallanNos(invoiceData.customerName)}
                         selected={selected}
                         setSelected={setSelected}
                       />
@@ -853,16 +898,18 @@ const PaymentRecived = () => {
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
-                      //   disabled={true}
-                      value={invoiceData.dueAmount}
+                      disabled={true}
+                      value={getDueAdvAmount(invoiceData?.customerName)}
                       autoComplete='dueAmount'
                       name='dueAmount'
                       variant='outlined'
                       fullWidth
                       id='dueAmount'
                       label='Previous Due Amount'
-                      onChange={handleChange}
-                      //   onChange={(e) => setDueAmount(e.target.value)}
+                      // onChange={handleChange}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
@@ -876,11 +923,14 @@ const PaymentRecived = () => {
                       label='Discount'
                       onChange={handleChange}
                       //   onChange={(e) => setDiscount(e.target.value)}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
-                      //   disabled
+                      // disabled={true}
                       value={invoiceData.paybleAmount}
                       autoComplete='paybleAmount'
                       name='paybleAmount'
@@ -894,30 +944,35 @@ const PaymentRecived = () => {
                   </Grid>
                   <Grid item xs={12} sm={5}>
                     <TextField
-                      value={invoiceData.recivedAmount}
-                      autoComplete='recivedAmount'
-                      name='recivedAmount'
+                      value={recAmount}
+                      autoComplete='receivingAmount'
+                      name='receivingAmount'
                       variant='outlined'
                       fullWidth
-                      id='recivedAmount'
-                      label='Recived Amount'
-                      onChange={handleChange}
+                      id='receivingAmount'
+                      label='Receiving Amount'
+                      onChange={handleRecAmtChange}
                       //   onChange={(e) => setRecivedAmount(e.target.value)}
                     />
                   </Grid>
                   <Grid item xs={12} sm={7}>
                     <TextField
-                      //   disabled
+                      disabled={true}
                       type='dueAdvAmount'
-                      value={invoiceData.dueAdvAmount}
+                      value={
+                        invoiceData?.paybleAmount - invoiceData?.receivingAmount
+                      }
                       autoComplete='dueAdvAmount'
                       name='dueAdvAmount'
                       variant='outlined'
                       fullWidth
                       id='dueAdvAmount'
                       label='Current Due/Adv Amount'
-                      onChange={handleChange}
+                      // onChange={handleChange}
                       //   onChange={(e) => setDueAdvAmount(e.target.value)}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Grid>
 
@@ -1168,13 +1223,13 @@ const PaymentRecived = () => {
                   </Grid>
                   <Grid item xs={12} sm={5}>
                     <TextField
-                      type='recivedAmount'
-                      value={recivedAmount}
-                      autoComplete='recivedAmount'
-                      name='recivedAmount'
+                      type='receivingAmount'
+                      value={receivingAmount}
+                      autoComplete='receivingAmount'
+                      name='receivingAmount'
                       variant='outlined'
                       fullWidth
-                      id='recivedAmount'
+                      id='receivingAmount'
                       label='Recived Amount'
                       onChange={(e) => setRecivedAmount(e.target.value)}
                     />

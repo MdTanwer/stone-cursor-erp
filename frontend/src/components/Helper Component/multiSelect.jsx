@@ -82,8 +82,10 @@ function MultiSelectDropDown({ options, selected, setSelected }) {
   const isAllSelected =
     options.length > 0 && selected.length === options.length;
 
-  const handleChange = (event) => {
+  const handleSelectChange = (event) => {
     const value = event.target.value;
+    // console.log('VALUE', value);
+    // console.log('OPTIONS', options);
     if (value[value.length - 1] === 'all') {
       setSelected(selected.length === options.length ? [] : options);
       return;
@@ -98,9 +100,9 @@ function MultiSelectDropDown({ options, selected, setSelected }) {
         label={`Select Challan`}
         labelId='mutiple-select-label'
         multiple
-        name='challan'
+        name='challans'
         value={selected}
-        onChange={handleChange}
+        onChange={handleSelectChange}
         renderValue={(selected) => selected.join(', ')}
         MenuProps={MenuProps}
       >
