@@ -63,7 +63,8 @@
     "devextreme-react": "22.1.5",
     "exceljs": "^4.3.0",
     "jspdf": "^2.5.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "file-saver-es": "^2.0.5"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -81,6 +81,9 @@ const SalesReport = () => {
 
     const [startDatevalue, setStartDatevalue] = useState(null);
     const [endDatevalue, setEndDatevalue] = useState(null);
+    const [invoices, setInvoices] = useState([]);
+    const [challans, setChallans] = useState([]);
+
 
     const [isDateWisecheckChanged, setIsDateWisecheckChanged] = useState(false);
     const [isDateRangeEnableDisable, setIsDateRangeEnableDisable] =
@@ -92,11 +95,43 @@ const SalesReport = () => {
     const [showInfo, setShowInfo] = useState(true);
     const [showNavButtons, setShowNavButtons] = useState(true);
 
+
+    useEffect(() => {
+        getAllChallans();
+
+    }, []);
+    console.log(challans);
+
+
+
+    const getInvoices = async () => {
+        try {
+            const response = await axios.get('/invoice/all-invoice');
+            setInvoices(response.data.invoices);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getAllChallans = () => {
+        axios
+            .get('challan/all-challans')
+            .then((res) => {
+                console.log(res.data);
+                setChallans(res.data.challans);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+
     const customizeColumns = (columns) => {
         columns[0].width = 70;
     };
 
     const data = []; // Define your data source
+
     const allowedPageSizes = [5, 10, "ALL"];
     // ************************This is for  Excel Export ***************************
     const onExporting = React.useCallback((e) => {
@@ -198,6 +233,20 @@ const SalesReport = () => {
 
     };
 
+    // vehicle: el.vehicle?.split('-')[1]?.trim()
+
+    const challanMod = challans.map((el) => {
+        return {
+            ...el, currentDate: new Date(`${el.currentDate}`).toLocaleDateString('en-GB'),
+            licensePlateNumber: el.vehicle,
+            rate: el.materialRateDetails.rate,
+            transportRate: el.materialRateDetails.transportRate,
+            customerName: el.customerName?.split(';')[1]?.trim(),
+            royalty: el.royalty === 'None' ? '' : 'M'
+        }
+    })
+
+    console.log(challanMod.licensePlateNumber)
     // ************************This is for  Excel Export end ***************************
     return (
         <div>
@@ -266,6 +315,7 @@ const SalesReport = () => {
                         </Button>
                     </Grid>
                 </Grid>
+
             </form>
 
             <div class="dx-viewport">
@@ -278,10 +328,14 @@ const SalesReport = () => {
                         <DataGrid
                             id="gridContainer"
                             // dataSource={orders}
-                            keyExpr="TrasactionId"
+                            dataSource={challanMod}
+                            // dataSource={challans}
+                            // keyExpr="TrasactionId"
                             showBorders={true}
                             onExporting={onExporting}
+                            columnAutoWidth={true}
                         >
+
                             <Paging defaultPageSize={10} />
                             <Pager
                                 visible={true}
@@ -301,35 +355,101 @@ const SalesReport = () => {
                             <Selection mode="single" />
                             {/* <Column dataField="CreatedDate" alignment="center"   caption="Date" /> */}
                             <Column
-                                dataField="SoldToName"
+                                dataField="challanNumber"
                                 alignment="left"
-                                caption="Customer Name"
+                                caption="SL"
                             />
                             <Column
-                                dataField="FinYear"
+                                dataField="currentDate"
+                                alignment="left"
+                                caption="Date"
+                            />
+                            {/* <Column
+                                dataField="licensePlateNumber"
+                                alignment="left"
+                                caption="Truck No"
+                            /> */}
+                            <Column
+                                dataField="materialName"
+                                alignment="left"
+                                caption="Material"
+                            />
+                            <Column
+                                dataField="licensePlateNumber"
+                                alignment="left"
+                                caption="Material"
+                            />
+                            <Column
+                                dataField="mineSourceName"
+                                alignment="left"
+                                caption="Mine Source"
+                            />
+                            <Column
+                                dataField="customerDestination"
+                                alignment="left"
+                                caption="Destination"
+                            />
+                            <Column
+                                dataField="quantity"
+                                alignment="left"
+                                caption="Tonne"
+                            />
+                            <Column
+                                dataField="rate"
+                                alignment="left"
+                                caption="Party Rate PMT"
+                            />
+                            <Column
+                                dataField="saleAmount"
                                 alignment="center"
-                                caption="Years"
+                                caption="Sales Amount"
                             />
 
                             <Column
-                                dataField="MonthName"
+                                dataField="customerName"
                                 alignment="center"
-                                caption="Month"
+                                caption="Party Name"
+                            />
+                            <Column
+                                dataField="royalty"
+                                alignment="center"
+                                caption="Mining Tonne"
+                            />
+                            <Column
+                                dataField="miningWeight"
+                                alignment="center"
+                                caption="Mining Tonne"
+                            />
+                            <Column
+                                dataField="nonMiningWeight"
+                                alignment="center"
+                                caption="Non Mining Tonne"
+                            />
+                            <Column
+                                dataField="transportRate"
+                                alignment="center"
+                                caption="Transport Cost PMT"
                             />
                             <Column
                                 dataField="SalesmanCode"
                                 alignment="center"
-                                caption="Salesman"
+                                caption="Royalty + Tax"
                             />
+                            <Column
+                                dataField="SalesmanCode"
+                                alignment="center"
+                                caption="Transport Cost"
+                            />
+
                             <Column
                                 dataField="TotalSalesAmt"
                                 alignment="right"
                                 format="$ #,##0.##"
                                 // displayFormat= "0.0"
                                 // precision="2"
-                                caption="TotalAmt"
+                                caption="Total Cost"
                             />
-                            <Column
+                            {/* <Column
                                 dataField="GrossCommRate"
                                 // format="percent"
 
@@ -342,17 +462,24 @@ const SalesReport = () => {
                                 // precision="2"
                                 alignment="right"
                                 format="$ #,##0.##"
-                                caption="GCommAmt"
-                            />
+                                caption="Profit/Lose"
+                            /> */}
                             {/* <Column dataField="SalesmanCommRate" alignment="center" caption="SCommRate"/> */}
                             <Column
                                 dataField="SalesmanCommAmt"
                                 // displayFormat="{0}"
                                 alignment="right"
                                 format="$ #,##0.##"
-                                caption="SCommAmt"
+                                caption="Is P or L"
                             />
-                            <Column dataField="FactoryName" groupIndex={0} />
+                            <Column
+                                dataField="GrossCommRate"
+                                // format="percent"
+
+                                alignment="center"
+                                caption="Material Cost"
+                            />
+                            {/* <Column dataField="FactoryName" groupIndex={0} /> */}
 
                             <Summary>
                                 <GroupItem
