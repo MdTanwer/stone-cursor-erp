@@ -59,7 +59,7 @@ const addNewChallanSchema = new mongoose.Schema({
     default: null,
   },
   vehicle: {
-    type: String,
+    type: Object,
     required: [true, 'Please enter vehicle'],
   },
   manualVehicleName: {
@@ -74,8 +74,8 @@ const addNewChallanSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  royaltyType: {
-    type: String,
+  royalty: {
+    type: Object,
     required: [true, 'Please enter Royalty type'],
   },
   loadedBy: {
@@ -112,6 +112,18 @@ const addNewChallanSchema = new mongoose.Schema({
   },
   netWeight: {
     type: Number,
+  },
+  saleAmount: {
+    type: Number,
+  },
+  miningAmount: {
+    type: Number,
+  },
+  nonMiningAmount: {
+    type: Number,
+  },
+  materialRateDetails: {
+    type: Object,
   },
   createdBy: {
     type: String,
