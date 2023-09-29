@@ -27,18 +27,18 @@ import Fade from '@material-ui/core/Fade';
 // import { Workbook } from 'exceljs';
 // import saveAs from 'file-saver';
 import DataGrid, {
-  Column,
-  Selection,
-  Summary,
-  GroupItem,
-  GroupPanel,
-  Grouping,
-  SortByGroupSummaryInfo,
-  TotalItem,
-  Export,
-  Scrolling,
-  Paging,
-  Pager,
+    Column,
+    Selection,
+    Summary,
+    GroupItem,
+    GroupPanel,
+    Grouping,
+    SortByGroupSummaryInfo,
+    TotalItem,
+    Export,
+    Scrolling,
+    Paging,
+    Pager,
 } from 'devextreme-react/data-grid';
 // import { jsPDF } from "jspdf";
 
@@ -56,381 +56,510 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const exportFormats = ['xlsx', 'pdf'];
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  container: {
-    marginTop: theme.spacing(2),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
+    root: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    title: {
+        flexGrow: 1,
+    },
+    container: {
+        marginTop: theme.spacing(2),
+    },
+    paper: {
+        padding: theme.spacing(2),
+        color: theme.palette.text.secondary,
+    },
 }));
 
 const EXTENSIONS = ['xlsx', 'xls', 'csv'];
 
 const SalesReport = () => {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  const [startDatevalue, setStartDatevalue] = useState(null);
-  const [endDatevalue, setEndDatevalue] = useState(null);
+    const [startDatevalue, setStartDatevalue] = useState(null);
+    const [endDatevalue, setEndDatevalue] = useState(null);
+    const [invoices, setInvoices] = useState([]);
+    const [challans, setChallans] = useState([]);
 
-  const [isDateWisecheckChanged, setIsDateWisecheckChanged] = useState(false);
-  const [isDateRangeEnableDisable, setIsDateRangeEnableDisable] =
-    useState(true);
 
-  const [displayMode, setDisplayMode] = useState('full');
-  const [showPageSizeSelector, setShowPageSizeSelector] = useState(true);
-  const [showInfo, setShowInfo] = useState(true);
-  const [showNavButtons, setShowNavButtons] = useState(true);
+    const [isDateWisecheckChanged, setIsDateWisecheckChanged] = useState(false);
+    const [isDateRangeEnableDisable, setIsDateRangeEnableDisable] =
+        useState(true);
 
-  const customizeColumns = (columns) => {
-    columns[0].width = 70;
-  };
 
-  const data = []; // Define your data source
-  const allowedPageSizes = [5, 10, 'ALL'];
-  // ************************This is for  Excel Export ***************************
-  const onExporting = React.useCallback((e) => {
-    if (e.format === 'xlsx') {
-      const workbook = new Workbook();
-      const worksheet = workbook.addWorksheet('Companies');
-      exportDataGrid({
-        component: e.component,
-        worksheet,
-        autoFilterEnabled: true,
-      }).then(() => {
-        workbook.xlsx.writeBuffer().then((buffer) => {
-          saveAs(
-            new Blob([buffer], { type: 'application/octet-stream' }),
-            'StoneCrusherReports.xlsx'
-          );
-        });
-      });
-      e.cancel = true;
-    } else if (e.format === 'pdf') {
-      debugger;
-      const doc = new jsPDF('l');
+    const [displayMode, setDisplayMode] = useState('full');
+    const [showPageSizeSelector, setShowPageSizeSelector] = useState(true);
+    const [showInfo, setShowInfo] = useState(true);
+    const [showNavButtons, setShowNavButtons] = useState(true);
 
-      exportDataGridToPdf({
-        jsPDFDocument: doc,
 
-        columnWidths: [70, 15, 15, 40, 35, 30, 30, 30],
+    useEffect(() => {
+        getAllChallans();
 
-        component: e.component,
-      }).then(() => {
-        doc.save('StoneCrusherReports.pdf');
-      });
-    }
-  });
+    }, []);
+    console.log(challans);
 
-  const DateWisecheckChanged = (state) => {
-    setIsDateWisecheckChanged(!isDateWisecheckChanged);
-    debugger;
 
-    //refresh();
 
-    //  setIsEnableDisable(isDateWisecheckChanged);
-    if (isDateWisecheckChanged) {
-      setStartDatevalue(null);
-      setEndDatevalue(null);
+    const getInvoices = async () => {
+        try {
+            const response = await axios.get('/invoice/all-invoice');
+            setInvoices(response.data.invoices);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-      setIsDateRangeEnableDisable(true);
-    } else {
-      setStartDatevalue(null);
-      setEndDatevalue(null);
-      setIsDateRangeEnableDisable(false);
-    }
+    const getAllChallans = () => {
+        axios
+            .get('challan/all-challans')
+            .then((res) => {
+                console.log(res.data);
+                setChallans(res.data.challans);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
-    //setIsDisable(!allCustchecked);
-  };
 
-  const search = () => {
-    debugger;
-    var sd = new Date(startDatevalue);
-    var ed = new Date(endDatevalue);
-    var sd = sd.toLocaleDateString();
-    var ed = ed.toLocaleDateString();
-    debugger;
+    const customizeColumns = (columns) => {
+        columns[0].width = 70;
+    };
 
-    if (isDateWisecheckChanged) {
-      debugger;
-      if (
-        startDatevalue === undefined ||
-        startDatevalue === null ||
-        startDatevalue === '' ||
-        startDatevalue.length === 0
-      ) {
-        toast.error('Start Date should not be blank, Please select Start Date');
+    const data = []; // Define your data source
 
-        return;
-      }
+    const allowedPageSizes = [5, 10, "ALL"];
+    // ************************This is for  Excel Export ***************************
+    const onExporting = React.useCallback((e) => {
+        if (e.format === "xlsx") {
+            const workbook = new Workbook();
+            const worksheet = workbook.addWorksheet("Companies");
+            exportDataGrid({
+                component: e.component,
+                worksheet,
+                autoFilterEnabled: true,
+            }).then(() => {
+                workbook.xlsx.writeBuffer().then((buffer) => {
+                    saveAs(
+                        new Blob([buffer], { type: "application/octet-stream" }),
+                        "StoneCrusherReports.xlsx"
+                    );
+                });
+            });
+            e.cancel = true;
+        } else if (e.format === "pdf") {
+            debugger;
+            const doc = new jsPDF("l");
 
-      if (
-        endDatevalue === undefined ||
-        endDatevalue === null ||
-        endDatevalue === '' ||
-        endDatevalue.length === 0
-      ) {
-        toast.error('End Date should not be blank, Please select End Date');
+            exportDataGridToPdf({
+                jsPDFDocument: doc,
 
-        return;
-      }
+                columnWidths: [70, 15, 15, 40, 35, 30, 30, 30],
 
-      if (startDatevalue.getTime() > endDatevalue.getTime()) {
-        toast.error('Start Date should be equal or less than from End Date');
-      }
-    }
-  };
+                component: e.component,
+            }).then(() => {
+                doc.save('StoneCrusherReports.pdf');
+            });
+        }
+    });
 
-  // ************************This is for  Excel Export end ***************************
-  return (
-    <div>
-      <h3>Stone Crusher Reports</h3>
-      <form className={classes.form}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12}></Grid>
+    const DateWisecheckChanged = (state) => {
+        setIsDateWisecheckChanged(!isDateWisecheckChanged);
+        debugger;
 
-          {/* *****************************start Date Range Section ******************************** */}
+        //refresh();
 
-          <Grid item xs={12} sm={2}>
-            <label style={{ paddingLeft: 45 }}> Date Range</label>
+        //  setIsEnableDisable(isDateWisecheckChanged);
+        if (isDateWisecheckChanged) {
+            setStartDatevalue(null);
+            setEndDatevalue(null);
 
-            <Radio
-              {...label}
-              checked={isDateWisecheckChanged}
-              onChange={DateWisecheckChanged}
-              color='primary'
-              size='medium'
-            />
-          </Grid>
+            setIsDateRangeEnableDisable(true);
+        } else {
+            setStartDatevalue(null);
+            setEndDatevalue(null);
+            setIsDateRangeEnableDisable(false);
+        }
 
-          <Grid item xs={12} sm={4}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label='Start Date'
-                disabled={isDateRangeEnableDisable}
-                value={startDatevalue}
-                onChange={(newValue) => {
-                  setStartDatevalue(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField variant='outlined' fullWidth {...params} />
-                )}
-              />
-            </LocalizationProvider>
-          </Grid>
+        //setIsDisable(!allCustchecked);
+    };
 
-          <Grid item xs={12} sm={4}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label='End Date'
-                disabled={isDateRangeEnableDisable}
-                value={endDatevalue}
-                onChange={(newValue) => {
-                  setEndDatevalue(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField variant='outlined' fullWidth {...params} />
-                )}
-              />
-            </LocalizationProvider>
-          </Grid>
+    const search = () => {
+        debugger;
+        var sd = new Date(startDatevalue);
+        var ed = new Date(endDatevalue);
+        var sd = sd.toLocaleDateString();
+        var ed = ed.toLocaleDateString();
+        debugger;
 
-          <Grid itehsm xs={12} sm={2}></Grid>
+        if (isDateWisecheckChanged) {
+            debugger;
+            if (
+                startDatevalue === undefined ||
+                startDatevalue === null ||
+                startDatevalue === '' ||
+                startDatevalue.length === 0
+            ) {
+                toast.error('Start Date should not be blank, Please select Start Date');
 
-          <Grid item xs={12} sm={12}>
-            <Button
-              variant='contained'
-              color='primary'
-              fullWidth
-              onClick={() => search()}
-            >
-              Search
-            </Button>
-          </Grid>
-        </Grid>
-      </form>
+                return;
+            }
 
-      <div class='dx-viewport'>
-        <div class='demo-container'>
-          {/* { title: "Created Date", field: "CreatedDate" }, 
+            if (
+                endDatevalue === undefined ||
+                endDatevalue === null ||
+                endDatevalue === '' ||
+                endDatevalue.length === 0
+            ) {
+                toast.error('End Date should not be blank, Please select End Date');
+
+                return;
+            }
+
+            if (startDatevalue.getTime() > endDatevalue.getTime()) {
+                toast.error('Start Date should be equal or less than from End Date');
+            }
+        }
+    };
+
+    // vehicle: el.vehicle?.split('-')[1]?.trim()
+
+    const challanMod = challans.map((el) => {
+        return {
+            ...el, currentDate: new Date(`${el.currentDate}`).toLocaleDateString('en-GB'),
+            licensePlateNumber: el.vehicle.licensePlateNumber,
+            rate: el.materialRateDetails.rate,
+            transportRate: el.materialRateDetails.transportRate,
+            customerName: el.customerName?.split(';')[1]?.trim(),
+            royalty: el.royalty === 'None' ? '' : 'M'
+        }
+    })
+
+    console.log(challanMod.licensePlateNumber)
+    // ************************This is for  Excel Export end ***************************
+    return (
+        <div>
+            <h3>Stone Crusher Reports</h3>
+            <form className={classes.form}>
+
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={12}></Grid>
+
+                    {/* *****************************start Date Range Section ******************************** */}
+
+                    <Grid item xs={12} sm={2}>
+                        <label style={{ paddingLeft: 45 }}> Date Range</label>
+
+                        <Radio
+                            {...label}
+                            checked={isDateWisecheckChanged}
+                            onChange={DateWisecheckChanged}
+                            color='primary'
+                            size='medium'
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} sm={4}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                label='Start Date'
+                                disabled={isDateRangeEnableDisable}
+                                value={startDatevalue}
+                                onChange={(newValue) => {
+                                    setStartDatevalue(newValue);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField variant='outlined' fullWidth {...params} />
+                                )}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid item xs={12} sm={4}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DatePicker
+                                label='End Date'
+                                disabled={isDateRangeEnableDisable}
+                                value={endDatevalue}
+                                onChange={(newValue) => {
+                                    setEndDatevalue(newValue);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField variant='outlined' fullWidth {...params} />
+                                )}
+                            />
+                        </LocalizationProvider>
+                    </Grid>
+
+                    <Grid itehsm xs={12} sm={2}></Grid>
+
+                    <Grid item xs={12} sm={12}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            onClick={() => search()}
+                        >
+                            Search
+                        </Button>
+                    </Grid>
+                </Grid>
+
+            </form>
+
+            <div class='dx-viewport'>
+                <div class='demo-container'>
+                    {/* { title: "Created Date", field: "CreatedDate" }, 
     
     
             {/* width={100} */}
-          <React.Fragment>
-            <DataGrid
-              id='gridContainer'
-              // dataSource={orders}
-              keyExpr='TrasactionId'
-              showBorders={true}
-              onExporting={onExporting}
-            >
-              <Paging defaultPageSize={10} />
-              <Pager
-                visible={true}
-                allowedPageSizes={allowedPageSizes}
-                displayMode={displayMode}
-                showPageSizeSelector={showPageSizeSelector}
-                showInfo={showInfo}
-                showNavigationButtons={showNavButtons}
-              />
-              {/* <rowType dataField="SoldToName" alignment="center" caption="Customer2"/> */}
+                    <React.Fragment>
+                        <DataGrid
+                            id="gridContainer"
+                            // dataSource={orders}
+                            dataSource={challanMod}
+                            // dataSource={challans}
+                            // keyExpr="TrasactionId"
+                            showBorders={true}
+                            onExporting={onExporting}
+                            columnAutoWidth={true}
+                        >
 
-              {/* <Export enabled={true} formats={exportFormats} /> */}
+                            <Paging defaultPageSize={10} />
+                            <Pager
+                                visible={true}
+                                allowedPageSizes={allowedPageSizes}
+                                displayMode={displayMode}
+                                showPageSizeSelector={showPageSizeSelector}
+                                showInfo={showInfo}
+                                showNavigationButtons={showNavButtons}
+                            />
+                            {/* <rowType dataField="SoldToName" alignment="center" caption="Customer2"/> */}
 
-              <GroupPanel visible={true} />
-              <Grouping autoExpandAll={true} />
+                            {/* <Export enabled={true} formats={exportFormats} /> */}
 
-              <Selection mode='single' />
-              {/* <Column dataField="CreatedDate" alignment="center"   caption="Date" /> */}
-              <Column
-                dataField='SoldToName'
-                alignment='left'
-                caption='Customer Name'
-              />
-              <Column dataField='FinYear' alignment='center' caption='Years' />
+                            <GroupPanel visible={true} />
+                            <Grouping autoExpandAll={true} />
 
-              <Column
-                dataField='MonthName'
-                alignment='center'
-                caption='Month'
-              />
-              <Column
-                dataField='SalesmanCode'
-                alignment='center'
-                caption='Salesman'
-              />
-              <Column
-                dataField='TotalSalesAmt'
-                alignment='right'
-                format='$ #,##0.##'
-                // displayFormat= "0.0"
-                // precision="2"
-                caption='TotalAmt'
-              />
-              <Column
-                dataField='GrossCommRate'
-                // format="percent"
+                            <Selection mode="single" />
+                            {/* <Column dataField="CreatedDate" alignment="center"   caption="Date" /> */}
+                            <Column
+                                dataField="challanNumber"
+                                alignment="left"
+                                caption="SL"
+                            />
+                            <Column
+                                dataField="currentDate"
+                                alignment="left"
+                                caption="Date"
+                            />
+                            <Column
+                                dataField="licensePlateNumber"
+                                alignment="left"
+                                caption="Truck No"
+                            />
+                            <Column
+                                dataField="materialName"
+                                alignment="left"
+                                caption="Material"
+                            />
 
-                alignment='center'
-                caption='GCommRate'
-              />
-              <Column
-                dataField='GrossCommAmt'
-                // displayFormat= "0.0"
-                // precision="2"
-                alignment='right'
-                format='$ #,##0.##'
-                caption='GCommAmt'
-              />
-              {/* <Column dataField="SalesmanCommRate" alignment="center" caption="SCommRate"/> */}
-              <Column
-                dataField='SalesmanCommAmt'
-                // displayFormat="{0}"
-                alignment='right'
-                format='$ #,##0.##'
-                caption='SCommAmt'
-              />
-              <Column dataField='FactoryName' groupIndex={0} />
+                            <Column
+                                dataField="mineSourceName"
+                                alignment="left"
+                                caption="Mine Source"
+                            />
+                            <Column
+                                dataField="customerDestination"
+                                alignment="left"
+                                caption="Destination"
+                            />
+                            <Column
+                                dataField="quantity"
+                                alignment="left"
+                                caption="Tonne"
+                            />
+                            <Column
+                                dataField="rate"
+                                alignment="left"
+                                caption="Party Rate PMT"
+                            />
+                            <Column
+                                dataField="saleAmount"
+                                alignment="center"
+                                caption="Sales Amount"
+                            />
 
-              <Summary>
-                <GroupItem
-                  column='FactoryName'
-                  summaryType='count'
-                  displayFormat='{0}'
-                />
-                <TotalItem
-                  column='FactoryName'
-                  summaryType='count'
-                  displayFormat='Total Records : {0} '
-                  showInGroupFooter={true}
-                />
-                <GroupItem
-                  column='SoldToName'
-                  showInGroupFooter={true}
-                  //alignByColumn={true}
-                  alignment='right'
-                  displayFormat='Total for principal : '
-                />
-                <TotalItem
-                  column='SoldToName'
-                  showInGroupFooter={true}
-                  // alignByColumn={true}
-                  alignment='right'
-                  displayFormat='Total for Salesman : '
-                />
-                <GroupItem
-                  column='TotalSalesAmt'
-                  summaryType='sum'
-                  valueFormat='##0.00'
-                  displayFormat=' {0}'
-                  showInGroupFooter={true}
-                  //  valueFormat="currency"
-                  alignByColumn={true}
-                  // displayFormat="{0}"
-                />
-                <TotalItem
-                  column='TotalSalesAmt'
-                  summaryType='sum'
-                  showInGroupFooter={true}
-                  //  valueFormat="currency"
-                  valueFormat='##0.00'
-                  displayFormat=' {0}'
-                  alignByColumn={true}
-                  // displayFormat="{0}"
-                />
-                <GroupItem
-                  column='GrossCommAmt'
-                  summaryType='sum'
-                  showInGroupFooter={true}
-                  //  valueFormat="currency"
-                  valueFormat='##0.00'
-                  displayFormat=' {0}'
-                  alignByColumn={true}
-                  // displayFormat="{0}"
-                />
-                <TotalItem
-                  column='GrossCommAmt'
-                  summaryType='sum'
-                  showInGroupFooter={true}
-                  //  valueFormat="currency"
-                  valueFormat='##0.00'
-                  displayFormat=' {0}'
-                  alignByColumn={true}
-                  // displayFormat=" {0}"
-                />
-                <GroupItem
-                  column='SalesmanCommAmt'
-                  summaryType='sum'
-                  displayFormat=' {0}'
-                  showInGroupFooter={true}
-                  valueFormat='##0.00'
-                />
-                <TotalItem
-                  column='SalesmanCommAmt'
-                  summaryType='sum'
-                  displayFormat=' {0}'
-                  showInGroupFooter={true}
-                  alignByColumn={true}
-                  valueFormat='##0.00'
-                />
+                            <Column
+                                dataField="customerName"
+                                alignment="center"
+                                caption="Party Name"
+                            />
+                            <Column
+                                dataField="royalty"
+                                alignment="center"
+                                caption="Mining Tonne"
+                            />
+                            <Column
+                                dataField="miningWeight"
+                                alignment="center"
+                                caption="Mining Tonne"
+                            />
+                            <Column
+                                dataField="nonMiningWeight"
+                                alignment="center"
+                                caption="Non Mining Tonne"
+                            />
+                            <Column
+                                dataField="transportRate"
+                                alignment="center"
+                                caption="Transport Cost PMT"
+                            />
+                            <Column
+                                dataField="SalesmanCode"
+                                alignment="center"
+                                caption="Royalty + Tax"
+                            />
+                            <Column
+                                dataField="SalesmanCode"
+                                alignment="center"
+                                caption="Transport Cost"
+                            />
 
-                {/* <TotalItem
+                            <Column
+                                dataField="TotalSalesAmt"
+                                alignment="right"
+                                format="$ #,##0.##"
+                                // displayFormat= "0.0"
+                                // precision="2"
+                                caption="Total Cost"
+                            />
+                            {/* <Column
+                                dataField="GrossCommRate"
+                                // format="percent"
+
+                                alignment="center"
+                                caption="GCommRate"
+                            />
+                            <Column
+                                dataField="GrossCommAmt"
+                                // displayFormat= "0.0"
+                                // precision="2"
+                                alignment="right"
+                                format="$ #,##0.##"
+                                caption="Profit/Lose"
+                            /> */}
+                            {/* <Column dataField="SalesmanCommRate" alignment="center" caption="SCommRate"/> */}
+                            <Column
+                                dataField="SalesmanCommAmt"
+                                // displayFormat="{0}"
+                                alignment="right"
+                                format="$ #,##0.##"
+                                caption="Is P or L"
+                            />
+                            <Column
+                                dataField="GrossCommRate"
+                                // format="percent"
+
+                                alignment="center"
+                                caption="Material Cost"
+                            />
+                            {/* <Column dataField="FactoryName" groupIndex={0} /> */}
+
+                            <Summary>
+                                <GroupItem
+                                    column='FactoryName'
+                                    summaryType='count'
+                                    displayFormat='{0}'
+                                />
+                                <TotalItem
+                                    column='FactoryName'
+                                    summaryType='count'
+                                    displayFormat='Total Records : {0} '
+                                    showInGroupFooter={true}
+                                />
+                                <GroupItem
+                                    column='SoldToName'
+                                    showInGroupFooter={true}
+                                    //alignByColumn={true}
+                                    alignment='right'
+                                    displayFormat='Total for principal : '
+                                />
+                                <TotalItem
+                                    column='SoldToName'
+                                    showInGroupFooter={true}
+                                    // alignByColumn={true}
+                                    alignment='right'
+                                    displayFormat='Total for Salesman : '
+                                />
+                                <GroupItem
+                                    column='TotalSalesAmt'
+                                    summaryType='sum'
+                                    valueFormat='##0.00'
+                                    displayFormat=' {0}'
+                                    showInGroupFooter={true}
+                                    //  valueFormat="currency"
+                                    alignByColumn={true}
+                                // displayFormat="{0}"
+                                />
+                                <TotalItem
+                                    column='TotalSalesAmt'
+                                    summaryType='sum'
+                                    showInGroupFooter={true}
+                                    //  valueFormat="currency"
+                                    valueFormat='##0.00'
+                                    displayFormat=' {0}'
+                                    alignByColumn={true}
+                                // displayFormat="{0}"
+                                />
+                                <GroupItem
+                                    column='GrossCommAmt'
+                                    summaryType='sum'
+                                    showInGroupFooter={true}
+                                    //  valueFormat="currency"
+                                    valueFormat='##0.00'
+                                    displayFormat=' {0}'
+                                    alignByColumn={true}
+                                // displayFormat="{0}"
+                                />
+                                <TotalItem
+                                    column='GrossCommAmt'
+                                    summaryType='sum'
+                                    showInGroupFooter={true}
+                                    //  valueFormat="currency"
+                                    valueFormat='##0.00'
+                                    displayFormat=' {0}'
+                                    alignByColumn={true}
+                                // displayFormat=" {0}"
+                                />
+                                <GroupItem
+                                    column='SalesmanCommAmt'
+                                    summaryType='sum'
+                                    displayFormat=' {0}'
+                                    showInGroupFooter={true}
+                                    valueFormat='##0.00'
+                                />
+                                <TotalItem
+                                    column='SalesmanCommAmt'
+                                    summaryType='sum'
+                                    displayFormat=' {0}'
+                                    showInGroupFooter={true}
+                                    alignByColumn={true}
+                                    valueFormat='##0.00'
+                                />
+
+                                {/* <TotalItem
               column="SaleAmount"
               
               summaryType="count"
               displayFormat="Total count: {0} companies"
             /> */}
-              </Summary>
-              {/* <Summary>
+                            </Summary>
+                            {/* <Summary>
             <TotalItem
               column="SaleAmount"
               summaryType="count"
@@ -443,14 +572,14 @@ const SalesReport = () => {
               valueFormat="currency" />  
           </Summary> */}
 
-              <SortByGroupSummaryInfo summaryItem='count' />
-              <Export enabled={true} formats={exportFormats}></Export>
-            </DataGrid>
-          </React.Fragment>
+                            <SortByGroupSummaryInfo summaryItem='count' />
+                            <Export enabled={true} formats={exportFormats}></Export>
+                        </DataGrid>
+                    </React.Fragment>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default SalesReport;
