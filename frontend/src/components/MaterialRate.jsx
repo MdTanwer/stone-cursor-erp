@@ -240,6 +240,7 @@ const MaterialRate = () => {
       materialName: materialName,
       locationName: locationName,
       customerName: customerName,
+      customerId: customerName?.trim()?.split(';')[0],
       rate: rate,
       purchaseRate: purchaseRate,
       transportRate: transportRate,
@@ -620,9 +621,12 @@ const MaterialRate = () => {
                               label='Select Prior Year'
                               onChange={handlecustomerChange}
                             >
-                              {allCustomer.map((el) => (
-                                <MenuItem key={el._id} value={el.customerName}>
-                                  {el.customerName}
+                              {allCustomer.map((el, i) => (
+                                <MenuItem
+                                  key={i}
+                                  value={`${el.customerId};${el.customerName}`}
+                                >
+                                  {`ID: ${el.customerId} - ${el.customerName}`}
                                 </MenuItem>
                               ))}
                             </Select>

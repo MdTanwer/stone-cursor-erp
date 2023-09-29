@@ -25,7 +25,6 @@ const materialRateSchema = new mongoose.Schema({
   },
   purchaseRate: {
     type: Number,
-
   },
   transportRate: {
     type: Number,
@@ -44,7 +43,7 @@ const materialRateSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
-    default: Date.now(),
+    // default: Date.now(),
   },
   updatedBy: {
     type: String,
