@@ -7,26 +7,30 @@ const invoiceSchema = new mongoose.Schema({
     type: Number,
   },
   currentDateTime: {
-    type: Date,
+    type: String,
   },
   customerName: {
     type: String,
     required: [true, 'Choose Customer !'],
   },
-  challan: {
-    type: String,
-    required: [true, 'Choose Challan !'],
+  challanNos: {
+    type: Array,
+    // required: [true, 'Choose Challan !'],
   },
-  dueAmount: {
-    type: String,
+  challans: {
+    type: Array,
+    // required: [true, 'Choose Challan !'],
   },
+  // dueAmount: {
+  //   type: String,
+  // },
   discount: {
     type: Number,
   },
   paybleAmount: {
     type: Number,
   },
-  recivedAmount: {
+  receivingAmount: {
     type: Number,
   },
   dueAdvAmount: {
