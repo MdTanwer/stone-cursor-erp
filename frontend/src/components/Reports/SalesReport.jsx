@@ -231,7 +231,7 @@ const SalesReport = () => {
     const challanMod = challans.map((el) => {
         return {
             ...el, currentDate: new Date(`${el.currentDate}`).toLocaleDateString('en-GB'),
-            licensePlateNumber: el.vehicle,
+            licensePlateNumber: el.vehicle.licensePlateNumber,
             rate: el.materialRateDetails.rate,
             transportRate: el.materialRateDetails.transportRate,
             customerName: el.customerName?.split(';')[1]?.trim(),
@@ -357,21 +357,17 @@ const SalesReport = () => {
                                 alignment="left"
                                 caption="Date"
                             />
-                            {/* <Column
+                            <Column
                                 dataField="licensePlateNumber"
                                 alignment="left"
                                 caption="Truck No"
-                            /> */}
+                            />
                             <Column
                                 dataField="materialName"
                                 alignment="left"
                                 caption="Material"
                             />
-                            <Column
-                                dataField="licensePlateNumber"
-                                alignment="left"
-                                caption="Material"
-                            />
+
                             <Column
                                 dataField="mineSourceName"
                                 alignment="left"
