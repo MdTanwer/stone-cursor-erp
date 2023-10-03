@@ -122,6 +122,9 @@ const addNewChallanSchema = new mongoose.Schema({
   nonMiningAmount: {
     type: Number,
   },
+  totalCost: {
+    type: Number,
+  },
   materialRateDetails: {
     type: Object,
   },
