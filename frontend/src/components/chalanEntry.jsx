@@ -119,8 +119,8 @@ export default function ChallanEntry(props) {
   const initialWeightState = {
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
     netWeight: '',
     emptyWeightDateTime: '',
@@ -149,11 +149,11 @@ export default function ChallanEntry(props) {
     loadType: '',
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
     emptyWeightDateTime: '',
-    netWeight: '',
+    netWeight: '0',
   };
 
   const columns = [
@@ -789,8 +789,7 @@ export default function ChallanEntry(props) {
     if (
       (challanEntryData.royalty === 'None'
         ? true
-        : challanEntryData.royalty !== 'None' &&
-          weightsData?.miningWeight !== '0') &&
+        : weightsData?.miningWeight !== '0') &&
       weightsData?.miningWeight < weightsData?.netWeight &&
       weightsData?.grossweight !== '' &&
       weightsData?.grossweight > 0 &&
@@ -806,11 +805,11 @@ export default function ChallanEntry(props) {
         resetWeightData();
       }, 100);
     } else {
-      if (weightsData.emptyWeight === '0') {
+      if (weightsData?.emptyWeight === '0' || weightsData?.emptyWeight === '') {
         toast.error('Empty Wt. Should be Greater Than Zero');
         return;
       }
-      if (weightsData.grossweight === '0') {
+      if (weightsData.grossweight === '0' || weightsData.grossweight === '') {
         toast.error('Gross Wt. Should be Greater Than Zero');
         return;
       }
@@ -820,15 +819,18 @@ export default function ChallanEntry(props) {
       ) {
         toast.error('Please Enter Mining Wt.');
       }
-      if (weightsData.miningWeight >= weightsData.netWeight) {
+      if (
+        weightsData?.miningWeight >= weightsData.netWeight &&
+        weightsData?.netWeight !== 0
+      ) {
         toast.error('Mining Wt. Should be Less than Net Wt.');
       }
-      if (weightsData.emptyWeight === '') {
-        toast.error('Please Enter Empty Wt.');
-      }
-      if (weightsData.grossweight === '') {
-        toast.error('Please Enter Gross Wt.');
-      }
+      // if (weightsData.emptyWeight === '') {
+      //   toast.error('Please Enter Empty Wt.');
+      // }
+      // if (weightsData.grossweight === '') {
+      //   toast.error('Please Enter Gross Wt.');
+      // }
     }
   };
 
@@ -921,19 +923,19 @@ export default function ChallanEntry(props) {
     };
     console.log('SUBMIT🔥🔥🔥', challan);
 
-    // try {
-    //   const { data } = await axios.post(`/challan/create-challan`, challan);
-    //   if (data?.success === true) {
-    //     toast.success('Challan Added Successfully');
-    //     getAllChallans();
-    //     // handleCloseCancel();
-    //     getMaxChallanNumber();
-    //     setIsSaved((prev) => (prev = true));
-    //     setIsPrint((prev) => (prev = false));
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    try {
+      const { data } = await axios.post(`/challan/create-challan`, challan);
+      if (data?.success === true) {
+        toast.success('Challan Added Successfully');
+        getAllChallans();
+        // handleCloseCancel();
+        getMaxChallanNumber();
+        setIsSaved((prev) => (prev = true));
+        setIsPrint((prev) => (prev = false));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handlePrint = (e) => {
@@ -2400,13 +2402,20 @@ export default function ChallanEntry(props) {
                     spacing={2}
                     // style={{ justifyContent: 'flex-end' }}
                   >
+                    {/* challanEntryData.royalty === 'None'
+                      ? true
+                      : challanEntryData.royalty !== 'None' &&
+                        weightsData?.miningWeight !== '0' */}
                     <Grid item xs={12} sm={3}>
                       <Button
                         disabled={
-                          challanEntryData?.royalty !== 'None' &&
-                          challanEntryData?.miningWeight === '0' &&
-                          challanEntryData?.grossweight !== '' &&
-                          challanEntryData?.emptyWeight !== ''
+                          // challanEntryData?.royalty !== 'None' &&
+                          (challanEntryData.royalty !== 'None' &&
+                            challanEntryData?.miningWeight === '0') ||
+                          // challanEntryData?.miningWeight === '0' &&
+                          challanEntryData?.grossweight === '' ||
+                          challanEntryData?.emptyWeight === '' ||
+                          isSaved
                             ? true
                             : false
                         }
