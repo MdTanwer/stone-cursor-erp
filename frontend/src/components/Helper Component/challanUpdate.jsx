@@ -184,7 +184,7 @@ export default function ChallanUpdateForm({
   const [showWeightBox, setShowWeightBox] = useState(false);
   const [customerDeleteName, setCustomerDeleteName] = useState('');
   const [challanData, setChallanData] = useState({ ...initialChallanState });
-  console.log(challanData);
+  // console.log(challanData);
   ///////////////////// All masters data /////////////////
 
   const [mineSource, setMineSource] = useState([]);

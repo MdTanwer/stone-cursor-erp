@@ -90,13 +90,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ChallanEntry(props) {
-
   const [isSaved, setIsSaved] = useState(false);
   const [isPrint, setIsPrint] = useState(true);
   const { name, email } = useSelector((state) => state.user.user);
   const [challans, setChallans] = useState([]);
   const classes = useStyles();
-  console.log(challans);
+  // console.log(challans);
   const getMaxChallanNumber = () => {
     if (!challans || challans.length === 0) {
       return 1;
@@ -120,8 +119,8 @@ export default function ChallanEntry(props) {
   const initialWeightState = {
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
     netWeight: '',
     emptyWeightDateTime: '',
@@ -150,11 +149,11 @@ export default function ChallanEntry(props) {
     loadType: '',
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
     emptyWeightDateTime: '',
-    netWeight: '',
+    netWeight: '0',
   };
 
   const columns = [
@@ -224,7 +223,7 @@ export default function ChallanEntry(props) {
   const [weightsData, setWeightsData] = useState({
     ...initialWeightState,
   });
-
+  console.log(weightsData);
   // console.log(challanEntryData);
 
   const [selectedRowId, setSelectedRowId] = useState('');
@@ -477,8 +476,11 @@ export default function ChallanEntry(props) {
       currentDate: dayjs(new Date()).$d.toLocaleDateString(),
       challanNumber: getMaxChallanNumber(),
       royalty: 'None',
-      miningWeight: 0,
-      nonMiningWeight: 0,
+      miningWeight: '0',
+      nonMiningWeight: '0',
+      // grossweight: 0,
+      // emptyWeight: 0,
+      netWeight: 0,
     });
     // getMaxChallanNumber();
     getAllChallans();
@@ -727,8 +729,13 @@ export default function ChallanEntry(props) {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        miningWeight: '',
-        nonMiningWeight: '',
+        miningWeight: '0',
+        nonMiningWeight: '0',
+      });
+      setWeightsData({
+        ...weightsData,
+        miningWeight: '0',
+        // nonMiningWeight: 0,
       });
       return;
     }
@@ -757,6 +764,21 @@ export default function ChallanEntry(props) {
       });
       return;
     }
+    // if (name === 'miningWeight') {
+    //   setWeightsData({
+    //     ...weightsData,
+    //     [name]: value,
+    //     nonMiningWeight:
+    //       weightsData.miningWeight === '0'
+    //         ? 0
+    //         : (
+    //             parseFloat(weightsData.netWeight) -
+    //             parseFloat(weightsData.miningWeight)
+    //           )?.toFixed(2),
+    //   });
+    //   return;
+    // }
+
     setWeightsData({
       ...weightsData,
       [name]: value,
@@ -764,14 +786,52 @@ export default function ChallanEntry(props) {
   };
 
   const handleAddWeightsOnClick = () => {
-    setChallanEntryData({
-      ...challanEntryData,
-      ...weightsData,
-    });
-    setShowWeightBox(false);
-    setTimeout(() => {
-      resetWeightData();
-    }, 100);
+    if (
+      (challanEntryData.royalty === 'None'
+        ? true
+        : weightsData?.miningWeight !== '0') &&
+      weightsData?.miningWeight < weightsData?.netWeight &&
+      weightsData?.grossweight !== '' &&
+      weightsData?.grossweight > 0 &&
+      weightsData?.emptyWeight !== '' &&
+      weightsData?.emptyWeight > 0
+    ) {
+      setChallanEntryData({
+        ...challanEntryData,
+        ...weightsData,
+      });
+      setShowWeightBox(false);
+      setTimeout(() => {
+        resetWeightData();
+      }, 100);
+    } else {
+      if (weightsData?.emptyWeight === '0' || weightsData?.emptyWeight === '') {
+        toast.error('Empty Wt. Should be Greater Than Zero');
+        return;
+      }
+      if (weightsData.grossweight === '0' || weightsData.grossweight === '') {
+        toast.error('Gross Wt. Should be Greater Than Zero');
+        return;
+      }
+      if (
+        challanEntryData.royalty !== 'None' &&
+        weightsData?.miningWeight === '0'
+      ) {
+        toast.error('Please Enter Mining Wt.');
+      }
+      if (
+        weightsData?.miningWeight >= weightsData.netWeight &&
+        weightsData?.netWeight !== 0
+      ) {
+        toast.error('Mining Wt. Should be Less than Net Wt.');
+      }
+      // if (weightsData.emptyWeight === '') {
+      //   toast.error('Please Enter Empty Wt.');
+      // }
+      // if (weightsData.grossweight === '') {
+      //   toast.error('Please Enter Gross Wt.');
+      // }
+    }
   };
 
   const resetWeightData = () => {
@@ -801,38 +861,7 @@ export default function ChallanEntry(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const newFormData = new FormData(e.currentTarget);
-    // newFormData.append('customerId', challanEntryData.customerId);
-    // newFormData.append('challanNumber', challanEntryData.challanNumber);
-    // newFormData.append(
-    //   'customerPhoneNumber',
-    //   challanEntryData.customerPhoneNumber
-    // );
-    // newFormData.append('currentDate', challanEntryData.currentDate);
-    // newFormData.append('grossweight', challanEntryData.grossweight);
-    // newFormData.append(
-    //   'grossWeightDateTime',
-    //   challanEntryData.grossWeightDateTime
-    // );
-    // newFormData.append('miningWeight', challanEntryData.miningWeight);
-    // newFormData.append('nonMiningWeight', challanEntryData.nonMiningWeight);
-    // newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
-    // newFormData.append(
-    //   'manualTransportName',
-    //   challanEntryData.manualTransportName
-    // );
-    // newFormData.append('emptyWeight', challanEntryData.emptyWeight);
-    // newFormData.append(
-    //   'emptyWeightDateTime',
-    //   challanEntryData.emptyWeightDateTime
-    // );
-    // newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
-    // newFormData.append('netWeight', challanEntryData.netWeight);
-    // newFormData.append('createdBy', `Name: ${name}, Email: ${email}`);
-    // newFormData.append('createdAt', challanEntryData.currentDate);
-    // newFormData.append('quantity', challanEntryData.quantity);
 
-    // const newForm = Object.fromEntries(newFormData);
     const materialRateDetails = getMaterialRateObject(
       challanEntryData?.materialName,
       challanEntryData?.customerDestination
@@ -859,12 +888,30 @@ export default function ChallanEntry(props) {
 
     const vehicle = getVehicle(challanEntryData?.vehicle);
 
+    const totalCost =
+      royalty === 'None'
+        ? (
+            parseFloat(challanEntryData?.netWeight) *
+            (parseFloat(materialRateDetails?.transportRate) +
+              parseFloat(materialRateDetails?.purchaseRate))
+          )?.toFixed(2)
+        : (
+            parseFloat(challanEntryData?.miningWeight) *
+              (parseFloat(materialRateDetails?.transportRate) +
+                parseFloat(materialRateDetails?.purchaseRate) +
+                parseFloat(royalty?.royltyRate)) +
+            parseFloat(challanEntryData?.nonMiningWeight) *
+              (parseFloat(materialRateDetails?.transportRate) +
+                parseFloat(materialRateDetails?.purchaseRate))
+          )?.toFixed(2);
+
     const challan = {
       ...challanEntryData,
       customerId: challanEntryData?.customerName?.trim().split(';')[0],
       createdBy: `Name: ${name}, Email: ${email}`,
       createdAt: challanEntryData.currentDate,
       saleAmount: saleAmount,
+      miningWeight: parseFloat(challanEntryData?.miningWeight),
       miningAmount: miningAmount,
       nonMiningAmount: nonMiningAmount,
       materialRateDetails: materialRateDetails,
@@ -872,6 +919,7 @@ export default function ChallanEntry(props) {
       nonMiningWeight: parseFloat(challanEntryData.nonMiningWeight)?.toFixed(2),
       royalty: royalty,
       vehicle: vehicle,
+      totalCost: totalCost,
     };
     console.log('SUBMIT🔥🔥🔥', challan);
 
@@ -2267,7 +2315,7 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
-                    value={challanEntryData.emptyWeight}
+                    value={parseFloat(challanEntryData.emptyWeight)?.toFixed(2)}
                     autoComplete='emptyWeight'
                     name='emptyWeight'
                     variant='outlined'
@@ -2307,6 +2355,9 @@ export default function ChallanEntry(props) {
                     type='number'
                     style={{ backgroundColor: '#d3f9d8' }}
                     disabled={true}
+                    required={
+                      challanEntryData?.royalty !== 'None' ? true : false
+                    }
                     value={parseFloat(challanEntryData.miningWeight)?.toFixed(
                       2
                     )}
@@ -2351,9 +2402,23 @@ export default function ChallanEntry(props) {
                     spacing={2}
                     // style={{ justifyContent: 'flex-end' }}
                   >
+                    {/* challanEntryData.royalty === 'None'
+                      ? true
+                      : challanEntryData.royalty !== 'None' &&
+                        weightsData?.miningWeight !== '0' */}
                     <Grid item xs={12} sm={3}>
                       <Button
-                        disabled={isSaved}
+                        disabled={
+                          // challanEntryData?.royalty !== 'None' &&
+                          (challanEntryData.royalty !== 'None' &&
+                            challanEntryData?.miningWeight === '0') ||
+                          // challanEntryData?.miningWeight === '0' &&
+                          challanEntryData?.grossweight === '' ||
+                          challanEntryData?.emptyWeight === '' ||
+                          isSaved
+                            ? true
+                            : false
+                        }
                         type='submit'
                         fullWidth
                         variant='contained'
@@ -2528,18 +2593,22 @@ export default function ChallanEntry(props) {
               <TextField
                 style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
-                value={parseFloat(
+                value={
                   (weightsData.netWeight =
-                    parseFloat(weightsData.grossweight) -
-                    parseFloat(weightsData.emptyWeight))
-                )?.toFixed(2)}
+                    weightsData?.grossweight && weightsData?.emptyWeight
+                      ? (
+                          parseFloat(weightsData?.grossweight) -
+                          parseFloat(weightsData?.emptyWeight)
+                        )?.toFixed(2)
+                      : 0)
+                }
                 autoComplete='netWeight'
                 name='netWeight'
                 variant='outlined'
                 fullWidth
                 id='netWeight'
                 label='Net Weight'
-                onChange={handleWeightChange}
+                // onChange={handleWeightChange}
                 autoFocus
                 InputLabelProps={{
                   shrink: true,
@@ -2573,13 +2642,13 @@ export default function ChallanEntry(props) {
                 style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
                 value={
-                  weightsData.miningWeight !== 0
-                    ? parseFloat(
-                        (weightsData.nonMiningWeight =
-                          parseFloat(weightsData.netWeight) -
-                          parseFloat(weightsData.miningWeight))
-                      )?.toFixed(2)
-                    : 0
+                  (weightsData.nonMiningWeight =
+                    weightsData?.miningWeight === '0'
+                      ? '0'
+                      : (
+                          parseFloat(weightsData?.netWeight) -
+                          parseFloat(weightsData?.miningWeight)
+                        )?.toFixed(2))
                 }
                 // value={weightsData.nonMiningWeight}
                 autoComplete='nonMiningWeight'
