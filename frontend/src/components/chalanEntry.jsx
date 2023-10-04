@@ -95,7 +95,7 @@ export default function ChallanEntry(props) {
   const { name, email } = useSelector((state) => state.user.user);
   const [challans, setChallans] = useState([]);
   const classes = useStyles();
-
+  // console.log(challans);
   const getMaxChallanNumber = () => {
     if (!challans || challans.length === 0) {
       return 1;
@@ -119,9 +119,10 @@ export default function ChallanEntry(props) {
   const initialWeightState = {
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
+    netWeight: '',
     emptyWeightDateTime: '',
   };
 
@@ -143,23 +144,27 @@ export default function ChallanEntry(props) {
     manualVehicleName: '',
     driver: '',
     manualDrivereName: '',
-    royaltyType: 'None',
+    royalty: 'None',
     loadedBy: '',
     loadType: '',
     grossweight: '',
     grossWeightDateTime: '',
-    miningWeight: '',
-    nonMiningWeight: '',
+    miningWeight: '0',
+    nonMiningWeight: '0',
     emptyWeight: '',
     emptyWeightDateTime: '',
-    netWeight: '',
+    netWeight: '0',
   };
 
   const columns = [
     { title: 'MongoDB Challan ID', field: '_id', hidden: true },
     { title: 'Challan No.', field: 'challanNumber' },
     { title: 'Manual Challan No.', field: 'mChallanNo' },
-    { title: 'Customer Name', field: 'customerName' },
+    {
+      title: 'Customer Name',
+      field: 'customerName',
+      render: (rowData) => rowData?.customerName?.split(';')[1],
+    },
     { title: 'Customer Phone No.', field: 'customerPhoneNumber' },
     { title: 'Material', field: 'materialName' },
     { title: 'Gross Weight', field: 'grossweight' },
@@ -179,11 +184,19 @@ export default function ChallanEntry(props) {
     { title: 'Unit', field: 'unit' },
     { title: 'Transporter', field: 'transporter' },
     { title: 'Manual Transporter', field: 'manualTransportName' },
-    { title: 'vehicle', field: 'vehicle' },
+    {
+      title: 'Vehicle No.',
+      // field: 'vehicle',
+      render: (rowData) => rowData?.vehicle?.licensePlateNumber,
+    },
     { title: 'Manual Vehicle', field: 'manualVehicleName' },
     { title: 'Driver', field: 'driver' },
     { title: 'Manual Driver', field: 'manualDrivereName' },
-    { title: 'Royalty Type', field: 'royaltyType' },
+    {
+      title: 'Royalty Type',
+      field: 'royalty',
+      render: (rowData) => rowData.royalty.royltyRate,
+    },
     { title: 'Loaded By', field: 'loadedBy' },
     { title: 'Load Type', field: 'loadType' },
   ];
@@ -210,7 +223,7 @@ export default function ChallanEntry(props) {
   const [weightsData, setWeightsData] = useState({
     ...initialWeightState,
   });
-
+  console.log(weightsData);
   // console.log(challanEntryData);
 
   const [selectedRowId, setSelectedRowId] = useState('');
@@ -224,7 +237,7 @@ export default function ChallanEntry(props) {
   const [customers, setCustomers] = useState([]);
   // const [material, setMaterial] = useState([]);
   const [materialRate, setMaterialRate] = useState([]);
-  const [uniqueCustomerName, setUniqueCustomerName] = useState([]);
+  // const [uniqueCustomerName, setUniqueCustomerName] = useState([]);
   const [allUnits, setAllUnits] = useState([]);
   const [transportData, setTransportData] = useState([]);
   const [vehiclesdata, setVehiclesdata] = useState([]);
@@ -270,14 +283,33 @@ export default function ChallanEntry(props) {
       const response = await axios.get('materialrate/get/materialrate');
       // console.log(response.data.materialrates);
       setMaterialRate(response.data.materialrates);
-      setUniqueCustomerName([
-        ...new Set(
-          response.data.materialrates.map((item) => item.customerName)
-        ),
-      ]);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getMaterialRateObject = (...materialNameDest) => {
+    // const custId = custIdName.split(';')[0];
+
+    let materialRateInfo = materialRate.find((el) => {
+      return (
+        materialNameDest.includes(el.materialName) &&
+        materialNameDest.includes(el.locationName)
+      );
+    });
+    // let materialRateInfo = materialRate.find((item) => {
+    //   return item.customerName.trim() === custName.trim();
+    // });
+    // console.log(materialRateInfo);
+    return materialRateInfo;
+  };
+
+  const getRoyaltyObject = (royltyId) => {
+    let royaltyObject = miningRoyalty.find((item) => {
+      return item.royltyId === royltyId;
+    });
+
+    return royaltyObject;
   };
 
   const getMaterialRateInfo = (custIdName) => {
@@ -293,12 +325,12 @@ export default function ChallanEntry(props) {
     return materialRateInfo;
   };
 
-  const getVehicleNumber = (vehicleName) => {
+  const getVehicle = (licensePlateNumber) => {
     // let materialRateInfo = materialRate.filter((item) => {
     //   return item.customerName.trim() === custName.trim();
     // });
     let vehicle = vehiclesdata.find((item) => {
-      return item.vehicleTypes.trim() === vehicleName.trim();
+      return item.licensePlateNumber?.trim() === licensePlateNumber?.trim();
     });
     // console.log(materialRateInfo);
     return vehicle;
@@ -335,7 +367,7 @@ export default function ChallanEntry(props) {
     }
   };
 
-  const getVehicle = async () => {
+  const getAllVehicles = async () => {
     try {
       const response = await axios.get('vehicle/get-vehicle');
       setVehiclesdata(response.data.vehicles);
@@ -443,7 +475,12 @@ export default function ChallanEntry(props) {
       unit: 'Tonne',
       currentDate: dayjs(new Date()).$d.toLocaleDateString(),
       challanNumber: getMaxChallanNumber(),
-      royaltyType: 'None',
+      royalty: 'None',
+      miningWeight: '0',
+      nonMiningWeight: '0',
+      // grossweight: 0,
+      // emptyWeight: 0,
+      netWeight: 0,
     });
     // getMaxChallanNumber();
     getAllChallans();
@@ -454,7 +491,7 @@ export default function ChallanEntry(props) {
     getMaterialRate();
     getAllUnits();
     getTransport();
-    getVehicle();
+    getAllVehicles();
     getdriversMaster();
     getLoaderMaster();
     getLoadType();
@@ -629,7 +666,21 @@ export default function ChallanEntry(props) {
     return maxID + 1;
   };
 
-  // maxID OF all PopUp Componennt end
+  // calculate challan amount
+
+  // const calcSaleAmount = () => {
+  //   const saleAmount = parseFloat(
+  //     parseFloat(challanEntryData?.netWeight) *
+  //       parseFloat(
+  //         getMaterialRateObject(
+  //           challanEntryData?.materialName,
+  //           challanEntryData?.customerDestination
+  //         )?.rate
+  //       )
+  //   )?.toFixed(2);
+
+  //   return saleAmount;
+  // };
 
   const handleDateChange = (newValue) => {
     setCurrentDate(newValue);
@@ -646,7 +697,6 @@ export default function ChallanEntry(props) {
         ...challanEntryData,
         [name]: value,
         customerPhoneNumber: getCustomerPhoneNo(value)?.phoneNumber,
-        customerId: value?.split(';')[0],
       });
       return;
     }
@@ -679,13 +729,37 @@ export default function ChallanEntry(props) {
       setChallanEntryData({
         ...challanEntryData,
         [name]: value,
-        miningWeight: '',
-        nonMiningWeight: '',
-        // netWeight:
-        //   parseInt(challanEntryData.grossweight) -
-        //   parseInt(challanEntryData.emptyWeight),
+        miningWeight: '0',
+        nonMiningWeight: '0',
+      });
+      setWeightsData({
+        ...weightsData,
+        miningWeight: '0',
+        // nonMiningWeight: 0,
       });
       return;
+    }
+    // if (name === 'royalty') {
+    //   setChallanEntryData({
+    //     ...challanEntryData,
+    //     [name]: value,
+    //   });
+    //   return;
+    // }
+    if (
+      challanEntryData?.grossweight !== '' &&
+      challanEntryData?.emptyWeight !== '' &&
+      challanEntryData?.miningWeight === '0'
+    ) {
+      // toast.error('Enter Mining & Non-Mining Wt');
+      toast.error('Enter Mining & Non-Mining Wt', {
+        autoClose: 5000,
+        position: toast.POSITION.BOTTOM_CENTER,
+        // zIndex: 9999,
+      });
+      setTimeout(() => {
+        handleAddWeightButton();
+      }, 500);
     }
 
     setChallanEntryData({
@@ -712,23 +786,87 @@ export default function ChallanEntry(props) {
       });
       return;
     }
+    // if (name === 'miningWeight') {
+    //   setWeightsData({
+    //     ...weightsData,
+    //     [name]: value,
+    //     nonMiningWeight:
+    //       weightsData.miningWeight === '0'
+    //         ? 0
+    //         : (
+    //             parseFloat(weightsData.netWeight) -
+    //             parseFloat(weightsData.miningWeight)
+    //           )?.toFixed(2),
+    //   });
+    //   return;
+    // }
+
     setWeightsData({
       ...weightsData,
       [name]: value,
     });
   };
 
-  const handleAddWeightsOnClick = () => {
-    setChallanEntryData({
-      ...challanEntryData,
-      ...weightsData,
-      netWeight:
-        parseInt(weightsData.grossweight) - parseInt(weightsData.emptyWeight),
+  const handleAddWeightButton = () => {
+    setShowWeightBox(true);
+    setWeightsData({
+      grossweight: challanEntryData.grossweight,
+      miningWeight: challanEntryData.miningWeight,
+      nonMiningWeight: challanEntryData.nonMiningWeight,
+      netWeight: challanEntryData.netWeight,
+      emptyWeight: challanEntryData.emptyWeight,
     });
-    setShowWeightBox(false);
-    setTimeout(() => {
-      resetWeightData();
-    }, 100);
+  };
+
+  const handleAddWeightsOnClick = () => {
+    if (
+      (challanEntryData.royalty === 'None'
+        ? true
+        : weightsData?.miningWeight !== '0') &&
+      parseFloat(parseFloat(weightsData?.miningWeight).toFixed(2)) <=
+        parseFloat(parseFloat(weightsData?.netWeight).toFixed(2)) &&
+      weightsData?.grossweight !== '' &&
+      weightsData?.grossweight > 0 &&
+      weightsData?.emptyWeight !== '' &&
+      weightsData?.emptyWeight > 0
+    ) {
+      setChallanEntryData({
+        ...challanEntryData,
+        ...weightsData,
+      });
+      setShowWeightBox(false);
+      setTimeout(() => {
+        resetWeightData();
+      }, 100);
+    } else {
+      if (weightsData?.emptyWeight === '0' || weightsData?.emptyWeight === '') {
+        toast.error('Empty Wt. Should be Greater Than Zero');
+        return;
+      }
+      if (weightsData.grossweight === '0' || weightsData.grossweight === '') {
+        toast.error('Gross Wt. Should be Greater Than Zero');
+        return;
+      }
+      if (
+        challanEntryData.royalty !== 'None' &&
+        weightsData?.miningWeight === '0'
+      ) {
+        toast.error('Please Enter Mining Wt.');
+      }
+      if (
+        parseFloat(parseFloat(weightsData?.miningWeight).toFixed(2)) >
+          parseFloat(parseFloat(weightsData.netWeight).toFixed(2)) &&
+        parseFloat(parseFloat(weightsData?.netWeight).toFixed(2)) !== 0
+      ) {
+        toast.error('Mining Wt. Should be Less than Net Wt.');
+      }
+      // if (weightsData.emptyWeight === '') {
+      //   toast.error('Please Enter Empty Wt.');
+      // }
+      // if (weightsData.grossweight === '') {
+      //   toast.error('Please Enter Gross Wt.');
+      // }
+    }
   };
 
   const resetWeightData = () => {
@@ -749,7 +887,6 @@ export default function ChallanEntry(props) {
   const handleReset = () => {
     setCurrentDate(dayjs(new Date()));
     setChallanEntryData({
-      // ...challanEntryData,
       ...initialChallanState,
       currentDate: dayjs(new Date()).$d.toLocaleDateString('en-GB'),
     });
@@ -759,42 +896,125 @@ export default function ChallanEntry(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newFormData = new FormData(e.currentTarget);
-    newFormData.append('customerId', challanEntryData.customerId);
-    newFormData.append('challanNumber', challanEntryData.challanNumber);
-    newFormData.append(
-      'customerPhoneNumber',
-      challanEntryData.customerPhoneNumber
-    );
-    newFormData.append('currentDate', challanEntryData.currentDate);
-    newFormData.append('grossweight', challanEntryData.grossweight);
-    newFormData.append(
-      'grossWeightDateTime',
-      challanEntryData.grossWeightDateTime
-    );
-    newFormData.append('miningWeight', challanEntryData.miningWeight);
-    newFormData.append('nonMiningWeight', challanEntryData.nonMiningWeight);
-    newFormData.append('manualDrivereName', challanEntryData.manualDrivereName);
-    newFormData.append(
-      'manualTransportName',
-      challanEntryData.manualTransportName
-    );
-    newFormData.append('emptyWeight', challanEntryData.emptyWeight);
-    newFormData.append(
-      'emptyWeightDateTime',
-      challanEntryData.emptyWeightDateTime
-    );
-    newFormData.append('manualVehicleName', challanEntryData.manualVehicleName);
-    newFormData.append('netWeight', challanEntryData.netWeight);
-    newFormData.append('createdBy', `Name: ${name}, Email: ${email}`);
-    newFormData.append('createdAt', challanEntryData.currentDate);
-    // newFormData.append('quantity', challanEntryData.quantity);
 
-    const newForm = Object.fromEntries(newFormData);
-    console.log('SUBMIT🔥🔥🔥', newForm);
+    const materialRateDetails = getMaterialRateObject(
+      challanEntryData?.materialName,
+      challanEntryData?.customerDestination
+    );
+
+    const partyRate = materialRateDetails?.rate;
+
+    const saleAmount = parseFloat(
+      (parseFloat(challanEntryData?.netWeight) * parseFloat(partyRate)).toFixed(
+        2
+      )
+    );
+
+    const miningAmount = parseFloat(
+      (
+        parseFloat(challanEntryData?.miningWeight) * parseFloat(partyRate)
+      ).toFixed(2)
+    );
+
+    const nonMiningAmount = parseFloat(
+      (
+        parseFloat(challanEntryData?.nonMiningWeight) * parseFloat(partyRate)
+      ).toFixed(2)
+    );
+
+    const royaltyObject = getRoyaltyObject(challanEntryData?.royalty);
+
+    const royalty =
+      challanEntryData?.royalty === 'None' ? 'None' : royaltyObject;
+
+    const vehicle = getVehicle(challanEntryData?.vehicle);
+
+    const totalTransportCost = parseFloat(
+      (
+        parseFloat(challanEntryData?.netWeight) *
+        parseFloat(materialRateDetails?.transportRate)
+      ).toFixed(2)
+    );
+
+    const totalCost =
+      royalty === 'None'
+        ? parseFloat(
+            (
+              parseFloat(challanEntryData?.netWeight) *
+              (parseFloat(materialRateDetails?.transportRate) +
+                parseFloat(materialRateDetails?.purchaseRate))
+            ).toFixed(2)
+          )
+        : parseFloat(
+            (
+              parseFloat(challanEntryData?.miningWeight) *
+                (parseFloat(materialRateDetails?.transportRate) +
+                  parseFloat(materialRateDetails?.purchaseRate) +
+                  parseFloat(royalty?.royltyRate)) +
+              parseFloat(challanEntryData?.nonMiningWeight) *
+                (parseFloat(materialRateDetails?.transportRate) +
+                  parseFloat(materialRateDetails?.purchaseRate))
+            ).toFixed(2)
+          );
+
+    const totalMaterialCost =
+      royalty === 'None'
+        ? parseFloat(
+            (
+              parseFloat(challanEntryData?.netWeight) *
+              parseFloat(materialRateDetails?.purchaseRate)
+            ).toFixed(2)
+          )
+        : parseFloat(
+            (
+              parseFloat(challanEntryData?.miningWeight) *
+                (parseFloat(materialRateDetails?.purchaseRate) +
+                  parseFloat(royalty?.royltyRate)) +
+              parseFloat(challanEntryData?.nonMiningWeight) *
+                parseFloat(materialRateDetails?.purchaseRate)
+            ).toFixed(2)
+          );
+
+    const profitLoss = parseFloat(
+      (parseFloat(saleAmount) - parseFloat(totalCost)).toFixed(2)
+    );
+
+    const isPorL = profitLoss > 0 ? 'PROFIT' : 'LOSS';
+
+    const splitProfitLoss = {
+      sixtyPer: parseFloat((0.6 * parseFloat(profitLoss)).toFixed(2)),
+      fortyPer: parseFloat((0.4 * parseFloat(profitLoss)).toFixed(2)),
+    };
+
+    const challan = {
+      ...challanEntryData,
+      customerId: challanEntryData?.customerName?.trim().split(';')[0],
+      createdBy: `Name: ${name}, Email: ${email}`,
+      createdAt: challanEntryData.currentDate,
+      saleAmount: saleAmount,
+      miningWeight: parseFloat(
+        parseFloat(challanEntryData?.miningWeight).toFixed(2)
+      ),
+      miningAmount: miningAmount,
+      nonMiningAmount: nonMiningAmount,
+      materialRateDetails: materialRateDetails,
+      netWeight: parseFloat(parseFloat(challanEntryData.netWeight).toFixed(2)),
+      nonMiningWeight: parseFloat(
+        parseFloat(challanEntryData.nonMiningWeight)?.toFixed(2)
+      ),
+      royalty: royalty,
+      vehicle: vehicle,
+      totalTransportCost: totalTransportCost,
+      totalCost: totalCost,
+      totalMaterialCost: totalMaterialCost,
+      profitLoss: profitLoss,
+      isPorL: isPorL,
+      splitProfitLoss: splitProfitLoss,
+    };
+    console.log('SUBMIT🔥🔥🔥', challan);
 
     try {
-      const { data } = await axios.post(`/challan/create-challan`, newForm);
+      const { data } = await axios.post(`/challan/create-challan`, challan);
       if (data?.success === true) {
         toast.success('Challan Added Successfully');
         getAllChallans();
@@ -951,8 +1171,7 @@ export default function ChallanEntry(props) {
             <div class="div-2-section-1">
               <p>VEHICLE NO. :</p>
               <p>${
-                getVehicleNumber(challanEntryData.vehicle)
-                  ?.licensePlateNumber || ''
+                getVehicle(challanEntryData.vehicle)?.licensePlateNumber || ''
               }</p>
               <p>MATERIAL NAME :</p>
               <p>${challanEntryData.materialName || ''}</p>
@@ -1118,6 +1337,7 @@ export default function ChallanEntry(props) {
     setOpenMasterLoadtype(true);
     // setOpenSourceMine(true)
   };
+
   return (
     <>
       <Grid container spacing={2}>
@@ -1297,7 +1517,7 @@ export default function ChallanEntry(props) {
 
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         color='primary'
                         onClick={handleMineSourceClick}
                       />
@@ -1348,7 +1568,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                         onClick={handleSiteInchargeClick}
@@ -1439,12 +1659,12 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       {/* <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                       /> */}
                       {/* <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         color='primary'
                         onClick={handleCustomerClick}
                         // onClick={() => setOpenMasterCustomer(true)}
@@ -1525,7 +1745,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     {/* <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                         onClick={handleMasterCompClick}
@@ -1589,7 +1809,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     {/* <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                       />
@@ -1597,7 +1817,7 @@ export default function ChallanEntry(props) {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={12} sm={2}>
+                {/* <Grid item xs={12} sm={2}>
                   <TextField
                     required
                     type='number'
@@ -1613,71 +1833,9 @@ export default function ChallanEntry(props) {
                     // onChange={(e) => setSaleSlipNo(e.target.value)}
                     autoFocus
                   />
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12} sm={2}>
-                  <Grid
-                    container
-                    spacing={1}
-                    style={{ flexSpacing: '2rem' }}
-                    xs={12}
-                    sm={12}
-                    alignItems='center'
-                  >
-                    <Grid item xs={12} sm={10}>
-                      <Box sx={{ minWidth: 20 }}>
-                        <FormControl fullWidth>
-                          <InputLabel id='demo-simple-select-label'>
-                            Select Unit
-                          </InputLabel>
-                          <Select
-                            required
-                            name='unit'
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            value={challanEntryData.unit}
-                            label='Select Prior Year'
-                            onChange={handleChange}
-                          >
-                            {allUnits.map((el) => (
-                              <MenuItem
-                                key={el.unitmasterId}
-                                value={el.unitName}
-                              >
-                                {el.unitName}
-                              </MenuItem>
-                            ))}
-                            {/* <MenuItem value='Value 1'>Value 1</MenuItem>
-                            <MenuItem value='Value 2'>Value 2</MenuItem>
-                            <MenuItem value='Value 3'>Value 3</MenuItem> */}
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      {/* <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
-                        // fontSize='large'
-                        color='primary'
-                      /> */}
-                      <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
-                        color='primary'
-                        onClick={handleUnitClick}
-                      />
-                      {openUnitMaster && (
-                        <MasterUnitComp
-                          openUnitMaster={openUnitMaster}
-                          getMaxUnitMasterId={getMaxUnitMasterId}
-                          // onClose={handleCloseeCancle}
-                          setOpenUnitMaster={setOpenUnitMaster}
-                        />
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <Grid
                     container
                     spacing={1}
@@ -1743,7 +1901,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         color='primary'
                         onClick={handleTransportClick}
                       />
@@ -1758,7 +1916,7 @@ export default function ChallanEntry(props) {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <TextField
                     disabled={
                       challanEntryData.transporter === 'Others' ? false : true
@@ -1808,11 +1966,8 @@ export default function ChallanEntry(props) {
                             label='Select Vehicle'
                             onChange={handleChange}
                           >
-                            {vehiclesdata.map((el) => (
-                              <MenuItem
-                                key={el.vehicleId}
-                                value={el.vehicleTypes}
-                              >
+                            {vehiclesdata.map((el, i) => (
+                              <MenuItem key={i} value={el.licensePlateNumber}>
                                 {`${el.vehicleTypes} - ${el.licensePlateNumber}`}
                               </MenuItem>
                             ))}
@@ -1836,7 +1991,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         color='primary'
                         onClick={handleVechicleClick}
                       />
@@ -1927,7 +2082,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                         onClick={handleDriverClick}
@@ -1970,67 +2125,7 @@ export default function ChallanEntry(props) {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                  <Grid
-                    container
-                    spacing={1}
-                    style={{ flexSpacing: '2rem' }}
-                    xs={12}
-                    sm={12}
-                    alignItems='center'
-                  >
-                    <Grid item xs={12} sm={10}>
-                      <Box sx={{ minWidth: 20 }}>
-                        <FormControl fullWidth>
-                          <InputLabel id='demo-simple-select-label'>
-                            Select Royalty
-                          </InputLabel>
-                          <Select
-                            name='royaltyType'
-                            labelId='demo-simple-select-label'
-                            id='demo-simple-select'
-                            // defaultValue='None'
-                            value={challanEntryData.royaltyType}
-                            label='Select Royalty'
-                            onChange={handleChange}
-                          >
-                            {miningRoyalty.map((el) => (
-                              <MenuItem
-                                value={el.royltyId}
-                              >{`${el.mineName} - ${el.royltyRate}`}</MenuItem>
-                            ))}
-                            {/* <MenuItem value='Value 1'>Value 1</MenuItem>
-                            <MenuItem value='Value 2'>Value 2</MenuItem>
-                            <MenuItem value='Value 3'>Value 3</MenuItem> */}
-                            <MenuItem
-                              style={{
-                                color: '#495057',
-                                backgroundColor: '#e9ecef',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                border: '3px solid #adb5bd',
-                                borderRadius: '0.5rem',
-                                margin: '4px',
-                              }}
-                              value='None'
-                            >
-                              None
-                            </MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={2}>
-                      <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
-                        // fontSize='large'
-                        color='primary'
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <Grid
                     container
                     spacing={1}
@@ -2068,7 +2163,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                         onClick={handleLoaderClick}
@@ -2083,7 +2178,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={3}>
                   <Grid
                     container
                     spacing={1}
@@ -2121,7 +2216,7 @@ export default function ChallanEntry(props) {
                     </Grid>
                     <Grid item xs={12} sm={2}>
                       <AddCircleIcon
-                        sx={{ fontSize: '30px' }}
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
                         // fontSize='large'
                         color='primary'
                         onClick={handleLoadtypeClick}
@@ -2137,131 +2232,211 @@ export default function ChallanEntry(props) {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={12} sm={2}>
-                  <Button
-                    style={{
-                      height: '100%',
-                      backgroundColor: '#8ce99a',
-                      border: '3px solid #37b24d',
-                      // borderRadius: '0.5rem',
-                    }}
-                    name='addWeight'
-                    variant='contained'
-                    // color='secondary'
-                    fullWidth
-                    onClick={() => {
-                      setShowWeightBox(true);
-                      setWeightsData({
-                        grossweight: challanEntryData.grossweight,
-                        miningWeight: challanEntryData.miningWeight,
-                        nonMiningWeight: challanEntryData.nonMiningWeight,
-                        emptyWeight: challanEntryData.emptyWeight,
-                      });
-                    }}
-                    autoFocus
+                <Grid item xs={12} sm={3}>
+                  <Grid
+                    container
+                    spacing={1}
+                    style={{ flexSpacing: '2rem' }}
+                    xs={12}
+                    sm={12}
+                    alignItems='center'
                   >
-                    Add Weights
-                  </Button>
+                    <Grid item xs={12} sm={10}>
+                      <Box sx={{ minWidth: 20 }}>
+                        <FormControl fullWidth>
+                          <InputLabel id='demo-simple-select-label'>
+                            Select Royalty
+                          </InputLabel>
+                          <Select
+                            name='royalty'
+                            labelId='demo-simple-select-label'
+                            id='demo-simple-select'
+                            // defaultValue='None'
+                            value={challanEntryData.royalty}
+                            label='Select Royalty'
+                            onChange={handleChange}
+                          >
+                            {miningRoyalty.map((el, i) => (
+                              <MenuItem
+                                key={i}
+                                value={el.royltyId}
+                              >{`${el.mineName} - ${el.royltyRate}`}</MenuItem>
+                            ))}
+                            <MenuItem
+                              style={{
+                                color: '#495057',
+                                backgroundColor: '#e9ecef',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                border: '3px solid #adb5bd',
+                                borderRadius: '0.5rem',
+                                margin: '4px',
+                              }}
+                              value='None'
+                            >
+                              None
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <AddCircleIcon
+                        sx={{ fontSize: '30px', cursor: 'pointer' }}
+                        // fontSize='large'
+                        color='primary'
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    required
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={true}
-                    value={challanEntryData.grossweight}
-                    autoComplete='grossweight'
-                    name='grossweight'
-                    variant='outlined'
-                    fullWidth
-                    id='grossweight'
-                    label='Gross Weight'
-                    onChange={handleChange}
-                    autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    // required
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={true}
-                    value={challanEntryData.miningWeight}
-                    autoComplete='miningWeight'
-                    name='miningWeight'
-                    variant='outlined'
-                    fullWidth
-                    id='miningWeight'
-                    label='Mining Weight'
-                    onChange={handleChange}
-                    autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    // required
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={true}
-                    value={challanEntryData.nonMiningWeight}
-                    autoComplete='nonMiningWeight'
-                    name='nonMiningWeight'
-                    variant='outlined'
-                    fullWidth
-                    id='nonMiningWeight'
-                    label='Non Mining Weight'
-                    onChange={handleChange}
-                    autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    required
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={true}
-                    value={challanEntryData.emptyWeight}
-                    autoComplete='emptyWeight'
-                    name='emptyWeight'
-                    variant='outlined'
-                    fullWidth
-                    id='emptyWeight'
-                    label='Empty Weight'
-                    onChange={handleChange}
-                    autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    required
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={true}
-                    value={challanEntryData.netWeight}
-                    autoComplete='netWeight'
-                    name='netWeight'
-                    variant='outlined'
-                    fullWidth
-                    id='netWeight'
-                    label='Net Weight'
-                    // onChange={handleChange}
-                    autoFocus
-                    // InputLabelProps={{
-                    //   shrink: true,
-                    // }}
-                  />
+
+                <Grid item xs={12} sm={9}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={2}>
+                      <Button
+                        style={{
+                          height: '100%',
+                          backgroundColor: '#8ce99a',
+                          border: '3px solid #37b24d',
+                          fontSize: '0.8rem',
+                          padding: '0 0 0 0',
+                          fontWeight: 'bold',
+                          // borderRadius: '0.5rem',
+                        }}
+                        name='addWeight'
+                        variant='contained'
+                        // color='secondary'
+                        fullWidth
+                        onClick={handleAddWeightButton}
+                        // onClick={() => {
+                        //   setShowWeightBox(true);
+                        //   setWeightsData({
+                        //     grossweight: challanEntryData.grossweight,
+                        //     miningWeight: challanEntryData.miningWeight,
+                        //     nonMiningWeight: challanEntryData.nonMiningWeight,
+                        //     netWeight: challanEntryData.netWeight,
+                        //     emptyWeight: challanEntryData.emptyWeight,
+                        //   });
+                        // }}
+                        autoFocus
+                      >
+                        Add Weights
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        required
+                        type='number'
+                        style={{ backgroundColor: '#d3f9d8' }}
+                        disabled={true}
+                        value={parseFloat(
+                          challanEntryData.grossweight
+                        )?.toFixed(2)}
+                        autoComplete='grossweight'
+                        name='grossweight'
+                        variant='outlined'
+                        fullWidth
+                        id='grossweight'
+                        label='Gross Weight'
+                        onChange={handleChange}
+                        autoFocus
+                        // InputLabelProps={{
+                        //   shrink: true,
+                        // }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        required
+                        type='number'
+                        style={{ backgroundColor: '#d3f9d8' }}
+                        disabled={true}
+                        value={parseFloat(
+                          challanEntryData.emptyWeight
+                        )?.toFixed(2)}
+                        autoComplete='emptyWeight'
+                        name='emptyWeight'
+                        variant='outlined'
+                        fullWidth
+                        id='emptyWeight'
+                        label='Empty Weight'
+                        onChange={handleChange}
+                        autoFocus
+                        // InputLabelProps={{
+                        //   shrink: true,
+                        // }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        required
+                        type='number'
+                        style={{ backgroundColor: '#d3f9d8' }}
+                        disabled={true}
+                        value={parseFloat(challanEntryData.netWeight)?.toFixed(
+                          2
+                        )}
+                        autoComplete='netWeight'
+                        name='netWeight'
+                        variant='outlined'
+                        fullWidth
+                        id='netWeight'
+                        label='Net Weight'
+                        // onChange={handleChange}
+                        autoFocus
+                        // InputLabelProps={{
+                        //   shrink: true,
+                        // }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        // required
+                        type='number'
+                        style={{ backgroundColor: '#d3f9d8' }}
+                        disabled={true}
+                        required={
+                          challanEntryData?.royalty !== 'None' ? true : false
+                        }
+                        value={parseFloat(
+                          challanEntryData.miningWeight
+                        )?.toFixed(2)}
+                        autoComplete='miningWeight'
+                        name='miningWeight'
+                        variant='outlined'
+                        fullWidth
+                        id='miningWeight'
+                        label='Mining Weight'
+                        onChange={handleChange}
+                        autoFocus
+                        // InputLabelProps={{
+                        //   shrink: true,
+                        // }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <TextField
+                        // required
+                        type='number'
+                        style={{ backgroundColor: '#d3f9d8' }}
+                        disabled={true}
+                        value={parseFloat(
+                          challanEntryData.nonMiningWeight
+                        )?.toFixed(2)}
+                        autoComplete='nonMiningWeight'
+                        name='nonMiningWeight'
+                        variant='outlined'
+                        fullWidth
+                        id='nonMiningWeight'
+                        label='Non Mining Weight'
+                        onChange={handleChange}
+                        autoFocus
+                        // InputLabelProps={{
+                        //   shrink: true,
+                        // }}
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item xs={12} sm={12} style={{ marginTop: '1rem' }}>
                   <Grid
@@ -2269,9 +2444,23 @@ export default function ChallanEntry(props) {
                     spacing={2}
                     // style={{ justifyContent: 'flex-end' }}
                   >
+                    {/* challanEntryData.royalty === 'None'
+                      ? true
+                      : challanEntryData.royalty !== 'None' &&
+                        weightsData?.miningWeight !== '0' */}
                     <Grid item xs={12} sm={3}>
                       <Button
-                        disabled={isSaved}
+                        disabled={
+                          // challanEntryData?.royalty !== 'None' &&
+                          (challanEntryData.royalty !== 'None' &&
+                            challanEntryData?.miningWeight === '0') ||
+                          // challanEntryData?.miningWeight === '0' &&
+                          challanEntryData?.grossweight === '' ||
+                          challanEntryData?.emptyWeight === '' ||
+                          isSaved
+                            ? true
+                            : false
+                        }
                         type='submit'
                         fullWidth
                         variant='contained'
@@ -2402,7 +2591,7 @@ export default function ChallanEntry(props) {
                 id='emptyWeightDateTime'
                 label='Empty Weight Date Time'
                 onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -2436,62 +2625,72 @@ export default function ChallanEntry(props) {
                 id='grossWeightDateTime'
                 label='Gross Weight Date Time'
                 onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    type='number'
-                    style={{ backgroundColor: '#d3f9d8' }}
-                    disabled={
-                      challanEntryData.royaltyType !== 'None' ? false : true
-                    }
-                    value={weightsData.miningWeight}
-                    autoComplete='miningWeight'
-                    name='miningWeight'
-                    variant='outlined'
-                    fullWidth
-                    id='miningWeight'
-                    label='Mining Weight'
-                    onChange={handleWeightChange}
-                    autoFocus
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-
-            {/* <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
-                value={weightsData.miningWeightDateTime}
-                autoComplete='miningWeightDateTime'
-                name='miningWeightDateTime'
+                value={
+                  (weightsData.netWeight =
+                    weightsData?.grossweight && weightsData?.emptyWeight
+                      ? (
+                          parseFloat(weightsData?.grossweight) -
+                          parseFloat(weightsData?.emptyWeight)
+                        )?.toFixed(2)
+                      : 0)
+                }
+                autoComplete='netWeight'
+                name='netWeight'
                 variant='outlined'
                 fullWidth
-                id='miningWeightDateTime'
-                label='Mining Weight Date Time'
-                onChange={handleWeightChange}
-                autoFocus
+                id='netWeight'
+                label='Net Weight'
+                // onChange={handleWeightChange}
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
               />
-            </Grid> */}
-            <Grid item xs={12} sm={6}>
+            </Grid>
+            {/* <Grid item xs={12} sm={12}> */}
+            {/* <Grid container spacing={2}> */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                type='number'
+                style={{ backgroundColor: '#d3f9d8' }}
+                disabled={challanEntryData.royalty !== 'None' ? false : true}
+                value={weightsData.miningWeight}
+                autoComplete='miningWeight'
+                name='miningWeight'
+                variant='outlined'
+                fullWidth
+                id='miningWeight'
+                label='Mining Weight'
+                onChange={handleWeightChange}
+                autoFocus
+              />
+            </Grid>
+            {/* </Grid> */}
+            {/* </Grid> */}
+
+            <Grid item xs={12} sm={4}>
               <TextField
                 type='number'
                 style={{ backgroundColor: '#d3f9d8' }}
                 disabled={true}
                 value={
                   (weightsData.nonMiningWeight =
-                    parseInt(weightsData.grossweight) -
-                    parseInt(weightsData.miningWeight))
+                    weightsData?.miningWeight === '0'
+                      ? '0'
+                      : (
+                          parseFloat(weightsData?.netWeight) -
+                          parseFloat(weightsData?.miningWeight)
+                        )?.toFixed(2))
                 }
                 // value={weightsData.nonMiningWeight}
                 autoComplete='nonMiningWeight'
@@ -2501,7 +2700,7 @@ export default function ChallanEntry(props) {
                 id='nonMiningWeight'
                 label='Non Mining Weight'
                 // onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -2555,7 +2754,7 @@ export default function ChallanEntry(props) {
         </DialogContent>
         <DialogActions>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}></Grid>
+            {/* <Grid item xs={12} sm={4}></Grid> */}
             <Grid item xs={12} sm={4}>
               <Button
                 fullWidth

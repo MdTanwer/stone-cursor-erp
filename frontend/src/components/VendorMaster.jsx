@@ -442,7 +442,7 @@ export default function VendorMaster(props) {
                         >
                             <Grid style={{ justifyItems: 'flex-end' }} item xs={12} sm={11}>
                                 <Typography variant='h5' fontWeight={700}>
-                                    Create New Customer
+                                    Create New Vendor
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={1}>

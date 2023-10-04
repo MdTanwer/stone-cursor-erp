@@ -23,6 +23,9 @@ const materialRateSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'please enter your Rate!'],
   },
+  purchaseRate: {
+    type: Number,
+  },
   transportRate: {
     type: Number,
   },
@@ -40,7 +43,7 @@ const materialRateSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
-    default: Date.now(),
+    // default: Date.now(),
   },
   updatedBy: {
     type: String,

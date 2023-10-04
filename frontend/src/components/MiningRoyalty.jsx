@@ -62,11 +62,13 @@ const MiningRoyalty = () => {
   const [mineName, setMineName] = useState("");
   const [locationName, setLocationName] = useState("");
   const [royltyRate, setRoyltyRate] = useState("");
+  const [units, setUnits] = useState('Tonne');
   const [gstRate, setGstRate] = useState("");
   const [igst, setIgst] = useState("");
   const [isActive, setIsActive] = useState(true);
 
   const [mineSource, setMineSource] = useState([]);
+  const [allUnits, setAllUnits] = useState([]);
   const [isMasterMaterialCompOpen, setIsMasterMaterialCompOpen] = useState(false);
 
 
@@ -81,16 +83,19 @@ const MiningRoyalty = () => {
     { title: "Royalty ID ", field: "royltyId" },
     { title: "Mine Name", field: "mineName" },
     // { title: "Location Name ", field: "locationName" },
-    { title: " Roylty Rate", field: "royltyRate", render: (rowData) => `${rowData.royltyRate} %` },
+    { title: " Roylty Rate", field: "royltyRate", },
+    { title: " Units", field: "units", },
     { title: "Gst Rate ", field: "gstRate", render: (rowData) => `${rowData.gstRate} %` },
     { title: " Igst", field: "igst", render: (rowData) => `${rowData.igst} %` },
     { title: "Active ", field: "isActive" },
   ];
 
   useEffect(() => {
+    setUnits('Tonne')
     getMaxRoyaltyId();
     setRoyltyId(getMaxRoyaltyId());
     getMineSource();
+    getAllUnits();
 
     GetMiningRoyalty();
   }, [open, openSourceMine]);
@@ -126,16 +131,18 @@ const MiningRoyalty = () => {
     // if (isMasterMaterialCompOpen) {
     //   return;
     // }
-
+    debugger
     var miningRoyalty = {
       royltyId: royltyId,
       mineName: mineName,
       locationName: locationName,
       royltyRate: royltyRate,
+      units: units,
       gstRate: gstRate,
       igst: igst,
       isActive: isActive,
     };
+    console.log(miningRoyalty);
     try {
       const response = await axios.post(
         "/miningRoyalty/create/miningroyalty",
@@ -208,6 +215,17 @@ const MiningRoyalty = () => {
     }
   };
 
+  const getAllUnits = async () => {
+    try {
+      const { data } = await axios.get(`/unitmaster/get-unitmasters`);
+      setAllUnits(data.unitmasters);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
   const getMaxSourceId = () => {
     if (!mineSource || mineSource.length === 0) {
       return 1;
@@ -232,7 +250,7 @@ const MiningRoyalty = () => {
   };
   const clear = () => {
     setMineName("");
-
+    setUnits("");
     setRoyltyRate("");
     setGstRate("");
     setIgst("");
@@ -251,6 +269,9 @@ const MiningRoyalty = () => {
 
   const handleMineChange = (e) => {
     setMineName(e.target.value);
+  };
+  const handleUnitChange = (e) => {
+    setUnits(e.target.value);
   };
   // const handleMineLocationChange = (e) => {
   //   setLocationName(e.target.value)
@@ -283,6 +304,7 @@ const MiningRoyalty = () => {
         setGstRate(rowData.gstRate);
         setIgst(rowData.igst);
         setUpdateRoyaltyID(rowData.royltyId)
+        setUnits(rowData.units)
       },
     },
     {
@@ -488,7 +510,7 @@ const MiningRoyalty = () => {
                     // onChange={(e) => setLocationName(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       type="royltyRate"
                       value={royltyRate}
@@ -501,7 +523,44 @@ const MiningRoyalty = () => {
                       onChange={(e) => setRoyltyRate(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+
+                  <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={12}>
+                      <Box sx={{ minWidth: 20 }}>
+                        <FormControl fullWidth>
+                          <InputLabel
+                            id="demo-simple-select-label"
+                            variant="outlined"
+                          >
+                            Select Unit
+                          </InputLabel>
+                          <Select
+                            variant="outlined"
+                            name="mineSourceName"
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={units}
+                            // value="Tonne"
+
+                            label="Select Units"
+                            onChange={handleUnitChange}
+                          >
+
+                            {allUnits.map((el) => (
+                              <MenuItem
+                                key={el.unitmasterId}
+                                value={el.unitName}
+                              >
+                                {el.unitName}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       type="gstRate"
                       value={gstRate}
@@ -514,7 +573,7 @@ const MiningRoyalty = () => {
                       onChange={(e) => setGstRate(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={2}>
                     <TextField
                       type="igst"
                       value={igst}
@@ -706,7 +765,7 @@ const MiningRoyalty = () => {
                       // onChange={(e) => setLocationName(e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
                       <TextField
                         type="royltyRate"
                         value={royltyRate}
@@ -719,7 +778,41 @@ const MiningRoyalty = () => {
                         onChange={(e) => setRoyltyRate(e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={3}>
+                      <Grid item xs={12} sm={12}>
+                        <Box sx={{ minWidth: 20 }}>
+                          <FormControl fullWidth>
+                            <InputLabel
+                              id="demo-simple-select-label"
+                              variant="outlined"
+                            >
+                              Select Unit
+                            </InputLabel>
+                            <Select
+                              variant="outlined"
+                              name="mineSourceName"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={units}
+                              defaultValue={'Tonne'}
+                              label="Units"
+                              onChange={handleUnitChange}
+                            >
+
+                              {allUnits.map((el) => (
+                                <MenuItem
+                                  key={el.unitmasterId}
+                                  value={el.unitName}
+                                >
+                                  {el.unitName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
                       <TextField
                         type="gstRate"
                         value={gstRate}
@@ -732,7 +825,7 @@ const MiningRoyalty = () => {
                         onChange={(e) => setGstRate(e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={2}>
                       <TextField
                         type="igst"
                         value={igst}

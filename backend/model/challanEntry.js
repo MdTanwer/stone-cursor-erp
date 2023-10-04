@@ -42,14 +42,14 @@ const addNewChallanSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter customer destination'],
   },
-  quantity: {
-    type: String,
-    required: [true, 'Please enter quantity'],
-  },
-  unit: {
-    type: String,
-    required: [true, 'Please enter unit name'],
-  },
+  // quantity: {
+  //   type: String,
+  //   required: [true, 'Please enter quantity'],
+  // },
+  // unit: {
+  //   type: String,
+  //   required: [true, 'Please enter unit name'],
+  // },
   transporter: {
     type: String,
     required: [true, 'Please enter transpoeter'],
@@ -59,7 +59,7 @@ const addNewChallanSchema = new mongoose.Schema({
     default: null,
   },
   vehicle: {
-    type: String,
+    type: Object,
     required: [true, 'Please enter vehicle'],
   },
   manualVehicleName: {
@@ -74,8 +74,8 @@ const addNewChallanSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  royaltyType: {
-    type: String,
+  royalty: {
+    type: Object,
     required: [true, 'Please enter Royalty type'],
   },
   loadedBy: {
@@ -112,6 +112,36 @@ const addNewChallanSchema = new mongoose.Schema({
   },
   netWeight: {
     type: Number,
+  },
+  saleAmount: {
+    type: Number,
+  },
+  miningAmount: {
+    type: Number,
+  },
+  nonMiningAmount: {
+    type: Number,
+  },
+  totalCost: {
+    type: Number,
+  },
+  totalMaterialCost: {
+    type: Number,
+  },
+  totalTransportCost: {
+    type: Number,
+  },
+  profitLoss: {
+    type: Number,
+  },
+  isPorL: {
+    type: String,
+  },
+  splitProfitLoss: {
+    type: Object,
+  },
+  materialRateDetails: {
+    type: Object,
   },
   createdBy: {
     type: String,
