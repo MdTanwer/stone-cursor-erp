@@ -42,14 +42,14 @@ const addNewChallanSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please enter customer destination'],
   },
-  quantity: {
-    type: String,
-    required: [true, 'Please enter quantity'],
-  },
-  unit: {
-    type: String,
-    required: [true, 'Please enter unit name'],
-  },
+  // quantity: {
+  //   type: String,
+  //   required: [true, 'Please enter quantity'],
+  // },
+  // unit: {
+  //   type: String,
+  //   required: [true, 'Please enter unit name'],
+  // },
   transporter: {
     type: String,
     required: [true, 'Please enter transpoeter'],
