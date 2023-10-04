@@ -739,6 +739,28 @@ export default function ChallanEntry(props) {
       });
       return;
     }
+    // if (name === 'royalty') {
+    //   setChallanEntryData({
+    //     ...challanEntryData,
+    //     [name]: value,
+    //   });
+    //   return;
+    // }
+    if (
+      challanEntryData?.grossweight !== '' &&
+      challanEntryData?.emptyWeight !== '' &&
+      challanEntryData?.miningWeight === '0'
+    ) {
+      // toast.error('Enter Mining & Non-Mining Wt');
+      toast.error('Enter Mining & Non-Mining Wt', {
+        autoClose: 7000,
+        position: toast.POSITION.BOTTOM_CENTER,
+        // zIndex: 9999,
+      });
+      setTimeout(() => {
+        handleAddWeightButton();
+      }, 500);
+    }
 
     setChallanEntryData({
       ...challanEntryData,
@@ -782,6 +804,17 @@ export default function ChallanEntry(props) {
     setWeightsData({
       ...weightsData,
       [name]: value,
+    });
+  };
+
+  const handleAddWeightButton = () => {
+    setShowWeightBox(true);
+    setWeightsData({
+      grossweight: challanEntryData.grossweight,
+      miningWeight: challanEntryData.miningWeight,
+      nonMiningWeight: challanEntryData.nonMiningWeight,
+      netWeight: challanEntryData.netWeight,
+      emptyWeight: challanEntryData.emptyWeight,
     });
   };
 
@@ -870,16 +903,22 @@ export default function ChallanEntry(props) {
     const partyRate = materialRateDetails?.rate;
 
     const saleAmount = parseFloat(
-      parseFloat(challanEntryData?.netWeight) * parseFloat(partyRate)
-    )?.toFixed(2);
+      (parseFloat(challanEntryData?.netWeight) * parseFloat(partyRate)).toFixed(
+        2
+      )
+    );
 
     const miningAmount = parseFloat(
-      parseFloat(challanEntryData?.miningWeight) * parseFloat(partyRate)
-    )?.toFixed(2);
+      (
+        parseFloat(challanEntryData?.miningWeight) * parseFloat(partyRate)
+      ).toFixed(2)
+    );
 
     const nonMiningAmount = parseFloat(
-      parseFloat(challanEntryData?.nonMiningWeight) * parseFloat(partyRate)
-    )?.toFixed(2);
+      (
+        parseFloat(challanEntryData?.nonMiningWeight) * parseFloat(partyRate)
+      ).toFixed(2)
+    );
 
     const royaltyObject = getRoyaltyObject(challanEntryData?.royalty);
 
@@ -888,22 +927,62 @@ export default function ChallanEntry(props) {
 
     const vehicle = getVehicle(challanEntryData?.vehicle);
 
+    const totalTransportCost = parseFloat(
+      (
+        parseFloat(challanEntryData?.netWeight) *
+        parseFloat(materialRateDetails?.transportRate)
+      ).toFixed(2)
+    );
+
     const totalCost =
       royalty === 'None'
-        ? (
-            parseFloat(challanEntryData?.netWeight) *
-            (parseFloat(materialRateDetails?.transportRate) +
-              parseFloat(materialRateDetails?.purchaseRate))
-          )?.toFixed(2)
-        : (
-            parseFloat(challanEntryData?.miningWeight) *
-              (parseFloat(materialRateDetails?.transportRate) +
-                parseFloat(materialRateDetails?.purchaseRate) +
-                parseFloat(royalty?.royltyRate)) +
-            parseFloat(challanEntryData?.nonMiningWeight) *
+        ? parseFloat(
+            (
+              parseFloat(challanEntryData?.netWeight) *
               (parseFloat(materialRateDetails?.transportRate) +
                 parseFloat(materialRateDetails?.purchaseRate))
-          )?.toFixed(2);
+            ).toFixed(2)
+          )
+        : parseFloat(
+            (
+              parseFloat(challanEntryData?.miningWeight) *
+                (parseFloat(materialRateDetails?.transportRate) +
+                  parseFloat(materialRateDetails?.purchaseRate) +
+                  parseFloat(royalty?.royltyRate)) +
+              parseFloat(challanEntryData?.nonMiningWeight) *
+                (parseFloat(materialRateDetails?.transportRate) +
+                  parseFloat(materialRateDetails?.purchaseRate))
+            ).toFixed(2)
+          );
+
+    const totalMaterialCost =
+      royalty === 'None'
+        ? parseFloat(
+            (
+              parseFloat(challanEntryData?.netWeight) *
+              parseFloat(materialRateDetails?.purchaseRate)
+            ).toFixed(2)
+          )
+        : parseFloat(
+            (
+              parseFloat(challanEntryData?.miningWeight) *
+                (parseFloat(materialRateDetails?.purchaseRate) +
+                  parseFloat(royalty?.royltyRate)) +
+              parseFloat(challanEntryData?.nonMiningWeight) *
+                parseFloat(materialRateDetails?.purchaseRate)
+            ).toFixed(2)
+          );
+
+    const profitLoss = parseFloat(
+      (parseFloat(saleAmount) - parseFloat(totalCost)).toFixed(2)
+    );
+
+    const isPorL = profitLoss > 0 ? 'PROFIT' : 'LOSS';
+
+    const splitProfitLoss = {
+      sixtyPer: parseFloat((0.6 * parseFloat(profitLoss)).toFixed(2)),
+      fortyPer: parseFloat((0.4 * parseFloat(profitLoss)).toFixed(2)),
+    };
 
     const challan = {
       ...challanEntryData,
@@ -911,15 +990,24 @@ export default function ChallanEntry(props) {
       createdBy: `Name: ${name}, Email: ${email}`,
       createdAt: challanEntryData.currentDate,
       saleAmount: saleAmount,
-      miningWeight: parseFloat(challanEntryData?.miningWeight),
+      miningWeight: parseFloat(
+        parseFloat(challanEntryData?.miningWeight).toFixed(2)
+      ),
       miningAmount: miningAmount,
       nonMiningAmount: nonMiningAmount,
       materialRateDetails: materialRateDetails,
-      netWeight: parseFloat(challanEntryData.netWeight)?.toFixed(2),
-      nonMiningWeight: parseFloat(challanEntryData.nonMiningWeight)?.toFixed(2),
+      netWeight: parseFloat(parseFloat(challanEntryData.netWeight).toFixed(2)),
+      nonMiningWeight: parseFloat(
+        parseFloat(challanEntryData.nonMiningWeight)?.toFixed(2)
+      ),
       royalty: royalty,
       vehicle: vehicle,
+      totalTransportCost: totalTransportCost,
       totalCost: totalCost,
+      totalMaterialCost: totalMaterialCost,
+      profitLoss: profitLoss,
+      isPorL: isPorL,
+      splitProfitLoss: splitProfitLoss,
     };
     console.log('SUBMIT🔥🔥🔥', challan);
 
@@ -2274,16 +2362,17 @@ export default function ChallanEntry(props) {
                     variant='contained'
                     // color='secondary'
                     fullWidth
-                    onClick={() => {
-                      setShowWeightBox(true);
-                      setWeightsData({
-                        grossweight: challanEntryData.grossweight,
-                        miningWeight: challanEntryData.miningWeight,
-                        nonMiningWeight: challanEntryData.nonMiningWeight,
-                        netWeight: challanEntryData.netWeight,
-                        emptyWeight: challanEntryData.emptyWeight,
-                      });
-                    }}
+                    onClick={handleAddWeightButton}
+                    // onClick={() => {
+                    //   setShowWeightBox(true);
+                    //   setWeightsData({
+                    //     grossweight: challanEntryData.grossweight,
+                    //     miningWeight: challanEntryData.miningWeight,
+                    //     nonMiningWeight: challanEntryData.nonMiningWeight,
+                    //     netWeight: challanEntryData.netWeight,
+                    //     emptyWeight: challanEntryData.emptyWeight,
+                    //   });
+                    // }}
                     autoFocus
                   >
                     Add Weights
@@ -2549,7 +2638,7 @@ export default function ChallanEntry(props) {
                 id='emptyWeightDateTime'
                 label='Empty Weight Date Time'
                 onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -2583,7 +2672,7 @@ export default function ChallanEntry(props) {
                 id='grossWeightDateTime'
                 label='Gross Weight Date Time'
                 onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -2609,7 +2698,7 @@ export default function ChallanEntry(props) {
                 id='netWeight'
                 label='Net Weight'
                 // onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -2658,7 +2747,7 @@ export default function ChallanEntry(props) {
                 id='nonMiningWeight'
                 label='Non Mining Weight'
                 // onChange={handleWeightChange}
-                autoFocus
+                // autoFocus
                 InputLabelProps={{
                   shrink: true,
                 }}

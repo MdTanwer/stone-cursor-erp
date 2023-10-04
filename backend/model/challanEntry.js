@@ -125,6 +125,21 @@ const addNewChallanSchema = new mongoose.Schema({
   totalCost: {
     type: Number,
   },
+  totalMaterialCost: {
+    type: Number,
+  },
+  totalTransportCost: {
+    type: Number,
+  },
+  profitLoss: {
+    type: Number,
+  },
+  isPorL: {
+    type: String,
+  },
+  splitProfitLoss: {
+    type: Object,
+  },
   materialRateDetails: {
     type: Object,
   },
