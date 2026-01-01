@@ -4,24 +4,7 @@ const Challan = require('../model/challanEntry');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const ErrorHandler = require('../utils/ErrorHandler');
 
-// create challan
-router.post(
-  '/create-challan',
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const challanData = req.body;
 
-      const challan = await Challan.create(challanData);
-
-      res.status(201).json({
-        success: true,
-        challan,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error, 400));
-    }
-  })
-);
 
 // get all challans
 router.get(
@@ -119,3 +102,4 @@ router.delete(
 );
 
 module.exports = router;
+
