@@ -120,14 +120,6 @@ export default function MasterDestination({
   const classes = useStyles();
 
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    var data = {
-      destinationId: destinationId,
-      destinationName: destinationName,
-      description: description,
-      isActive: isActive,
-    };
 
     console.log(data);
     axios
@@ -336,3 +328,4 @@ export default function MasterDestination({
     </>
   );
 }
+
